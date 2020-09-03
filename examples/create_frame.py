@@ -2,7 +2,8 @@ import ldfparser
 import binascii
 
 if __name__ == "__main__":
-	ldf = ldfparser.LDF("network.ldf")
+	path = os.path.join(os.path.dirname(__file__), "network.ldf")
+	ldf = ldfparser.LDF(path)
 	content = ldf.frame('Backlight').data(
 		{
 			"backlight_level": 10

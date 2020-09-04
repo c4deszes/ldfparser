@@ -16,6 +16,7 @@ from typing import Union
 from lark import Lark, Transformer
 
 from ldfparser.lin import LinFrame, LinSignal
+from ldfparser.encoding import LinSignalType, LogicalValue, PhysicalValue
 
 class LDF:
 	def __init__(self, path: str):
@@ -29,6 +30,17 @@ class LDF:
 			if member is not None:
 				ldf.update(member)
 		
+		signalTypes = {}
+		self.converters = {}
+		if 'types' in ldf and 'representations' in ldf:
+			for signalEncodingType in ldf['types']:
+				signalType = LinSignalType(signalEncodingType[0], signalEncodingType[1:])
+				signalTypes[signalType.name] = signalType
+			
+			for signalRepresentation in ldf['representations']:
+				for signal in signalRepresentation[1:]:
+					self.converters[signal] = signalTypes[signalRepresentation[0]]
+
 		self.signals = []
 		for signal in ldf['signals']:
 			self.signals.append(
@@ -82,6 +94,12 @@ class LDFTransformer(Transformer):
 		except ValueError as e:
 			return int(i, 16)
 
+	def parse_real_or_integer(self, i:str):
+		try:
+			return float(i)
+		except ValueError as e:
+			return self.parse_int(i)
+
 	def ldf_node_name(self,s):
 		return s[0][0:]
 	def signal_name(self, s):
@@ -123,7 +141,6 @@ class LDFTransformer(Transformer):
 		return self.parse_int(s[0])
 	def ldf_signal_name(self,s):
 		return s[0][0:]
-
 	def ldf_signal_default_value(self,s):
 		s = s[0]
 		s = s.replace('{','').replace('}','').split(',')
@@ -147,14 +164,45 @@ class LDFTransformer(Transformer):
 		return
 		# return {"ldf_schedule_table" : "NOT_IMPLEMENTED"}
 	def ldf_signal_representation(self,s):
-		return
-		# return {"ldf_signal_representation" : "NOT_IMPLEMENTED"}
+		return {"representations" : s}
 	def ldf_signal_representation_node(self,s):
-		return
-		# return {"ldf_signal_representation_node" : "NOT_IMPLEMENTED"}
-	def ldf_signal_encoding_types(self,s):
-		return
-		# return {"ldf_signal_encoding_types" : "NOT_IMPLEMENTED"}
+		return s
+	
+	def ldf_signal_encoding_types(self, s):
+		return {'types': s}
+	def ldf_signal_encoding_type(self, s):
+		return s
+
+	def ldf_signal_encoding_type_name(self, s):
+		return s[0][0:]
+
+	def ldf_signal_encoding_logical_value(self, s):
+		return LogicalValue(s[0], s[1])
+
+	def ldf_encoding_logical_signal_value(self, s):
+		return self.parse_int(s[0])
+
+	def ldf_encoding_logical_signal_info(self, s):
+		return s[0][1:-1]
+
+	def ldf_signal_encoding_physical_value(self, s):
+		return PhysicalValue(s[0], s[1], s[2], s[3], s[4] if len(s) > 4 else None)
+
+	def ldf_encoding_phy_min(self, s):
+		return self.parse_int(s[0])
+
+	def ldf_encoding_phy_max(self, s):
+		return self.parse_int(s[0])
+
+	def ldf_encoding_phy_scale(self, s):
+		return self.parse_real_or_integer(s[0])
+
+	def ldf_encoding_phy_offset(self, s):
+		return self.parse_real_or_integer(s[0])
+
+	def ldf_encoding_phy_unit(self, s):
+		return s[0][1:-1]
+
 	def ldf_diagnostic(self,s):
 		return
 		# return {"ldf_diagnostic" : "NOT_IMPLEMENTED"}

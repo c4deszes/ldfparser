@@ -32,6 +32,7 @@ jobs:
         run: |
           python examples/create_frame.py
           python examples/read_frame.py
+          python examples/signal_encoding.py
 
       - name: Package
         run: |

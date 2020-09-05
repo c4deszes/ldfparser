@@ -26,11 +26,35 @@ print(frame.parse(received))
 # >> {"Signal_1": 123, "Signal_2": 0}
 
 # Encode signal values through converters
-message = frame.data({"MotorRPM": 100}, ldf.converters)
+message = frame.data({"MotorRPM": 100, "FanState": "ON"}, ldf.converters)
 print(binascii.hexlify(message))
-# >> 0xFE00
+# >> 0xFE01
 
 ```
+
+---
+
+## Features
+
++ Semantic validation of LDF files
+
++ Retrieve Signal and Frame information
+
++ Retrieve Signal encoding types and use them to convert values
+
+### Currently not supported
+
++ Header information
+
++ Signals longer than 16 bits
+
++ Ascii and BCD signal values
+
++ Node attributes
+
++ Scheduling table
+
++ Diagnostics
 
 ---
 

@@ -47,7 +47,7 @@ class LinFrame:
 
 	def raw(self, data: Dict[str, int]) -> bytearray:
 		"""
-		
+		Returns a bytearray (frame content) by using the raw signal values provided
 		"""
 		message = []
 		for signal in self.signals:
@@ -58,6 +58,9 @@ class LinFrame:
 		return self._packer.pack(*message)
 
 	def data(self, data: Dict[str, Union[str, int, float]], converters: Dict[str, LinSignalType]) -> bytearray:
+		"""
+		Returns a bytearray (frame content) by using the human readable signal values
+		"""
 		converted = {}
 		for value in data.items():
 			if converters[value[0]] is None:
@@ -67,7 +70,7 @@ class LinFrame:
 
 	def parse_raw(self, data: bytearray) -> Dict[str, int]:
 		"""
-		Returns a mapping between Signal names and their values in the given message
+		Returns a mapping between Signal names and their raw physical values in the given message
 		"""
 		message = {}
 		unpacked = self._packer.unpack(data)
@@ -76,6 +79,9 @@ class LinFrame:
 		return message
 
 	def parse(self, data: bytearray, converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:
+		"""
+		Returns a mapping between Signal names and their human readable value
+		"""
 		tmp = self.parse_raw(data)
 		output = {}
 		for value in tmp.items():
@@ -86,7 +92,7 @@ class LinFrame:
 
 	def compare(self, previous: bytearray, current: bytearray) -> Dict[str, int]:
 		"""
-		Returns a mapping between Signals names and their values, the result will
+		Returns a mapping between Signal names and their values, the result will
 		only contain signals that have changed compared to the previous message
 		"""
 		prev = self.parse(previous)

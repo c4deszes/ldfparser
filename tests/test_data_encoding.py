@@ -81,3 +81,21 @@ def test_logical_decode(logicalValue):
 
 	with pytest.raises(ValueError) as e:
 		logicalValue.decode(0)
+
+@pytest.mark.unit
+def test_logical_encode_no_signal_info():
+	logicalValue = LogicalValue(1)
+
+	assert logicalValue.encode(1) == 1
+
+	with pytest.raises(ValueError) as e:
+		logicalValue.encode(0)
+
+@pytest.mark.unit
+def test_logical_decode_no_signal_info():
+	logicalValue = LogicalValue(1)
+
+	assert logicalValue.decode(1) == 1
+
+	with pytest.raises(ValueError) as e:
+		logicalValue.decode(0)

@@ -67,7 +67,7 @@ class LDF:
 
 	def signal(self, name: str) -> LinSignal:
 		"""
-		Returns Signal
+		Returns Signal with the given name
 		"""
 		return next((x for x in self.signals if x.name == name), None)
 
@@ -177,7 +177,7 @@ class LDFTransformer(Transformer):
 		return s[0][0:]
 
 	def ldf_signal_encoding_logical_value(self, s):
-		return LogicalValue(s[0], s[1])
+		return LogicalValue(s[0], s[1] if len(s) > 1 else None)
 
 	def ldf_encoding_logical_signal_value(self, s):
 		return self.parse_int(s[0])

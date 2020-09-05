@@ -149,9 +149,9 @@ class LogicalValue(ValueConverter):
 		"""
 		if self.info is None and value == self.phy_value:
 			return self.phy_value
-		if value != self.info:
-			raise ValueError("value: " + str(value) + " not equal to " + self.info)
-		return self.phy_value
+		if self.info is not None and value == self.info:
+			return self.phy_value
+		raise ValueError("value: " + str(value) + " not equal to signal info")
 
 	def decode(self, value: int) -> Union[str, int]:
 		"""
@@ -169,9 +169,9 @@ class LogicalValue(ValueConverter):
 
 			ValueError: when the value doesn't match the physical value
 		"""
-		if value != self.phy_value:
-			raise ValueError("value: " + str(value) + " not equal to " + str(self.phy_value))
-		return self.info
+		if value == self.phy_value:
+			return self.info if self.info is not None else self.phy_value
+		raise ValueError("value: " + str(value) + " not equal to " + str(self.phy_value))
 
 class LinSignalType:
 	"""

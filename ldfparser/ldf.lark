@@ -29,11 +29,23 @@ start: ldf_container
 ?ldf_schedule_table: "Schedule_tables" "{" [ldf_schedule_table_node*] "}" 
 ?ldf_schedule_table_node: ANY_OPENED_BLOCK [ANY_SEMICOLON_TERMINATED_LINE*] "}"
 
-?ldf_signal_encoding_types: "Signal_encoding_types" "{" [ldf_signal_encoding_types_node*] "}" 
-?ldf_signal_encoding_types_node: ANY_OPENED_BLOCK [(ANY_SEMICOLON_TERMINATED_LINE*)] ["}"] [ANY_CLOSED_BLOCK]
+?ldf_signal_encoding_types: "Signal_encoding_types" "{" [ldf_signal_encoding_type*] "}" 
+?ldf_signal_encoding_type: [ldf_signal_encoding_type_name] "{" [(ldf_signal_encoding_logical_value | ldf_signal_encoding_physical_value)*] ["}"] [ANY_CLOSED_BLOCK]
+?ldf_signal_encoding_logical_value: "logical_value" "," [ldf_encoding_logical_signal_value] ("," [ldf_encoding_logical_signal_info])? ";"
+?ldf_signal_encoding_physical_value: "physical_value" "," [ldf_encoding_phy_min] "," [ldf_encoding_phy_max] "," [ldf_encoding_phy_scale] "," [ldf_encoding_phy_offset] ("," ldf_encoding_phy_unit)? ";"
+
+ldf_signal_encoding_type_name: CNAME
+ldf_encoding_logical_signal_value: C_INT
+ldf_encoding_logical_signal_info: ESCAPED_STRING
+
+ldf_encoding_phy_min: C_INT
+ldf_encoding_phy_max: C_INT
+ldf_encoding_phy_scale: C_FLOAT
+ldf_encoding_phy_offset: C_FLOAT
+ldf_encoding_phy_unit: ESCAPED_STRING
 
 ?ldf_signal_representation: "Signal_representation" "{" [ldf_signal_representation_node*] "}" 
-?ldf_signal_representation_node: [(ANY_COLON_TERMINATED_LINE | ANY_SEMICOLON_TERMINATED_LINE)*]
+?ldf_signal_representation_node: ldf_signal_encoding_type_name ":" ldf_signal_name ("," ldf_signal_name)* ";"
 
 ?ldf_node_master: "Master:" ldf_node_name "," /.*;/  
 ?ldf_node_slaves: "Slaves:" ldf_node_name? ";" 
@@ -61,10 +73,9 @@ ANY_CLOSED_BLOCK: /.*}/
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 ANY_COLON_TERMINATED_LINE: /.*,/
 
-
-
 C_INITIALIZER_LIST: ("{"|"{ ") C_INT ([","|", "]C_INT)* ("}"|" }")
 C_INT: ("0x"HEXDIGIT+) | ("-"? HEXDIGIT+) 
+C_FLOAT: INT ("." INT)?
 
 ldf_header: (ldf_header_lin | ldf_header_channel)*  
 ldf_header_lin : "LIN_"/.*;/

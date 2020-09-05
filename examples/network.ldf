@@ -9,10 +9,10 @@ Nodes {
 }
 
 Signals{
-	backlight_level: 4, 0, MasterECU, Slave ;
+	backlight_level: 8, 0, MasterECU, Slave ;
 	button_1: 4, 0, Slave, MasterECU ;
 	button_2: 4, 0, Slave, MasterECU ;
-	backlight_status: 4, 0, Slave, MasterECU ;
+	backlight_status: 8, 0, Slave, MasterECU ;
 }
 
 Frames{
@@ -47,4 +47,20 @@ Node_attributes {
 }
 
 Schedule_tables {
+}
+
+Signal_encoding_types {
+	BacklightEncoding {
+		logical_value, 255, "Flashing";
+		physical_value, 0, 199, 0.5, 0, "%";
+		physical_value, 200, 254, 0, 200;
+	}
+	ButtonState {
+		physical_value, 0, 15, 6.667, 0;
+	}
+}
+
+Signal_representation {
+	BacklightEncoding: backlight_level;
+	ButtonState: button_1, button_2;
 }

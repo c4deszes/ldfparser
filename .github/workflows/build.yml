@@ -1,10 +1,17 @@
 name: CI
 
 on:
+  create: {}
   push:
+    paths-ignore:
+      - '*.md'
+      - '**/*.md'
     branches:
-      - 'master'
+      - master
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - '**/*.md'
     types:
       - opened
       - edited

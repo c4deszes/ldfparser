@@ -44,3 +44,12 @@ def test_retrieve_frames():
 	assert frame.frame_id == 11
 	assert frame.name == 'Backlight'
 	assert frame.signals[0].name == 'backlight_level'
+
+@pytest.mark.unit
+def test_retrieve_header():
+	path = os.path.join(os.path.dirname(__file__), "ldf", "valid.ldf")
+	ldf = ldfparser.LDF(path)
+
+	assert ldf.protocol_version == '2.1'
+	assert ldf.language_version == '2.1'
+	assert ldf.baudrate == 19200.0

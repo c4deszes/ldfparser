@@ -29,17 +29,10 @@ class LDF:
 		for member in json:
 			if member is not None:
 				ldf.update(member)
-		
-		signalTypes = {}
-		self.converters = {}
-		if 'types' in ldf and 'representations' in ldf:
-			for signalEncodingType in ldf['types']:
-				signalType = LinSignalType(signalEncodingType[0], signalEncodingType[1:])
-				signalTypes[signalType.name] = signalType
-			
-			for signalRepresentation in ldf['representations']:
-				for signal in signalRepresentation[1:]:
-					self.converters[signal] = signalTypes[signalRepresentation[0]]
+
+		self.protocol_version = ldf['header']['protocol_version'][0]
+		self.language_version = ldf['header']['language_version'][0]
+		self.baudrate = ldf['header']['speed'][0] * 1000
 
 		self.signals = []
 		for signal in ldf['signals']:
@@ -64,6 +57,17 @@ class LDF:
 					signalMapping
 				)
 			)
+
+		signalTypes = {}
+		self.converters = {}
+		if 'types' in ldf and 'representations' in ldf:
+			for signalEncodingType in ldf['types']:
+				signalType = LinSignalType(signalEncodingType[0], signalEncodingType[1:])
+				signalTypes[signalType.name] = signalType
+			
+			for signalRepresentation in ldf['representations']:
+				for signal in signalRepresentation[1:]:
+					self.converters[signal] = signalTypes[signalRepresentation[0]]
 
 	def signal(self, name: str) -> LinSignal:
 		"""
@@ -210,8 +214,18 @@ class LDFTransformer(Transformer):
 		return
 		# return {"ldf_diagnostic_frames" : "NOT_IMPLEMENTED"}
 	def ldf_header(self,s):
-		return
-		# return {"ldf_header" : "NOT_IMPLEMENTED"}
-	def ldf_header_lin(self,s):
-		#print(s)
-		return
+		return {'header': dict(s)}
+	def ldf_description_file(self, s):
+		return ("description_file", "")
+	def ldf_header_protocol_version_def(self,s):
+		return ("protocol_version", s)
+	def ldf_header_language_version_def(self,s):
+		return ("language_version", s)
+	def ldf_header_speed_def(self,s):
+		return ("speed", s)
+	def lin_protocol_version(self, s):
+		return s[0][1:-1]
+	def lin_language_version(self, s):
+		return s[0][1:-1]
+	def lin_speed(self, s):
+		return self.parse_real_or_integer(s[0])

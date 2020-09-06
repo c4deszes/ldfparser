@@ -1,4 +1,4 @@
-LIN_description_file;
+LIN_description_file ;
 LIN_protocol_version = "2.1" ;
 LIN_language_version = "2.1" ;
 LIN_speed = 19.2 kbps ;
@@ -17,12 +17,12 @@ Signals{
 
 Frames{
 	Backlight: 11, MasterECU, 1{
-		backlight_level, 0;
+		backlight_level, 0 ;
 	}
 	Buttons_Status: 12, Slave, 2{
-		button_1, 0;
-		button_2, 4;		
-		backlight_status, 8;
+		button_1, 0 ;
+		button_2, 4 ;		
+		backlight_status, 8 ;
 	}
 }
 
@@ -51,16 +51,16 @@ Schedule_tables {
 
 Signal_encoding_types {
 	BacklightEncoding {
-		logical_value, 255, "Flashing";
-		physical_value, 0, 199, 0.5, 0, "%";
-		physical_value, 200, 254, 0, 200;
+		logical_value, 255, "Flashing" ;
+		physical_value, 0, 199, 0.5, 0, "%" ;
+		physical_value, 200, 254, 0, 200 ;
 	}
 	ButtonState {
-		physical_value, 0, 15, 6.667, 0;
+		physical_value, 0, 15, 6.667, 0 ;
 	}
 }
 
 Signal_representation {
-	BacklightEncoding: backlight_level;
-	ButtonState: button_1, button_2;
+	BacklightEncoding: backlight_level ;
+	ButtonState: button_1, button_2 ;
 }

@@ -15,6 +15,9 @@ import ldfparser
 ldf = ldfparser.LDF(path = "network.ldf")
 frame = ldf.frame('Frame_1')
 
+# Get baudrate from LDF
+print(ldf.baudrate)
+
 # Encode signal values into frame
 message = frame.raw({"Signal_1": 123, "Signal_2": 0})
 print(binascii.hexlify(message))
@@ -38,13 +41,13 @@ print(binascii.hexlify(message))
 
 + Semantic validation of LDF files
 
++ Retrieve header information (version, baudrate)
+
 + Retrieve Signal and Frame information
 
 + Retrieve Signal encoding types and use them to convert values
 
 ### Currently not supported
-
-+ Header information
 
 + Signals longer than 16 bits
 

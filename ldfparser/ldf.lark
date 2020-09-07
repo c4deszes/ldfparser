@@ -75,7 +75,7 @@ ANY_COLON_TERMINATED_LINE: /.*,/
 
 C_INITIALIZER_LIST: ("{"|"{ ") C_INT ([","|", "]C_INT)* ("}"|" }")
 C_INT: ("0x"HEXDIGIT+) | ("-"? HEXDIGIT+) 
-C_FLOAT: INT ("." INT)?
+C_FLOAT: "-"? INT ("." INT)?
 
 ldf_header: [ldf_description_file ldf_header_protocol_version_def ldf_header_language_version_def ldf_header_speed_def (ldf_header_channel)?]
 ldf_description_file: "LIN_description_file" ";"

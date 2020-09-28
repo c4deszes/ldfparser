@@ -55,7 +55,7 @@ class LinFrame:
 				message.append(data.get(signal.name))
 			else:
 				message.append(signal.init_value[0])
-		return self._packer.pack(*message)
+		return self._flip_bytearray(self._packer.pack(*message))
 
 	def data(self, data: Dict[str, Union[str, int, float]], converters: Dict[str, LinSignalType]) -> bytearray:
 		"""
@@ -73,7 +73,7 @@ class LinFrame:
 		Returns a mapping between Signal names and their raw physical values in the given message
 		"""
 		message = {}
-		unpacked = self._packer.unpack(data)
+		unpacked = self._packer.unpack(self._flip_bytearray(data))
 		for i in range(len(unpacked)):
 			message[self.signals[i].name] = unpacked[i]
 		return message
@@ -101,4 +101,10 @@ class LinFrame:
 
 	def __str__(self):
 		return "Frame(id=" + str(self.frame_id) + ", name=" + self.name + ")"
+
+	def _flip_bytearray(self, data: bytearray) -> bytearray:
+		flipped = bytearray()
+		for i in data:
+			flipped.append(int('{:08b}'.format(i)[::-1], 2))
+		return flipped
 

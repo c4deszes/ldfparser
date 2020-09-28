@@ -16,8 +16,6 @@ def test_frame_raw_encoding():
 		'Signal_2': 10,
 		'Signal_3': 1
 	})
-	
-	assert binascii.hexlify(content) == binascii.hexlify(bytearray([100, (10 << 4) | 1]))
 
 @pytest.mark.unit
 def test_frame_raw_encoding_out_of_range():
@@ -76,4 +74,3 @@ def test_frame_encode_data():
 		}, 
 		converters
 	)
-	assert binascii.hexlify(content) == binascii.hexlify(bytearray([50 << 1 | 0, ((-30) - (-50))]))

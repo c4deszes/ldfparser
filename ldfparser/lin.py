@@ -27,7 +27,7 @@ class LinFrame:
 		self._packer = bitstruct.compile(self._pattern)
 
 	def _frame_pattern(self, frame_bits: int, signals: List[Tuple[int, LinSignal]]) -> str:
-		pattern = ""
+		pattern = "<"
 		offset = 0
 		for signal in signals:
 			if signal[0] < offset:

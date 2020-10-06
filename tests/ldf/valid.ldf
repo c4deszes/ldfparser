@@ -1,14 +1,25 @@
+// This is a comment
+
+/************/
+/* Comments */
+/************/
+
 LIN_description_file;
 LIN_protocol_version = "2.1" ;
 LIN_language_version = "2.1" ;
 LIN_speed = 19.2 kbps ;
+
+//This is a comment
 
 Nodes {
   Master: Master, 5 ms, 0.1 ms ;
   Slaves: Slave ;
 }
 
+//This is a comment
+
 Signals{
+	//This is a comment
 	backlight_level: 4, 0, MasterECU, Slave ;
 	button_1: 4, 0, Slave, MasterECU ;
 	button_2: 4, 0, Slave, MasterECU ;
@@ -21,6 +32,7 @@ Frames{
 	}
 	Buttons_Status: 12, Slave, 2{
 		button_1, 0;
+		//This is a comment
 		button_2, 4;		
 		backlight_status, 8;
 	}
@@ -45,3 +57,5 @@ Node_attributes {
 
 Schedule_tables {
 }
+
+//This is a comment

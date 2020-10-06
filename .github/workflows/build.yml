@@ -32,15 +32,15 @@ jobs:
       - name: Install requirements
         run: | 
           python -m pip install --upgrade pip
-          pip install pytest setuptools wheel twine
+          pip install pytest pytest-cov setuptools wheel twine
           pip install -r requirements.txt
 
       - name: Install package
         run: |
           python setup.py install
 
-      - name: Test
-        run: pytest
+      - name: Test & Coverage
+        run: pytest --cov=ldfparser --cov-report xml
 
       - name: Run examples
         run: |
@@ -51,6 +51,15 @@ jobs:
       - name: Package
         run: |
           python setup.py sdist bdist_wheel
+
+      - name: Upload coverage results
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
       - name: Publish
         if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')

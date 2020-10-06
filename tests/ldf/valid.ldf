@@ -1,3 +1,9 @@
+//This is a comment
+
+/*****************/
+/* BLOCK COMMENT */
+/*****************/
+
 LIN_description_file;
 LIN_protocol_version = "2.1" ;
 LIN_language_version = "2.1" ;
@@ -17,6 +23,7 @@ Signals{
 
 Frames{
 	Backlight: 11, MasterECU, 1{
+		//This is a comment
 		backlight_level, 0;
 	}
 	Buttons_Status: 12, Slave, 2{
@@ -42,6 +49,8 @@ Node_attributes {
 		}
 	}
 }
+
+//This is a comment
 
 Schedule_tables {
 }

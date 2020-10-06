@@ -1,6 +1,9 @@
 # LDF Parser
 
-[![Workflow](https://github.com/c4deszes/ldfparser/workflows/CI/badge.svg)](https://github.com/c4deszes/ldfparser/actions) [![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://badge.fury.io/py/ldfparser) [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![Workflow](https://github.com/c4deszes/ldfparser/workflows/CI/badge.svg)](https://github.com/c4deszes/ldfparser/actions)
+[![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://badge.fury.io/py/ldfparser)
+[![codecov.io](https://codecov.io/github/c4deszes/ldfparser/coverage.svg?branch=master)](https://codecov.io/github/c4deszes/ldfparser?branch=master)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 > This tool is able parse LIN Description Files, retrieve signal names and frames from them, as well as encoding messages using frame definitions and decoding them.
 

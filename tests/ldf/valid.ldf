@@ -11,7 +11,7 @@ LIN_speed = 19.2 kbps ;
 
 Nodes {
   Master: Master, 5 ms, 0.1 ms ;
-  Slaves: Slave ;
+  Slaves: Slave1, Slave2, Slave3;
 }
 
 Signals{
@@ -34,7 +34,7 @@ Frames{
 }
 
 Node_attributes {
-	Slave{
+	Slave1 {
 		LIN_protocol = "2.1" ;
 		configured_NAD = 0x1 ;
 		initial_NAD = 0x1 ;

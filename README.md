@@ -50,13 +50,13 @@ print(binascii.hexlify(message))
 
 + Retrieve Signal encoding types and use them to convert values
 
++ Retrieve Node attributes
+
 ### Currently not supported
 
 + Signals longer than 16 bits
 
 + Ascii and BCD signal values
-
-+ Node attributes
 
 + Scheduling table
 

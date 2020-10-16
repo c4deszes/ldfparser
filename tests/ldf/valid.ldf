@@ -10,7 +10,7 @@ LIN_language_version = "2.1" ;
 LIN_speed = 19.2 kbps ;
 
 Nodes {
-  Master: Master, 5 ms, 0.1 ms ;
+  Master: MasterECU, 5 ms, 0.1 ms ;
   Slaves: Slave1, Slave2, Slave3;
 }
 
@@ -38,6 +38,20 @@ Node_attributes {
 		LIN_protocol = "2.1" ;
 		configured_NAD = 0x1 ;
 		initial_NAD = 0x1 ;
+		product_id = 0x0, 0x0, 0x28 ;
+		P2_min = 50 ms ;
+		ST_min = 0 ms ;
+		N_As_timeout = 1000 ms ;
+		N_Cr_timeout = 1000 ms ;
+		configurable_frames{
+			Backlight ;
+			Buttons_Status ;
+		}
+	}
+	Slave2 {
+		LIN_protocol = "2.1" ;
+		configured_NAD = 0x2 ;
+		initial_NAD = 0x2 ;
 		product_id = 0x0, 0x0, 0x28 ;
 		P2_min = 50 ms ;
 		ST_min = 0 ms ;

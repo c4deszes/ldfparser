@@ -1,15 +1,3 @@
-#
-# MIT License
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-# Source: https://github.com/uCAN-LIN/LinUSBConverter/blob/29289c854a6cb63ea7191d9cf020526d4e4e48fc/python_lib/ucanlintools/LDF_parser.py
-#
-
 import os
 from typing import Union
 
@@ -18,56 +6,19 @@ from lark import Lark, Transformer
 from ldfparser.lin import LinFrame, LinSignal
 from ldfparser.encoding import LinSignalType, LogicalValue, PhysicalValue
 
+import json
+
 class LDF:
-	def __init__(self, path: str):
-		lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
-		parser = Lark(grammar=open(lark), parser='lalr')
-		ldf_file = open(path, "r").read()
-		tree = parser.parse(ldf_file)
-		json = LDFTransformer().transform(tree)
-		ldf = {}
-		for member in json:
-			if member is not None:
-				ldf.update(member)
-
-		self.protocol_version = ldf['header']['protocol_version'][0]
-		self.language_version = ldf['header']['language_version'][0]
-		self.baudrate = ldf['header']['speed'][0] * 1000
-
+	def __init__(self):
+		self.protocol_version = None
+		self.language_version = None
+		self.baudrate = None
+		self.channel_name = None
+		self.master = None
+		self.slaves = []
 		self.signals = []
-		for signal in ldf['signals']:
-			self.signals.append(
-				LinSignal(
-					signal['signal_name'],
-					signal['size_bits'],
-					signal['default_val']
-				)
-			)
-
 		self.frames = []
-		for frame in ldf['frames']:
-			signalMapping = {}
-			for signal in frame['frame_signals']:
-				signalMapping[signal['bit_offset']] = self.signal(signal['name'])
-			self.frames.append(
-				LinFrame(
-					frame['frame_id'],
-					frame['frame_name'],
-					frame['frame_len'],
-					signalMapping
-				)
-			)
-
-		signalTypes = {}
-		self.converters = {}
-		if 'types' in ldf and 'representations' in ldf:
-			for signalEncodingType in ldf['types']:
-				signalType = LinSignalType(signalEncodingType[0], signalEncodingType[1:])
-				signalTypes[signalType.name] = signalType
-			
-			for signalRepresentation in ldf['representations']:
-				for signal in signalRepresentation[1:]:
-					self.converters[signal] = signalTypes[signalRepresentation[0]]
+		self.converters = []
 
 	def signal(self, name: str) -> LinSignal:
 		"""
@@ -85,14 +36,17 @@ class LDF:
 			return next((x for x in self.frames if x.name == frame_id), None)
 		return None
 
-	def node(self, node_id):
-		pass
+def parseLDF(path: str) -> LDF:
+	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
+	parser = Lark(grammar=open(lark), parser='lalr')
+	ldf_file = open(path, "r").read()
+	tree = parser.parse(ldf_file)
+	transformed = LDFTransformer().transform(tree)
+	print(json.dumps(transformed))
+	pass
 
-#
-# Source: https://github.com/uCAN-LIN/LinUSBConverter/blob/29289c854a6cb63ea7191d9cf020526d4e4e48fc/python_lib/ucanlintools/LDF_parser.py#L60
-#
 class LDFTransformer(Transformer):
-	def parse_int(self, i:str):
+	def parse_integer(self, i:str):
 		try:
 			return int(i)
 		except ValueError as e:
@@ -104,128 +58,223 @@ class LDFTransformer(Transformer):
 		except ValueError as e:
 			return self.parse_int(i)
 
-	def ldf_node_name(self,s):
-		return s[0][0:]
-	def signal_name(self, s):
-		return s[0][0:]
-	def signal_size(self, s):
-		return self.parse_int(s[0])
-	def signal_bit_offset(self, s):
-		return self.parse_int(s[0])
-	def ldf_node_master(self,s):
-		return s[0][0:]
-	def ldf_node_slaves(self,s):
-		return s[0][0:]
+	def ldf_identifier(self, tree):
+		return tree[0][0:]
 
-	def ldf_nodes(self,s):
-		return {'nodes': s}
-	def ldf_signals(self,s):
-		return {'signals': s}
-	def ldf_frames(self,s):
-		return {'frames': s}
+	def ldf_integer(self, tree):
+		return self.parse_integer(tree[0])
 
-	def ldf_container(self,s):
-		return s
+	def ldf_float(self, tree):
+		return self.parse_real_or_integer(tree[0])
 
-	def ldf_signal(self,s):
-		return {'signal_name':s[0], 'size_bits':s[1], 'default_val': s[2], 'publisher': s[3], 'subscriber': s[4]}
-	def ldf_frame(self,s):
-		return {'frame_name':s[0], 'frame_id':s[1], 'publisher':s[2], 'frame_len':s[3], 'frame_signals':s[4:]}
-	def ldf_frame_signal(self,s):
-		return {'name':s[0],'bit_offset':s[1]}
-	def ldf_frame_name(self,s):
-		return s[0][0:] 
-	def ldf_frame_id(self,s):
-		return self.parse_int(s[0])
-	def ldf_frame_len(self,s):
-		return self.parse_int(s[0])
-	def ldf_signal_size(self,s):
-		return self.parse_int(s[0])
-	def ldf_signal_bit_offset(self,s):
-		return self.parse_int(s[0])
-	def ldf_signal_name(self,s):
-		return s[0][0:]
-	def ldf_signal_default_value(self,s):
-		s = s[0]
-		s = s.replace('{','').replace('}','').split(',')
-		o = []
-		for x in s:
-			o.append(self.parse_int(x))
-		return o
+	def start(self, tree):
+		return tree[0]
 
-	# start = dict 
-	def start(self,s):
-		return s[0]
+	def ldf(self, tree):
+		ldf = {}
+		for k in tree[0:]:
+			ldf[k[0]] = k[1]
+		return ldf
 
-	def ldf_node_atributes(self,s):
-		return
-		# return {"ldf_node_atributes" : "NOT_IMPLEMENTED"}
-	def ldf_node_atributes_node(self,s):
-		return
-		# return {"ldf_node_atributes_node" : "NOT_IMPLEMENTED"}
+	def header_lin_description_file(self, tree):
+		return ("header", "lin_description_file")
 
-	def ldf_schedule_table(self,s):
-		return
-		# return {"ldf_schedule_table" : "NOT_IMPLEMENTED"}
-	def ldf_signal_representation(self,s):
-		return {"representations" : s}
-	def ldf_signal_representation_node(self,s):
-		return s
+	def header_protocol_version(self, tree):
+		return ("protocol_version", str(tree[0]))
+
+	def header_language_version(self, tree):
+		return ("language_version", str(tree[0]))
+
+	def header_speed(self, tree):
+		return ("speed", float(tree[0]) * 1000)
+
+	def header_channel(self, tree):
+		return ("channel", tree[0])
+
+	def nodes(self, tree):
+		return ("nodes", {'master': tree[0], 'slaves': tree[1]})
+
+	def nodes_master(self, tree):
+		return {"name": tree[0], "timebase": tree[1] * 0.001, "jitter": tree[2] * 0.001}
+
+	def nodes_slaves(self, tree):
+		return tree
+
+	def node_compositions(self, tree):
+		return ("node_compositions", tree[0:])
+
+	def node_compositions_configuration(self, tree):
+		return {"name": tree[0], "compositions": tree[1]}
+
+	def node_compositions_composite(self, tree):
+		return {"name": tree[0], "nodes": tree[1:]}
+
+	def signals(self, tree):
+		return ("signals", tree)
+
+	def signal_definition(self, tree):
+		return {"name": tree[0], "width": int(tree[1]), "default_value": tree[2], "publisher": tree[3], "subscribers": tree[4:]}
+
+	def signal_default_value(self, tree):
+		return tree[0]
+
+	def signal_default_value_single(self, tree):
+		return int(tree[0])
+
+	def signal_default_value_array(self, tree):
+		return tree[0]
+
+	def frames(self, tree):
+		return ("frames", tree)
+
+	def frame_definition(self, tree):
+		return {"name": tree[0], "frame_id": int(tree[1]), "publisher": tree[2], "length": tree[3] if len(tree) > 4 else None, "signals": tree[4] if len(tree) > 4 else tree[3]}
+
+	def frame_signals(self, tree):
+		return tree[0:]
+
+	def frame_signal(self, tree):
+		return {"signal": tree[0], "offset": int(tree[1])}
+
+	def sporadic_frames(self, tree):
+		return ("sporadic_frames", tree[0:])
+
+	def sporadic_frame_definition(self, tree):
+		return {"name": tree[0], "frames": tree[1:]}
+
+	def event_triggered_frames(self, tree):
+		return ("event_triggered_frames", tree[0:])
+
+	def event_triggered_frame_definition(self, tree):
+		return {"name": tree[0]}
+
+	def event_triggered_frame_definition_frames(self, tree):
+		return tree[0:]
+
+	def node_attributes(self, tree):
+		return ("node_attributes", tree[0:])
+
+	def node_definition(self, tree):
+		node = {"name": tree[0]}
+		for k in tree[1:]:
+			node[k[0]] = k[1]
+		return node
+
+	def node_definition_protocol(self, tree):
+		return ("lin_protocol", str(tree[0]))
+
+	def node_definition_configured_nad(self, tree):
+		return ("configured_nad", tree[0])
+
+	def node_definition_initial_nad(self, tree):
+		return ("initial_nad", tree[0])
+
+	def node_definition_product_id(self, tree):
+		return ("product_id", {"supplier_id": tree[0], "function_id": tree[1], "variant": tree[2] if len(tree) > 2 else None})
+
+	def node_definition_response_error(self, tree):
+		return ("response_error", tree[0])
+
+	def node_definition_fault_state_signals(self, tree):
+		return ("fault_state_signals", tree[0:])
+
+	def node_definition_p2_min(self, tree):
+		return ("P2_min", tree[0])
+
+	def node_definition_st_min(self, tree):
+		return ("ST_min", tree[0])
+
+	def node_definition_n_as_timeout(self, tree):
+		return ("N_As_timeout", tree[0])
+
+	def node_definition_n_cr_min(self, tree):
+		return ("N_Cr_timeout", tree[0])
+
+	def node_definition_configurable_frames(self, tree):
+		return tree[0]
+
+	def node_definition_configurable_frames_20(self, tree):
+		frames = {}
+		a = iter(tree)
+		for frame, msg_id in zip(a, a):
+			frames[frame] = msg_id
+		return ("configurable_frames", frames)
+
+	def node_definition_configurable_frames_21(self, tree):
+		return ("configurable_frames", tree[0:])
+
+	def schedule_tables(self, tree):
+		return ("schedule_tables", tree)
+
+	def schedule_table_definition(self, tree):
+		return {"name": tree[0], "schedule": tree[1:]}
+
+	def schedule_table_entry(self, tree):
+		return {"command": tree[0], "delay": tree[1]}
 	
-	def ldf_signal_encoding_types(self, s):
-		return {'types': s}
-	def ldf_signal_encoding_type(self, s):
-		return s
+	def schedule_table_command(self, tree):
+		return tree[0]
 
-	def ldf_signal_encoding_type_name(self, s):
-		return s[0][0:]
+	def schedule_table_command_masterreq(self, tree):
+		return {"type": "master_request"}
 
-	def ldf_signal_encoding_logical_value(self, s):
-		return LogicalValue(s[0], s[1] if len(s) > 1 else None)
+	def schedule_table_command_slaveresp(self, tree):
+		return {"type": "slave_response"}
 
-	def ldf_encoding_logical_signal_value(self, s):
-		return self.parse_int(s[0])
+	def schedule_table_command_assignnad(self, tree):
+		return {"type": "assign_nad", "node": tree[0]}
 
-	def ldf_encoding_logical_signal_info(self, s):
-		return s[0][1:-1]
+	def schedule_table_command_conditionalchangenad(self, tree):
+		return {"type": "conditional_change_nad"} #TODO: add arguments
 
-	def ldf_signal_encoding_physical_value(self, s):
-		return PhysicalValue(s[0], s[1], s[2], s[3], s[4] if len(s) > 4 else None)
+	def schedule_table_command_datadump(self, tree):
+		return {"type": "data_dump", "node": tree[0], "data": tree[1:]}
 
-	def ldf_encoding_phy_min(self, s):
-		return self.parse_int(s[0])
+	def schedule_table_command_saveconfiguration(self, tree):
+		return {"type": "save_configuration", "node": tree[0]}
 
-	def ldf_encoding_phy_max(self, s):
-		return self.parse_int(s[0])
+	def schedule_table_command_assignframeidrange(self, tree):
+		return {"type": "assign_frame_id_range"} #TODO: add arguments
 
-	def ldf_encoding_phy_scale(self, s):
-		return self.parse_real_or_integer(s[0])
+	def schedule_table_command_assignframeid(self, tree):
+		return {"type": "assign_frame_id"} # TODO: add arguments
 
-	def ldf_encoding_phy_offset(self, s):
-		return self.parse_real_or_integer(s[0])
+	def schedule_table_command_freeformat(self, tree):
+		return {"type": "free_format", "data": tree[0:]}
 
-	def ldf_encoding_phy_unit(self, s):
-		return s[0][1:-1]
+	def schedule_table_command_frame(self, tree):
+		return {"type": "frame", "frame": tree[0]}
 
-	def ldf_diagnostic(self,s):
-		return
-		# return {"ldf_diagnostic" : "NOT_IMPLEMENTED"}
-	def ldf_diagnostic_frames(self,s):
-		return
-		# return {"ldf_diagnostic_frames" : "NOT_IMPLEMENTED"}
-	def ldf_header(self,s):
-		return {'header': dict(s)}
-	def ldf_description_file(self, s):
-		return ("description_file", "")
-	def ldf_header_protocol_version_def(self,s):
-		return ("protocol_version", s)
-	def ldf_header_language_version_def(self,s):
-		return ("language_version", s)
-	def ldf_header_speed_def(self,s):
-		return ("speed", s)
-	def lin_protocol_version(self, s):
-		return s[0][1:-1]
-	def lin_language_version(self, s):
-		return s[0][1:-1]
-	def lin_speed(self, s):
-		return self.parse_real_or_integer(s[0])
+	def signal_groups(self, tree):
+		return ("signal_groups", tree)
+
+	def signal_group(self, tree):
+		signals = {}
+		a = iter(tree[2:])
+		for signal, offset in zip(a, a):
+			signals[signal] = offset
+		return {"name": tree[0], "size": tree[1], "signals": signals}
+
+	def signal_encoding_types(self, tree):
+		return ("signal_encoding_types", tree)
+
+	def signal_encoding_type(self, tree):
+		return {"name": tree[0], "values": tree[1:]}
+
+	def signal_encoding_logical_value(self, tree):
+		return {"type": "logical", "value": tree[0], "text": tree[1] if len(tree) > 1 else None}
+
+	def signal_encoding_physical_value(self, tree):
+		return {"type": "physical", "min": tree[0], "max": tree[1], "scale": tree[2], "offset": tree[3], "unit": tree[4] if len(tree) > 4 else None}
+
+	def signal_encoding_bcd_value(self, tree):
+		return {"type": "bcd"}
+
+	def signal_encoding_ascii_value(self, tree):
+		return {"type": "ascii"}
+
+	def signal_representations(self, tree):
+		return ("signal_representations", tree)
+
+	def signal_representation_node(self, tree):
+		return {"encoding": tree[0], "signals": tree[1:]}

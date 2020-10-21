@@ -1,20 +1,20 @@
 # python setup.py sdist
 # python -m twine upload dist/*
  
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-setuptools.setup(
+setup(
      name='ldfparser',  
-     version='0.4.1',
+     version='0.5.0-snapshot',
      author="Balazs Eszes",
      author_email="c4deszes@gmail.com",
      description="LDF Language support for Python",
      long_description=long_description,
      long_description_content_type="text/markdown",
      url="https://github.com/c4deszes/ldfparser",
-     packages = ['ldfparser'],
+     packages = find_packages(),
      package_data = { '': ['*.lark'] },
      license = 'MIT',
      keywords = ['LIN', 'LDF'],

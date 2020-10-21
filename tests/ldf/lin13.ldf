@@ -1,0 +1,203 @@
+// This is a LIN description example file
+// Issued by Istvan Horvath
+
+LIN_description_file ;
+LIN_protocol_version = "1.3";
+LIN_language_version = "1.3";
+LIN_speed = 19.2 kbps;
+
+Nodes {
+	Master:CEM,5 ms, 0.1 ms;
+	Slaves:LSM,CPM;
+}
+
+Signals {
+	RearFogLampInd:1,0,CEM,LSM;
+	PositionLampInd:1,0,CEM,LSM;
+	FrontFogLampInd:1,0,CEM,LSM;
+	IgnitionKeyPos:3,0,CEM,LSM,CPM;
+	LSMFuncIllum:4,0,CEM,LSM;
+	LSMSymbolIllum:4,0,CEM,LSM;
+	StartHeater:3,0,CEM,CPM;
+	CPMReqB0:8,0,CEM,CPM;
+	CPMReqB1:8,0,CEM,CPM;
+	CPMReqB2:8,0,CEM,CPM;
+	CPMReqB3:8,0,CEM,CMP;
+	CPMReqB4:8,0,CEM,CPM;
+	CPMReqB5:8,0,CEM,CPM;
+	CPMReqB6:8,0,CEM,CPM;
+	CPMReqB7:8,0,CEM,CPM;
+	ReostatPos:4,0,LSM,CEM;
+	HeadLampBeamLev:4,0,LSM,CEM;
+	FrontFogLampSw:1,0,LSM,CEM;
+	RearFogLampSw:1,0,LSM,CEM;
+	MLSOff:1,0,LSM,CEM;
+	MLSHeadLight:1,0,LSM,CEM;
+	MLSPosLight:1,0,LSM,CEM;
+	HBLSortHigh:1,0,LSM,CEM;
+	HBLShortLow:1,0,LSM,CEM;
+	ReoShortHigh:1,0,LSM,CEM;
+	ReoShortLow:1,0,LSM,CEM;
+	LSMHWPartNoB0:8,0,LSM,CEM;
+	LSMHWPartNoB1:8,0,LSM,CEM;
+	LSMHWPartNoB2:8,0,LSM,CEM;
+	LSMHWPartNoB3:8,0,LSM,CEM;
+	LSMSWPartNo:8,0,LSM,CEM;
+	CPMOutputs:10,0,CPM,CEM;
+	HeaterStatus:4,0,CPM,CEM;
+	CPMGlowPlug:7,0,CPM,CEM;
+	CPMFanPWM:8,0,CPM,CEM;
+	WaterTempLow:8,0,CPM,CEM;
+	WaterTempHigh:8,0,CPM,CEM;
+	CPMFuelPump:7,0,CPM,CEM;
+	CPMRunTime:13,0,CPM,CEM;
+	FanIdealSpeed:8,0,CPM,CEM;
+	FanMeasSpeed:8,0,CPM,CEM;
+	CPMRespB0:1,0,CPM,CEM;
+	CPMRespB1:1,0,CPM,CEM;
+	CPMRespB2:1,0,CPM,CEM;
+	CPMRespB3:1,0,CPM,CEM;
+	CPMRespB4:1,0,CPM,CEM;
+	CPMRespB5:1,0,CPM,CEM;
+	CPMRespB6:1,0,CPM,CEM;
+	CPMRespB7:1,0,CPM,CEM;
+}
+
+Frames {
+	VL1_CEM_Frm1:32,CEM,3 { //The length of this frame is redefined to 3
+		RearFogLampInd,0;
+		PositionLampInd,1;
+		FrontFogLampInd,2;
+		IgnitionKeyPos,3;
+		LSMFuncIllum,8;
+		LSMSymbolIllum,12;
+		StartHeater,16;
+	}
+	VL1_CEM_Frm2:48,CEM {
+		CPMReqB0,0;
+		CPMReqB1,8;
+		CPMReqB2,16;
+		CPMReqB3,24;
+		CPMReqB4,32;
+		CPMReqB5,40;
+		CPMReqB6,48;
+		CPMReqB7,56;
+	}
+	VL1_LSM_Frm1:33,LSM {
+		ReostatPos,0;
+		HeadLampBeamLev,4;
+		FrontFogLampSw,8;
+		RearFogLampSw,9;
+		MLSOff,10;
+		MLSHeadLight,11;
+		MLSPosLight,12;
+		HBLSortHigh,16;
+		HBLShortLow,17;
+		ReoShortHigh,18;
+		ReoShortLow,19;
+	}
+	VL1_LSM_Frm2:49,LSM,5 { //The length of this frame is redefined to 5
+		LSMHWPartNoB0,0;
+		LSMHWPartNoB1,8;
+		LSMHWPartNoB2,16;
+		LSMHWPartNoB3,32;
+		LSMSWPartNo,40;
+	}
+	VL1_CPM_Frm1:50,CPM {
+		CPMOutputs,0;
+		HeaterStatus,10;
+		CPMGlowPlug,16;
+		CPMFanPWM,24;
+		WaterTempLow,32;
+		WaterTempHigh,40;
+		CPMFuelPump,56;
+	}
+	VL1_CPM_Frm2:34,CPM {
+		CPMRunTime,0;
+		FanIdealSpeed,16;
+		FanMeasSpeed,24;
+	}
+	VL1_CPM_Frm3:51,CPM {
+		CPMRespB0,0;
+		CPMRespB1,8;
+		CPMRespB2,16;
+		CPMRespB3,24;
+		CPMRespB4,32;
+		CPMRespB5,40;
+		CPMRespB6,48;
+		CPMRespB7,56;
+	}
+}
+Schedule_tables {
+	VL1_ST1 {
+		VL1_CEM_Frm1 delay 15 ms;
+		VL1_LSM_Frm1 delay 15 ms;
+		VL1_CPM_Frm1 delay 20 ms;
+		VL1_CPM_Frm2 delay 20 ms;
+	}
+	VL1_ST2 {
+		VL1_CEM_Frm1 delay 15 ms;
+		VL1_CEM_Frm2 delay 20 ms;
+		VL1_LSM_Frm1 delay 15 ms;
+		VL1_LSM_Frm2 delay 20 ms;
+		VL1_CEM_Frm1 delay 15 ms;
+		VL1_CPM_Frm1 delay 20 ms;
+		VL1_CPM_Frm2 delay 20 ms;
+		VL1_LSM_Frm1 delay 15 ms;
+		VL1_CPM_Frm3 delay 20 ms;
+	}
+}
+
+Signal_groups {
+	CPMReq:64 {
+		CPMReqB0,0;
+		CPMReqB1,8;
+		CPMReqB2,16;
+		CPMReqB3,24;
+		CPMReqB4,32;
+		CPMReqB5,40;
+		CPMReqB6,48;
+		CPMReqB7,56;
+	}
+	CPMResp:64 {
+		CPMRespB0,0;
+		CPMRespB1,8;
+		CPMRespB2,16;
+		CPMRespB3,24;
+		CPMRespB4,32;
+		CPMRespB5,40;
+		CPMRespB6,48;
+		CPMRespB7,56;
+	}
+}
+
+Signal_encoding_types {
+	State1 {
+		logical_value,0,"off";
+		logical_value,1,"on";
+	}
+	State2 {
+		logical_value,0,"off";
+		logical_value,1,"on";
+		logical_value,2,"error";
+		logical_value,3,"void";
+	}
+	Temp {
+		physical_value,0,250,0.5,-40,"degree";
+		physical_value,251,253,1,0,"undefined";
+		logical_value,254,"out of range";
+		logical_value,255,"error";
+	}
+	Speed {
+		physical_value,0,65500,0.008,250,"km/h";
+		physical_value,65501,65533,1,0,"undefined";
+		logical_value,65534,"error";
+		logical_value,65535,"void";
+	}
+}
+
+Signal_representation {
+	State1:RearFogLampInd,PositionLampInd,FrontFogLampInd;
+	Temp:WaterTempLow,WaterTempHigh;
+	Speed:FanIdealSpeed,FanMeasSpeed;
+}

@@ -42,12 +42,6 @@ jobs:
       - name: Test & Coverage
         run: pytest --cov=ldfparser --cov-report xml
 
-      - name: Run examples
-        run: |
-          python examples/create_frame.py
-          python examples/read_frame.py
-          python examples/signal_encoding.py
-
       - name: Package
         run: |
           python setup.py sdist bdist_wheel

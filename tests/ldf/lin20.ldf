@@ -1,0 +1,49 @@
+/*
+* File: hello.ldf
+* Author: Christian Bondesson
+* Description: The LIN description file for the example program
+*/
+
+LIN_description_file ;
+LIN_protocol_version = "2.0";
+LIN_language_version = "2.0";
+LIN_speed = 19.2 kbps;
+
+Nodes {
+	Master: CEM, 5 ms, 0.1 ms;
+	Slaves: LSM;
+}
+
+Signals {
+	InternalLightsRequest: 2, 0, CEM, LSM;
+	InternalLightsSwitch: 2, 0, LSM, CEM;
+}
+
+Frames {
+	VL1_CEM_Frm1: 1, CEM {
+		InternalLightsRequest, 0;
+	}
+	VL1_LSM_Frm1: 2, LSM {
+		InternalLightsSwitch, 0;
+	}
+}
+
+Schedule_tables {
+	MySchedule1 {
+		VL1_CEM_Frm1 delay 15 ms;
+		VL1_LSM_Frm1 delay 15 ms;
+	}
+}
+
+Signal_encoding_types {
+	Dig2Bit {
+		logical_value, 0, "off";
+		logical_value, 1, "on";
+		logical_value, 2, "error";
+		logical_value, 3, "void";
+	}
+}
+
+Signal_representation {
+	Dig2Bit: InternalLightsRequest, InternalLightsSwitch;
+}

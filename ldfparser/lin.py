@@ -37,7 +37,7 @@ class LinFrame:
 				pattern += "p" + str(padding)
 				offset += padding
 			if offset + signal[1].width > frame_bits:
-				raise ValueError(str(self) + ":" + str(signal[1]) + " out of frame")
+				raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside {self}")
 			pattern += "u" + str(signal[1].width)
 			offset += signal[1].width
 		if offset < frame_bits:

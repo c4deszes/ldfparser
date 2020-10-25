@@ -28,6 +28,13 @@ Frames {
 	}
 }
 
+Node_attributes {
+	LSM {
+		LIN_protocol = 2.0;
+		configured_NAD = 0x01;
+	}
+}
+
 Schedule_tables {
 	MySchedule1 {
 		VL1_CEM_Frm1 delay 15 ms;

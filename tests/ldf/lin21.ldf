@@ -2,9 +2,6 @@
 /* This is the example LDF from LIN 2.1 specification */
 /******************************************************/
 
-/*
- *
- */
 // Source: https://lin-cia.org/fileadmin/microsites/lin-cia.org/resources/documents/LIN-Spec_Pac2_1.pdf
 
 LIN_description_file;
@@ -25,7 +22,7 @@ Node_attributes {
 		initial_NAD = 0x01;
 		product_id = 0x4A4F, 0x4841;
 		response_error = LSMerror;
-		fault_state_signals = IntTest;
+		fault_state_signals = IntError;
 		P2_min = 150 ms;
 		ST_min = 50 ms;
 		configurable_frames {
@@ -46,12 +43,12 @@ Node_attributes {
 }
 
 Signals {
-	IntLightsReq: 2, 0, CEM, LSM, RSM;
+	InternalLightsRequest: 2, 0, CEM, LSM, RSM;
 	RightIntLightsSwitch: 8, 0, RSM, CEM;
 	LeftIntLightsSwitch: 8, 0, LSM, CEM;
 	LSMerror: 1, 0, LSM, CEM;
 	RSMerror: 1, 0, LSM, CEM;
-	IntTest: 2, 0, LSM, CEM;
+	IntError: 2, 0, LSM, CEM;
 }
 
 Frames {

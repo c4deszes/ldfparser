@@ -72,7 +72,7 @@ Install via `pip install ldfparser`
 
 ## Credits
 
-Inspired by [uCAN-LIN LinUSBConverter](https://github.com/uCAN-LIN/LinUSBConverter), specifically the LDF parsing mechanism via [Lark](https://github.com/lark-parser/lark)
+Inspired by [uCAN-LIN LinUSBConverter](https://github.com/uCAN-LIN/LinUSBConverter), specifically the LDF parsing mechanism via [Lark](https://github.com/lark-parser/lark). Previously the library included most of the lark file, parsing code and examples, since 0.5.0 they've been completely rewritten to better accomodate the different LIN standards.
 
 ---
 

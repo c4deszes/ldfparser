@@ -1,24 +1,22 @@
 import os
-from typing import Union
-
+from typing import Any, Union, Dict, List
 from lark import Lark, Transformer
 
-from ldfparser.lin import LinFrame, LinSignal
-from ldfparser.encoding import LinSignalType, LogicalValue, PhysicalValue
-
-import json
+from .lin import LinFrame, LinSignal
+from .encoding import LinSignalType, LogicalValue, PhysicalValue, ValueConverter
+from .node import LinNode, LinMaster, LinProductId, LinSlave, LinSlave20
 
 class LDF:
 	def __init__(self):
-		self.protocol_version = None
-		self.language_version = None
-		self.baudrate = None
-		self.channel_name = None
-		self.master = None
-		self.slaves = []
-		self.signals = []
-		self.frames = []
-		self.converters = []
+		self.protocol_version: float = None
+		self.language_version: float = None
+		self.baudrate: float = None
+		self.channel: str = None
+		self.master: LinMaster = None
+		self.slaves: List[LinSlave] = []
+		self.signals: List[LinSignal] = []
+		self.frames: List[LinFrame] = []
+		self.converters: Dict[str, LinSignalType] = {}
 
 	def signal(self, name: str) -> LinSignal:
 		"""
@@ -36,14 +34,119 @@ class LDF:
 			return next((x for x in self.frames if x.name == frame_id), None)
 		return None
 
-def parseLDF(path: str) -> LDF:
+	def slave(self, name: str) -> LinSlave:
+		"""
+		Returns Lin Slave with the given name
+		"""
+		return next((x for x in self.slaves if x.name == name), None)
+
+def parseLDFtoDict(path: str) -> Dict[str, Any]:
 	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
 	parser = Lark(grammar=open(lark), parser='lalr')
 	ldf_file = open(path, "r").read()
 	tree = parser.parse(ldf_file)
-	transformed = LDFTransformer().transform(tree)
-	print(json.dumps(transformed))
-	pass
+	return LDFTransformer().transform(tree)
+
+def parseLDF(path: str) -> LDF:
+	json = parseLDFtoDict(path)
+	ldf = LDF()
+
+	_populate_ldf_header(json, ldf)
+	_populate_ldf_signals(json, ldf)
+	_populate_ldf_frames(json, ldf)
+	_populate_ldf_nodes(json, ldf)
+	_populate_ldf_encoding_types(json, ldf)
+	return ldf
+
+def _populate_ldf_header(json: dict, ldf: LDF):
+	ldf.protocol_version = _require_key(json, 'protocol_version', 'LDF missing protocol version.')
+	ldf.language_version = _require_key(json, 'language_version', 'LDF missing language version.')
+	ldf.baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
+	ldf.channel = json.get('channel_name')
+
+def _populate_ldf_signals(json: dict, ldf: LDF):
+	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
+		ldf.signals.append(LinSignal(signal['name'], signal['width'], signal['default_value']))
+
+def _populate_ldf_frames(json:dict, ldf: LDF):
+	for frame in _require_key(json, 'frames', 'LDF missing Frames section.'):
+		signals = {}
+		for signal in frame['signals']:
+			s = ldf.signal(signal['signal'])
+			if s is None:
+				raise ValueError(f"{frame['name']} references non existing signal {signal['signal']}")
+			signals[signal['offset']] = s
+		length = frame['length']
+		if length is None and ldf.language_version > 2.0 :
+			raise ValueError(f"Frame({frame['frame_id']}, {frame['name']}) has no length specified, only allowed in LIN 2.0 and below.")
+		if length is None:
+			if 0 <= frame['frame_id'] <= 31:
+				length = 2
+			elif 32 <= frame['frame_id'] <= 47:
+				length = 4
+			elif 48 <= frame['frame_id'] <= 63:
+				length = 8
+		ldf.frames.append(LinFrame(frame['frame_id'], frame['name'], length, signals))
+
+def _populate_ldf_nodes(json:dict, ldf: LDF):
+	master_node = json['nodes']['master']
+	ldf.master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
+
+	if ldf.language_version >= 2.0:
+		for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section.'):
+			name = node['name']
+			if name not in json['nodes']['slaves']:
+				raise ValueError(f"Node {name} is configured but not listed as a slave.")
+			lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
+			if lin_protocol >= 2.0:
+				slave = LinSlave20(name)
+				slave.lin_protocol = lin_protocol
+				slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
+				slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
+				if lin_protocol >= 2.1:
+					product_id_json = _require_key(node, 'product_id', f"Node {name} has no product_id specified, required for LIN 2.1 nodes and above")
+					product_id = LinProductId(product_id_json['supplier_id'], product_id_json['function_id'], product_id_json.get('variant'))
+					slave.product_id = product_id
+
+					response_error = _require_key(node, 'response_error', f"Node {name} has no response_error signal specified, required for LIN 2.1 nodes and above")
+					response_error_signal = ldf.signal(response_error)
+					if response_error_signal is None:
+						raise ValueError(f"Node {name} references non existing signal '{response_error}'")
+					slave.response_error = response_error_signal
+
+				ldf.slaves.append(slave)
+			else:
+				slave = LinSlave(name)
+				slave.lin_protocol = lin_protocol
+				ldf.slaves.append(slave)
+	else:
+		for slave in json['nodes']['slaves']:
+			ldf.slaves.append(LinSlave(slave))
+
+def _populate_ldf_encoding_types(json: dict, ldf: LDF):
+	if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
+		return
+	signalTypes = {}
+	for encoding_type in json['signal_encoding_types']:
+		converters = []
+		for encoding_value in encoding_type['values']:
+			converters.append(_convert_encoding_value(encoding_value))
+		signalTypes[encoding_type['name']] = LinSignalType(encoding_type['name'], converters)
+	for representations in json['signal_representations']:
+		for signal in representations['signals']:
+			ldf.converters[signal] = signalTypes[representations['encoding']]
+
+def _convert_encoding_value(json: dict) -> ValueConverter:
+	if json['type'] == 'logical':
+		return LogicalValue(json['value'], json['text'])
+	if json['type'] == 'physical':
+		return PhysicalValue(json['min'], json['max'], json['scale'], json['offset'], json['unit'])
+	raise ValueError(f"Unsupported value type {json['type']}")
+
+def _require_key(a: dict, k: str, msg: str) -> Any:
+	if a.get(k) is None:
+		raise ValueError(msg)
+	return a[k]
 
 class LDFTransformer(Transformer):
 	def parse_integer(self, i:str):
@@ -80,16 +183,16 @@ class LDFTransformer(Transformer):
 		return ("header", "lin_description_file")
 
 	def header_protocol_version(self, tree):
-		return ("protocol_version", str(tree[0]))
+		return ("protocol_version", tree[0])
 
 	def header_language_version(self, tree):
-		return ("language_version", str(tree[0]))
+		return ("language_version", tree[0])
 
 	def header_speed(self, tree):
 		return ("speed", float(tree[0]) * 1000)
 
 	def header_channel(self, tree):
-		return ("channel", tree[0])
+		return ("channel_name", tree[0])
 
 	def nodes(self, tree):
 		return ("nodes", {'master': tree[0], 'slaves': tree[1]})
@@ -161,7 +264,7 @@ class LDFTransformer(Transformer):
 		return node
 
 	def node_definition_protocol(self, tree):
-		return ("lin_protocol", str(tree[0]))
+		return ("lin_protocol", tree[0])
 
 	def node_definition_configured_nad(self, tree):
 		return ("configured_nad", tree[0])
@@ -179,16 +282,16 @@ class LDFTransformer(Transformer):
 		return ("fault_state_signals", tree[0:])
 
 	def node_definition_p2_min(self, tree):
-		return ("P2_min", tree[0])
+		return ("P2_min", tree[0] * 0.001)
 
 	def node_definition_st_min(self, tree):
-		return ("ST_min", tree[0])
+		return ("ST_min", tree[0] * 0.001)
 
 	def node_definition_n_as_timeout(self, tree):
-		return ("N_As_timeout", tree[0])
+		return ("N_As_timeout", tree[0] * 0.001)
 
 	def node_definition_n_cr_min(self, tree):
-		return ("N_Cr_timeout", tree[0])
+		return ("N_Cr_timeout", tree[0] * 0.001)
 
 	def node_definition_configurable_frames(self, tree):
 		return tree[0]
@@ -272,6 +375,9 @@ class LDFTransformer(Transformer):
 
 	def signal_encoding_ascii_value(self, tree):
 		return {"type": "ascii"}
+
+	def signal_encoding_text_value(self, tree):
+		return tree[0][1:-1]
 
 	def signal_representations(self, tree):
 		return ("signal_representations", tree)

@@ -54,7 +54,7 @@ diagnostic_frames: "Diagnostic_frames" "{" "}"
 // LIN 2.1 Specification, section 9.2.2.2
 node_attributes: "Node_attributes" "{" (node_definition+) "}"
 node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames)* "}"
-node_definition_protocol: "LIN_protocol" "=" "\"" ldf_float "\"" ";"
+node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_float "\""] | ldf_float) ";"
 node_definition_configured_nad: "configured_NAD" "=" ldf_integer ";"
 node_definition_initial_nad: "initial_NAD" "=" ldf_integer ";"
 node_definition_product_id: "product_id" "=" ldf_integer "," ldf_integer ("," ldf_integer)? ";"
@@ -65,7 +65,7 @@ node_definition_st_min: "ST_min" "=" ldf_float "ms" ";"
 node_definition_n_as_timeout: "N_As_timeout" "=" ldf_float "ms" ";"
 node_definition_n_cr_timeout: "N_Cr_timeout" "=" ldf_float "ms" ";"
 node_definition_configurable_frames: node_definition_configurable_frames_20 | node_definition_configurable_frames_21
-node_definition_configurable_frames_20: "configurable_frames" "{" (ldf_identifier ("=" ldf_integer) ";")+ "}"
+node_definition_configurable_frames_20: "configurable_frames" "{" (ldf_identifier "=" ldf_integer ";")+ "}"
 node_definition_configurable_frames_21: "configurable_frames" "{" (ldf_identifier ";")+ "}"
 
 // LIN 2.1 Specification, section 9.2.5
@@ -91,10 +91,11 @@ signal_group: ldf_identifier ":" ldf_integer "{" (ldf_identifier "," ldf_integer
 // LIN 2.1 Specification, section 9.2.6.1
 signal_encoding_types: "Signal_encoding_types" "{" (signal_encoding_type+) "}" 
 signal_encoding_type: ldf_identifier "{" (signal_encoding_logical_value | signal_encoding_physical_value)+ "}"
-signal_encoding_logical_value: "logical_value" "," ldf_integer ("," ESCAPED_STRING)? ";"
-signal_encoding_physical_value: "physical_value" "," ldf_integer "," ldf_integer "," ldf_float "," ldf_float ("," ESCAPED_STRING)? ";"
+signal_encoding_logical_value: "logical_value" "," ldf_integer ("," signal_encoding_text_value)? ";"
+signal_encoding_physical_value: "physical_value" "," ldf_integer "," ldf_integer "," ldf_float "," ldf_float ("," signal_encoding_text_value)? ";"
 signal_encoding_bcd_value: "bcd_value" ";"
 signal_encoding_ascii_value: "ascii_value" ";"
+signal_encoding_text_value: ESCAPED_STRING
 
 // LIN 2.1 Specification, section 9.2.6.2
 signal_representations: "Signal_representation" "{" (signal_representation_node+) "}" 

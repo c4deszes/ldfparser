@@ -96,7 +96,7 @@ Frames {
 		ReoShortHigh,18;
 		ReoShortLow,19;
 	}
-	VL1_LSM_Frm2:49,LSM,5 { //The length of this frame is redefined to 5
+	VL1_LSM_Frm2:49,LSM,6 { //The length of this frame is redefined to 5
 		LSMHWPartNoB0,0;
 		LSMHWPartNoB1,8;
 		LSMHWPartNoB2,16;

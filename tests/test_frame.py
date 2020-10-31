@@ -37,7 +37,7 @@ def test_frame_signals_overlapping():
 	signal2 = LinSignal('Signal_2', 4, 0)
 	signal3 = LinSignal('Signal_3', 1, 0)
 
-	with pytest.raises(Exception) as e:
+	with pytest.raises(ValueError) as e:
 		frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 7: signal2, 15: signal3})
 
 @pytest.mark.unit
@@ -45,18 +45,18 @@ def test_frame_signal_out_of_frame():
 	signal1 = LinSignal('Signal_1', 8, 0)
 	signal2 = LinSignal('Signal_2', 4, 0)
 
-	with pytest.raises(Exception) as e:
+	with pytest.raises(ValueError) as e:
 		frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 14: signal2})
 
 @pytest.mark.integration
 def test_frame_encode_data():
-	motorSpeed = LinSignal('MotorSpeed', 7, [0])
+	motorSpeed = LinSignal('MotorSpeed', 7, 0)
 	motorValues = [LogicalValue(0, 'off'), PhysicalValue(1, 99, 1, 0, 'rpm'), PhysicalValue(100, 128, 0, 100)]
 
-	temperature = LinSignal('Temperature', 8, [255])
+	temperature = LinSignal('Temperature', 8, 255)
 	temperatureValues = [LogicalValue(0, 'MEASUREMENT_ERROR'), PhysicalValue(1, 255, 1, -50, 'C')]
 
-	errorState = LinSignal('Error', 1, [0])
+	errorState = LinSignal('Error', 1, 0)
 	errorValues = [LogicalValue(0, 'NO_ERROR'), LogicalValue(1, 'ERROR')]
 
 	converters = {

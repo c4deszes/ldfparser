@@ -1,6 +1,6 @@
 from typing import List
 
-from .lin import LinSignal
+from .lin import LinFrame, LinSignal
 
 class LinProductId:
 	def __init__(self, supplier_id: int, function_id: int, variant: int = None) -> None:
@@ -14,6 +14,7 @@ class LinNode:
 		self.name = name
 		self.subscribed_to: List[LinSignal] = []
 		self.publishes: List[LinSignal] = []
+		self.publishes_frames: List[LinFrame] = []
 
 class LinMaster(LinNode):
 

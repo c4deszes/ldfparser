@@ -3,7 +3,7 @@ from typing import Any, Union, Dict, List
 from lark import Lark, Transformer
 
 from .lin import LinFrame, LinSignal
-from .encoding import LinSignalType, LogicalValue, PhysicalValue, ValueConverter
+from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
 from .node import LinNode, LinMaster, LinProductId, LinSlave, LinSlave20
 
 class LDF:
@@ -66,7 +66,7 @@ def _populate_ldf_header(json: dict, ldf: LDF):
 
 def _populate_ldf_signals(json: dict, ldf: LDF):
 	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
-		ldf.signals.append(LinSignal(signal['name'], signal['width'], signal['default_value']))
+		ldf.signals.append(LinSignal.create(signal['name'], signal['width'], signal['init_value']))
 
 def _populate_ldf_frames(json:dict, ldf: LDF):
 	for frame in _require_key(json, 'frames', 'LDF missing Frames section.'):
@@ -141,6 +141,10 @@ def _convert_encoding_value(json: dict) -> ValueConverter:
 		return LogicalValue(json['value'], json['text'])
 	if json['type'] == 'physical':
 		return PhysicalValue(json['min'], json['max'], json['scale'], json['offset'], json['unit'])
+	if json['type'] == 'bcd':
+		return BCDValue()
+	if json['type'] == 'ascii':
+		return ASCIIValue()
 	raise ValueError(f"Unsupported value type {json['type']}")
 
 def _require_key(a: dict, k: str, msg: str) -> Any:
@@ -216,7 +220,7 @@ class LDFTransformer(Transformer):
 		return ("signals", tree)
 
 	def signal_definition(self, tree):
-		return {"name": tree[0], "width": int(tree[1]), "default_value": tree[2], "publisher": tree[3], "subscribers": tree[4:]}
+		return {"name": tree[0], "width": int(tree[1]), "init_value": tree[2], "publisher": tree[3], "subscribers": tree[4:]}
 
 	def signal_default_value(self, tree):
 		return tree[0]

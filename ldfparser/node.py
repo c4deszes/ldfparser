@@ -24,27 +24,19 @@ class LinMaster(LinNode):
 		self.jitter: float = jitter
 
 class LinSlave(LinNode):
-
-	def __init__(self, name: str):
-		super().__init__(name)
-		self.lin_protocol: float = None
-
-class LinSlave20(LinSlave):
 	def __init__(self, name: str) -> None:
 		super().__init__(name)
+		self.lin_protocol: float = None
 		self.configured_nad: int = None
+		self.initial_nad: int = None
 		self.product_id: LinProductId = None
 		self.response_error: LinSignal = None
+		self.fault_state_signals: List[LinSignal] = []
 		self.p2_min: float = 0.05
 		self.st_min: float = 0
-		self.configurable_frames = []
-
-class LinSlave21(LinSlave20):
-	def __init__(self) -> None:
-		self.initial_nad: int = None
-		self.fault_state_signals: List[LinSignal] = []
 		self.n_as_timeout: float = 1
 		self.n_cr_timeout: float = 1
+		self.configurable_frames = []
 		
 class LinNodeCompositionConfiguration:
 

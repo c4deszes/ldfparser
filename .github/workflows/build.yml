@@ -42,9 +42,20 @@ jobs:
       - name: Test & Coverage
         run: pytest --cov=ldfparser --cov-report xml
 
+      - name: Run Examples
+        run: |
+          python ./examples/communication.py
+          python ./examples/ldf2json.py
+
       - name: Package
         run: |
           python setup.py sdist bdist_wheel
+
+      - name: Archive package
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: dist/
 
       - name: Upload coverage results
         uses: codecov/codecov-action@v1

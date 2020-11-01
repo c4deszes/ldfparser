@@ -4,13 +4,13 @@ from lark import Lark, Transformer
 
 from .lin import LinFrame, LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
-from .node import LinNode, LinMaster, LinProductId, LinSlave, LinSlave20
+from .node import LinNode, LinMaster, LinProductId, LinSlave
 
 class LDF:
 	def __init__(self):
 		self.protocol_version: float = None
 		self.language_version: float = None
-		self.baudrate: float = None
+		self.baudrate: int = None
 		self.channel: str = None
 		self.master: LinMaster = None
 		self.slaves: List[LinSlave] = []
@@ -89,39 +89,30 @@ def _populate_ldf_frames(json:dict, ldf: LDF):
 		ldf.frames.append(LinFrame(frame['frame_id'], frame['name'], length, signals))
 
 def _populate_ldf_nodes(json:dict, ldf: LDF):
-	master_node = json['nodes']['master']
+	nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
+	master_node = nodes['master']
 	ldf.master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
 
 	if ldf.language_version >= 2.0:
-		for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section.'):
+		for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LIN 2.0 LIN descriptions and above.'):
 			name = node['name']
-			if name not in json['nodes']['slaves']:
+			if name not in nodes['slaves']:
 				raise ValueError(f"Node {name} is configured but not listed as a slave.")
 			lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
-			if lin_protocol >= 2.0:
-				slave = LinSlave20(name)
-				slave.lin_protocol = lin_protocol
-				slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
-				slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
-				if lin_protocol >= 2.1:
-					product_id_json = _require_key(node, 'product_id', f"Node {name} has no product_id specified, required for LIN 2.1 nodes and above")
-					product_id = LinProductId(product_id_json['supplier_id'], product_id_json['function_id'], product_id_json.get('variant'))
-					slave.product_id = product_id
+			slave = LinSlave(name)
+			slave.lin_protocol = lin_protocol
+			slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
+			slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
 
-					response_error = _require_key(node, 'response_error', f"Node {name} has no response_error signal specified, required for LIN 2.1 nodes and above")
-					response_error_signal = ldf.signal(response_error)
-					if response_error_signal is None:
-						raise ValueError(f"Node {name} references non existing signal '{response_error}'")
-					slave.response_error = response_error_signal
-
-				ldf.slaves.append(slave)
-			else:
-				slave = LinSlave(name)
-				slave.lin_protocol = lin_protocol
-				ldf.slaves.append(slave)
+			if node.get('product_id') is not None:
+				product_id = LinProductId(node['product_id']['supplier_id'], node['product_id']['function_id'], node['product_id'].get('variant'))
+				slave.product_id = product_id
+			ldf.slaves.append(slave)
 	else:
-		for slave in json['nodes']['slaves']:
-			ldf.slaves.append(LinSlave(slave))
+		for slave in nodes['slaves']:
+			node = LinSlave(slave)
+			node.lin_protocol = ldf.protocol_version
+			ldf.slaves.append(node)
 
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
 	if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
@@ -193,7 +184,7 @@ class LDFTransformer(Transformer):
 		return ("language_version", tree[0])
 
 	def header_speed(self, tree):
-		return ("speed", float(tree[0]) * 1000)
+		return ("speed", int(float(tree[0]) * 1000))
 
 	def header_channel(self, tree):
 		return ("channel_name", tree[0])

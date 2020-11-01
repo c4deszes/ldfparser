@@ -1,3 +1,4 @@
+from ldfparser.node import LinSlave
 from ldfparser.encoding import LogicalValue
 import os
 import pytest
@@ -59,7 +60,11 @@ def test_load_valid_lin22():
 	
 	assert ldf.signal('InternalLightsRequest') is not None
 	assert ldf.frame('LSM_Frm2') is not None
-	assert ldf.slave('LSM') is not None
+	
+	LSM = ldf.slave('LSM')
+	assert LSM is not None
+	assert LSM.product_id.supplier_id == 0x4A4F
+	assert LSM.product_id.function_id == 0x4841
 
 	converter = ldf.converters['InternalLightsRequest']
 	assert converter.name == 'Dig2Bit'

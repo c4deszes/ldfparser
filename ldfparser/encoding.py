@@ -76,7 +76,7 @@ class LogicalValue(ValueConverter):
 class BCDValue(ValueConverter):
 
 	def encode(self, value: int, signal) -> List[int]:
-		if value > 10**signal.width:
+		if value > 10**int(signal.width / 8):
 			raise ValueError(f"cannot convert value {value} to bcd, out of {signal} bounds")
 		bcd = []
 		for i in range(int(signal.width / 8) - 1, -1, -1):

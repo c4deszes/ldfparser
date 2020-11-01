@@ -122,6 +122,13 @@ def test_encode_bcd():
 	assert bcdValue.encode(123456, LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == [1, 2, 3, 4, 5, 6]
 
 @pytest.mark.unit
+def test_encode_bcd_out_of_bounds():
+	bcdValue = BCDValue()
+
+	with pytest.raises(ValueError):
+		bcdValue.encode(123, LinSignal('Counter', 16, [0, 0]))
+
+@pytest.mark.unit
 def test_decode_bcd():
 	bcdValue = BCDValue()
 

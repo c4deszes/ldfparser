@@ -222,6 +222,9 @@ class LDFTransformer(Transformer):
 	def signal_default_value_array(self, tree):
 		return tree[0]
 
+	def diagnostic_signals(self, tree):
+		return ("diagnostic_signals", [])
+
 	def frames(self, tree):
 		return ("frames", tree)
 
@@ -248,6 +251,9 @@ class LDFTransformer(Transformer):
 
 	def event_triggered_frame_definition_frames(self, tree):
 		return tree[0:]
+
+	def diagnostic_frames(self, tree):
+		return ("diagnostic_frames", [])
 
 	def node_attributes(self, tree):
 		return ("node_attributes", tree[0:])
@@ -285,7 +291,7 @@ class LDFTransformer(Transformer):
 	def node_definition_n_as_timeout(self, tree):
 		return ("N_As_timeout", tree[0] * 0.001)
 
-	def node_definition_n_cr_min(self, tree):
+	def node_definition_n_cr_timeout(self, tree):
 		return ("N_Cr_timeout", tree[0] * 0.001)
 
 	def node_definition_configurable_frames(self, tree):

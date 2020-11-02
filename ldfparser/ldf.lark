@@ -49,7 +49,8 @@ event_triggered_frame_definition: ldf_identifier ":" (ldf_identifier ",")? ldf_i
 event_triggered_frame_definition_frames: ("," ldf_identifier)+
 
 // LIN 2.1 Specification, section 9.2.4.4
-diagnostic_frames: "Diagnostic_frames" "{" "}"
+diagnostic_frames: "Diagnostic_frames" "{" (diagnostic_frame_definition)+ "}"
+diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" (ANY_SEMICOLON_TERMINATED_LINE)* "}"
 
 // LIN 2.1 Specification, section 9.2.2.2
 node_attributes: "Node_attributes" "{" (node_definition+) "}"

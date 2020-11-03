@@ -97,9 +97,17 @@ class LinFrame:
 		"""
 		message = {}
 		unpacked = self._packer.unpack(self._flip_bytearray(data))
-		for i in range(len(unpacked)):
-			# TODO: handle array signals
-			message[self.signals[i].name] = unpacked[i]
+		signal_index = 0
+		i = 0
+		while i < len(unpacked):
+			if self.signals[signal_index].is_array():
+				signal_size = int(self.signals[signal_index].width / 8)
+				message[self.signals[signal_index].name] = list(unpacked[i:i+signal_size])
+				i += signal_size - 1
+			else:
+				message[self.signals[signal_index].name] = unpacked[i]
+			signal_index += 1
+			i += 1
 		return message
 
 	def parse(self, data: bytearray, converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:

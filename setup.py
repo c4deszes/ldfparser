@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setup(
      name='ldfparser',  
-     version='0.5.0-snapshot',
+     version='0.5.0',
      author="Balazs Eszes",
      author_email="c4deszes@gmail.com",
      description="LDF Language support for Python",

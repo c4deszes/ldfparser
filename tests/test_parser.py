@@ -2,7 +2,6 @@ from ldfparser.node import LinSlave
 from ldfparser.encoding import LogicalValue
 import os
 import pytest
-import unittest
 import ldfparser
 
 @pytest.mark.unit
@@ -12,7 +11,7 @@ def test_load_valid_lin13():
 
 	assert ldf.protocol_version == 1.3
 	assert ldf.language_version == 1.3
-	assert ldf.baudrate == 19200.0
+	assert ldf.baudrate == 19200
 
 	assert ldf.master.timebase == 0.005
 	assert ldf.master.jitter == 0.0001
@@ -28,7 +27,7 @@ def test_load_valid_lin20():
 
 	assert ldf.protocol_version == 2.0
 	assert ldf.language_version == 2.0
-	assert ldf.baudrate == 19200.0
+	assert ldf.baudrate == 19200
 
 	assert ldf.signal('InternalLightsRequest') is not None
 	assert ldf.frame('VL1_CEM_Frm1') is not None
@@ -41,7 +40,7 @@ def test_load_valid_lin21():
 
 	assert ldf.protocol_version == 2.1
 	assert ldf.language_version == 2.1
-	assert ldf.baudrate == 19200.0
+	assert ldf.baudrate == 19200
 	assert ldf.channel == 'DB'
 
 	assert ldf.signal('InternalLightsRequest') is not None
@@ -55,7 +54,7 @@ def test_load_valid_lin22():
 
 	assert ldf.protocol_version == 2.2
 	assert ldf.language_version == 2.2
-	assert ldf.baudrate == 19200.0
+	assert ldf.baudrate == 19200
 	assert ldf.channel == 'DB'
 	
 	assert ldf.signal('InternalLightsRequest') is not None

@@ -1,5 +1,4 @@
 import pytest
-import binascii
 
 from ldfparser import LinFrame, LinSignal
 from ldfparser.encoding import LinSignalType, LogicalValue, PhysicalValue
@@ -16,6 +15,41 @@ def test_frame_raw_encoding():
 		'Signal_2': 10,
 		'Signal_3': 1
 	})
+
+	assert list(content) == [100, 10 | 1 << 7]
+
+@pytest.mark.unit
+def test_frame_raw_encoding_array():
+	signal1 = LinSignal('Signal_1', 16, [0, 0])
+	frame = LinFrame(1, 'Frame_1', 2, {0: signal1})
+	content = frame.raw({
+		'Signal_1': [1, 2]
+	})
+	assert list(content) == [1, 2]
+
+@pytest.mark.unit
+def test_frame_raw_encoding_array2():
+	signal1 = LinSignal('Signal_1', 16, [0, 0])
+	signal2 = LinSignal('Signal_2', 8, 0)
+	frame = LinFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
+	content = frame.raw({
+		'Signal_1': [1, 2],
+		'Signal_2': 3
+	})
+	assert list(content) == [1, 2, 3]
+
+@pytest.mark.unit
+def test_frame_raw_decoding_array():
+	signal1 = LinSignal('Signal_1', 16, [0, 0])
+	frame = LinFrame(1, 'Frame_1', 2, {0: signal1})
+	assert frame.parse_raw(bytearray([1, 2])) == {"Signal_1": [1, 2]}
+
+@pytest.mark.unit
+def test_frame_raw_decoding_array2():
+	signal1 = LinSignal('Signal_1', 16, [0, 0])
+	signal2 = LinSignal('Signal_2', 8, 0)
+	frame = LinFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
+	assert frame.parse_raw(bytearray([1, 2, 3])) == {"Signal_1": [1, 2], "Signal_2": 3}
 
 @pytest.mark.unit
 def test_frame_raw_encoding_out_of_range():

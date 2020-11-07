@@ -18,3 +18,6 @@ class CommentCollector(Transformer):
 
 	def line_comment(self, tree):
 		return tree[0][0:]
+
+	def block_comment(self, tree):
+		return tree[0][0:]

@@ -18,6 +18,7 @@ class LDF:
 		self.signals: List[LinSignal] = []
 		self.frames: List[LinFrame] = []
 		self.converters: Dict[str, LinSignalType] = {}
+		self.comments: List[str] = []
 
 	def signal(self, name: str) -> LinSignal:
 		"""
@@ -41,18 +42,18 @@ class LDF:
 		"""
 		return next((x for x in self.slaves if x.name == name), None)
 
-def parseLDFtoDict(path: str, preserveComments: bool = False) -> Dict[str, Any]:
+def parseLDFtoDict(path: str, captureComments: bool = False) -> Dict[str, Any]:
 	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
 	parser = Lark(grammar=open(lark), parser='lalr')
 	ldf_file = open(path, "r").read()
 	tree = parser.parse(ldf_file)
 	json = LDFTransformer().transform(tree)
-	if preserveComments:
+	if captureComments:
 		json['comments'] = parseComments(ldf_file)
 	return json
 
-def parseLDF(path: str, preserveComments: bool = False) -> LDF:
-	json = parseLDFtoDict(path)
+def parseLDF(path: str, captureComments: bool = False) -> LDF:
+	json = parseLDFtoDict(path, captureComments)
 	ldf = LDF()
 
 	_populate_ldf_header(json, ldf)
@@ -60,6 +61,10 @@ def parseLDF(path: str, preserveComments: bool = False) -> LDF:
 	_populate_ldf_frames(json, ldf)
 	_populate_ldf_nodes(json, ldf)
 	_populate_ldf_encoding_types(json, ldf)
+
+	if captureComments:
+		ldf.comments = json['comments']
+
 	return ldf
 
 def _populate_ldf_header(json: dict, ldf: LDF):

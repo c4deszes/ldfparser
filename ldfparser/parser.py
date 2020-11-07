@@ -5,6 +5,7 @@ from lark import Lark, Transformer
 from .lin import LinFrame, LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
 from .node import LinNode, LinMaster, LinProductId, LinSlave
+from .comment import parseComments
 
 class LDF:
 	def __init__(self):
@@ -40,14 +41,17 @@ class LDF:
 		"""
 		return next((x for x in self.slaves if x.name == name), None)
 
-def parseLDFtoDict(path: str) -> Dict[str, Any]:
+def parseLDFtoDict(path: str, preserveComments: bool = False) -> Dict[str, Any]:
 	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
 	parser = Lark(grammar=open(lark), parser='lalr')
 	ldf_file = open(path, "r").read()
 	tree = parser.parse(ldf_file)
-	return LDFTransformer().transform(tree)
+	json = LDFTransformer().transform(tree)
+	if preserveComments:
+		json['comments'] = parseComments(ldf_file)
+	return json
 
-def parseLDF(path: str) -> LDF:
+def parseLDF(path: str, preserveComments: bool = False) -> LDF:
 	json = parseLDFtoDict(path)
 	ldf = LDF()
 

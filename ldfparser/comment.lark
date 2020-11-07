@@ -1,0 +1,13 @@
+start: (comment)*
+
+comment: line_comment
+line_comment: LINE_COMMENT
+
+LINE_COMMENT: /\/\/[^\n]*/
+BLOCK_COMMENT: "/*" /(.|\n)*/ "*/"
+NOT_COMMENT: /(?!\/\/)[^\n]]*/
+NEWLINE: /\r?\n/
+
+%ignore NEWLINE
+%ignore NOT_COMMENT
+%ignore BLOCK_COMMENT

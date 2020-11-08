@@ -20,6 +20,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
     runs-on: ubuntu-latest
@@ -42,7 +43,7 @@ jobs:
       - name: Modify version
         if: github.event_name == 'pull_request'
         run: |
-          crudini --set setup.cfg metadata version (crudini --get setup.cfg metadata version)-pr-$GITHUB_EVENT_NUMBER-build-$GITHUB_RUN_ID
+          crudini --set setup.cfg metadata version $(crudini --get setup.cfg metadata version)-pr-$GITHUB_EVENT_NUMBER-build-$GITHUB_RUN_ID
 
       - name: Install package
         run: |

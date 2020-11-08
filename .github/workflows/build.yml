@@ -42,7 +42,7 @@ jobs:
       - name: Modify version
         if: github.event_name == 'pull_request'
         run: |
-          crudini --set setup.cfg metadata version $GITHUB_SHA
+          crudini --set setup.cfg metadata version (crudini --get setup.cfg metadata version)-pr-$GITHUB_EVENT_NUMBER-build-$GITHUB_RUN_ID
 
       - name: Install package
         run: |

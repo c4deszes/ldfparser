@@ -19,6 +19,10 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,13 +31,19 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: ${{ matrix.python-version }}
 
       - name: Install requirements
-        run: | 
+        run: |
+          sudo apt-get -y install crudini
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov setuptools wheel twine
+          pip install pytest pytest-cov setuptools wheel
           pip install -r requirements.txt
+
+      - name: Modify version
+        if: github.event_name == 'pull_request'
+        run: |
+          crudini --set setup.cfg metadata version $(crudini --get setup.cfg metadata version).dev$GITHUB_RUN_NUMBER
 
       - name: Install package
         run: |
@@ -54,19 +64,43 @@ jobs:
       - name: Archive package
         uses: actions/upload-artifact@v2
         with:
-          name: package
+          name: package-${{ matrix.python-version }}
           path: dist/
 
       - name: Upload coverage results
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./
-          flags: unittests
-          name: codecov-umbrella
+          flags: unittests,${{ matrix.python-version }}
+          name: Python-${{ matrix.python-version }}
           fail_ci_if_error: true
 
-      - name: Publish
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    container:
+      image: "python"
+    steps:
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: Download package
+        uses: actions/download-artifact@v2
+        with:
+          name: package-3.6
+          path: dist
+
+      - name: Publish to Test PyPi
+        if: github.event_name == 'pull_request'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: |
+          twine upload --repository testpypi dist/*
+
+      - name: Publish to PyPi
         if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
         env:
           TWINE_USERNAME: __token__

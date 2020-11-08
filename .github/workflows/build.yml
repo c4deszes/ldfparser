@@ -59,12 +59,11 @@ jobs:
 
       - name: Upload coverage results
         uses: codecov/codecov-action@v1
-        if: matrix.python-version == '3.8'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./
           flags: unittests
-          name: codecov-umbrella
+          name: python-${{ matrix.python-version }}
           fail_ci_if_error: true
 
       - name: Publish

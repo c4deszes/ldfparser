@@ -1,13 +1,9 @@
-# python setup.py sdist
-# python -m twine upload dist/*
- 
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setup(
-     name='ldfparser',  
-     version='0.5.0',
+     name='ldfparser',
      author="Balazs Eszes",
      author_email="c4deszes@gmail.com",
      description="LDF Language support for Python",
@@ -19,10 +15,13 @@ setup(
      license = 'MIT',
      keywords = ['LIN', 'LDF'],
      install_requires = ['lark-parser', 'bitstruct'],
-
+     python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4',
      py_modules=['lin','parser'],
      classifiers=[
-         "Programming Language :: Python :: 3",
+         "Programming Language :: Python :: 3.6",
+         "Programming Language :: Python :: 3.7",
+         "Programming Language :: Python :: 3.8",
+         "Programming Language :: Python :: 3.9",
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
      ],

@@ -61,6 +61,8 @@ print(binascii.hexlify(message))
 
 + Retrieve Node attributes
 
++ Capturing comments
+
 ### Currently not supported
 
 + Scheduling table

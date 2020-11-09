@@ -56,6 +56,7 @@ jobs:
         run: |
           python ./examples/communication.py
           python ./examples/ldf2json.py
+          python ./examples/read_comments.py
 
       - name: Package
         run: |

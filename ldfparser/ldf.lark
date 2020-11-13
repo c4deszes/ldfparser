@@ -105,13 +105,14 @@ signal_representation_node: ldf_identifier ":" ldf_identifier ("," ldf_identifie
 C_INT: ("0x"HEXDIGIT+) | ("-"? INT) 
 C_FLOAT: "-"? INT ("." INT)?
 
-BLOCK_COMMENT: "/*" /(.|\n)*/ "*/"
-LINE_COMMENT: /\/\/.*/
-
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 
-%ignore LINE_COMMENT
-%ignore BLOCK_COMMENT
+// Use common.CPP_COMMENT and common.C_COMMENT once lark-parser v0.10.2 is released
+CPP_COMMENT: /\/\/[^\n]*/
+C_COMMENT: "/*" /.*?/s "*/"
+
+%ignore CPP_COMMENT
+%ignore C_COMMENT
 %ignore WS
 %ignore WS_INLINE
 

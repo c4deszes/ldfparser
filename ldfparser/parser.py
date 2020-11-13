@@ -42,18 +42,18 @@ class LDF:
 		"""
 		return next((x for x in self.slaves if x.name == name), None)
 
-def parseLDFtoDict(path: str, captureComments: bool = False) -> Dict[str, Any]:
+def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict[str, Any]:
 	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
 	parser = Lark(grammar=open(lark), parser='lalr')
-	ldf_file = open(path, "r").read()
+	ldf_file = open(path, "r", encoding=encoding).read()
 	tree = parser.parse(ldf_file)
 	json = LDFTransformer().transform(tree)
 	if captureComments:
 		json['comments'] = parseComments(ldf_file)
 	return json
 
-def parseLDF(path: str, captureComments: bool = False) -> LDF:
-	json = parseLDFtoDict(path, captureComments)
+def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
+	json = parseLDFtoDict(path, captureComments, encoding)
 	ldf = LDF()
 
 	_populate_ldf_header(json, ldf)

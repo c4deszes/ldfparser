@@ -107,6 +107,7 @@ C_FLOAT: "-"? INT ("." INT)?
 
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 
+// Use common.CPP_COMMENT and common.C_COMMENT once lark-parser v0.10.2 is released
 CPP_COMMENT: /\/\/[^\n]*/
 C_COMMENT: "/*" /.*?/s "*/"
 

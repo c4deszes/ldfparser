@@ -14,7 +14,7 @@ setup(
      package_data = { '': ['*.lark'] },
      license = 'MIT',
      keywords = ['LIN', 'LDF'],
-     install_requires = ['lark-parser', 'bitstruct'],
+     install_requires = ['lark-parser>=0.10.0', 'bitstruct'],
      python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4',
      py_modules=['lin','parser'],
      classifiers=[

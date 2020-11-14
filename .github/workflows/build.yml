@@ -8,6 +8,7 @@ on:
       - '**/*.md'
     branches:
       - master
+      - development
   pull_request:
     paths-ignore:
       - '*.md'
@@ -41,7 +42,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Modify version
-        if: github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/development'
         run: |
           crudini --set setup.cfg metadata version $(crudini --get setup.cfg metadata version).dev$GITHUB_RUN_NUMBER
 
@@ -78,6 +79,7 @@ jobs:
 
   release:
     needs: [build]
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     container:
       image: "python"
@@ -94,7 +96,7 @@ jobs:
           path: dist
 
       - name: Publish to Test PyPi
-        if: github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/development'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
@@ -102,7 +104,7 @@ jobs:
           twine upload --repository testpypi dist/*
 
       - name: Publish to PyPi
-        if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}

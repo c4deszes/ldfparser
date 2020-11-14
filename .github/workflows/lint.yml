@@ -5,6 +5,9 @@ on:
     paths-ignore:
       - '*.md'
       - '**/*.md'
+  branches:
+      - master
+      - development
   pull_request:
     paths-ignore:
       - '*.md'
@@ -15,7 +18,7 @@ on:
       - synchronize
 
 jobs:
-  lint:
+  flake8:
     runs-on: ubuntu-latest
     container:
       image: "python"

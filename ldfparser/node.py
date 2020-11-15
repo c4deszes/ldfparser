@@ -2,11 +2,13 @@ from typing import List
 
 from .lin import LinFrame, LinSignal
 
+
 class LinProductId:
 	def __init__(self, supplier_id: int, function_id: int, variant: int = None) -> None:
 		self.supplier_id: int = supplier_id
 		self.function_id: int = function_id
 		self.variant: int = variant
+
 
 class LinNode:
 
@@ -16,12 +18,14 @@ class LinNode:
 		self.publishes: List[LinSignal] = []
 		self.publishes_frames: List[LinFrame] = []
 
+
 class LinMaster(LinNode):
 
 	def __init__(self, name: str, timebase: float, jitter: float):
 		super().__init__(name)
 		self.timebase: float = timebase
 		self.jitter: float = jitter
+
 
 class LinSlave(LinNode):
 	def __init__(self, name: str) -> None:
@@ -37,12 +41,14 @@ class LinSlave(LinNode):
 		self.n_as_timeout: float = 1
 		self.n_cr_timeout: float = 1
 		self.configurable_frames = []
-		
+
+
 class LinNodeCompositionConfiguration:
 
 	def __init__(self, name: str) -> None:
 		self.name: str = name
 		self.compositions: List[LinNodeComposition] = []
+
 
 class LinNodeComposition:
 

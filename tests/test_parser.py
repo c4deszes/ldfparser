@@ -1,8 +1,8 @@
-from ldfparser.node import LinSlave
 from ldfparser.encoding import LogicalValue
 import os
 import pytest
 import ldfparser
+
 
 @pytest.mark.unit
 def test_load_valid_lin13():
@@ -20,6 +20,7 @@ def test_load_valid_lin13():
 	assert ldf.frame('VL1_CEM_Frm1') is not None
 	assert ldf.slave('LSM') is not None
 
+
 @pytest.mark.unit
 def test_load_valid_lin20():
 	path = os.path.join(os.path.dirname(__file__), "ldf", "lin20.ldf")
@@ -32,6 +33,7 @@ def test_load_valid_lin20():
 	assert ldf.signal('InternalLightsRequest') is not None
 	assert ldf.frame('VL1_CEM_Frm1') is not None
 	assert ldf.slave('LSM') is not None
+
 
 @pytest.mark.unit
 def test_load_valid_lin21():
@@ -47,6 +49,7 @@ def test_load_valid_lin21():
 	assert ldf.frame('LSM_Frm2') is not None
 	assert ldf.slave('LSM') is not None
 
+
 @pytest.mark.unit
 def test_load_valid_lin22():
 	path = os.path.join(os.path.dirname(__file__), "ldf", "lin22.ldf")
@@ -56,10 +59,10 @@ def test_load_valid_lin22():
 	assert ldf.language_version == 2.2
 	assert ldf.baudrate == 19200
 	assert ldf.channel == 'DB'
-	
+
 	assert ldf.signal('InternalLightsRequest') is not None
 	assert ldf.frame('LSM_Frm2') is not None
-	
+
 	LSM = ldf.slave('LSM')
 	assert LSM is not None
 	assert LSM.product_id.supplier_id == 0x4A4F

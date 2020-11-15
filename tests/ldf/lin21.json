@@ -1,0 +1,466 @@
+{
+	"channel_name": "DB",
+	"event_triggered_frames": [
+		{
+			"name": "Node_Status_Event"
+		}
+	],
+	"frames": [
+		{
+			"frame_id": 1,
+			"length": 1,
+			"name": "CEM_Frm1",
+			"publisher": "CEM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "InternalLightsRequest"
+				}
+			]
+		},
+		{
+			"frame_id": 2,
+			"length": 2,
+			"name": "LSM_Frm1",
+			"publisher": "LSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "LeftIntLightsSwitch"
+				}
+			]
+		},
+		{
+			"frame_id": 3,
+			"length": 1,
+			"name": "LSM_Frm2",
+			"publisher": "LSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "LSMerror"
+				},
+				{
+					"offset": 1,
+					"signal": "IntError"
+				}
+			]
+		},
+		{
+			"frame_id": 4,
+			"length": 2,
+			"name": "RSM_Frm1",
+			"publisher": "RSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "RightIntLightsSwitch"
+				}
+			]
+		},
+		{
+			"frame_id": 5,
+			"length": 1,
+			"name": "RSM_Frm2",
+			"publisher": "RSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "RSMerror"
+				}
+			]
+		}
+	],
+	"header": "lin_description_file",
+	"language_version": 2.1,
+	"node_attributes": [
+		{
+			"P2_min": 0.15,
+			"ST_min": 0.05,
+			"configurable_frames": [
+				"CEM_Frm1",
+				"LSM_Frm1",
+				"LSM_Frm2"
+			],
+			"configured_nad": 32,
+			"fault_state_signals": [
+				"IntError"
+			],
+			"initial_nad": 1,
+			"lin_protocol": 2.1,
+			"name": "LSM",
+			"product_id": {
+				"function_id": 18497,
+				"supplier_id": 19023,
+				"variant": null
+			},
+			"response_error": "LSMerror"
+		},
+		{
+			"P2_min": 0.15,
+			"ST_min": 0.05,
+			"configurable_frames": {
+				"CEM_Frm1": 1,
+				"LSM_Frm1": 2,
+				"LSM_Frm2": 3
+			},
+			"configured_nad": 32,
+			"lin_protocol": 2.0,
+			"name": "RSM",
+			"product_id": {
+				"function_id": 17747,
+				"supplier_id": 20046,
+				"variant": 1
+			},
+			"response_error": "RSMerror"
+		}
+	],
+	"nodes": {
+		"master": {
+			"jitter": 0.0001,
+			"name": "CEM",
+			"timebase": 0.005
+		},
+		"slaves": [
+			"LSM",
+			"RSM"
+		]
+	},
+	"protocol_version": 2.1,
+	"schedule_tables": [
+		{
+			"name": "Configuration_Schedule",
+			"schedule": [
+				{
+					"command": {
+						"node": "LSM",
+						"type": "assign_nad"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"type": "assign_frame_id_range"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "CEM_Frm1",
+						"node": "RSM",
+						"type": "assign_frame_id"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm1",
+						"node": "RSM",
+						"type": "assign_frame_id"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm2",
+						"node": "RSM",
+						"type": "assign_frame_id"
+					},
+					"delay": 15.0
+				}
+			]
+		},
+		{
+			"name": "Normal_Schedule",
+			"schedule": [
+				{
+					"command": {
+						"frame": "CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "LSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "Node_Status_Event",
+						"type": "frame"
+					},
+					"delay": 10.0
+				}
+			]
+		},
+		{
+			"name": "MRF_schedule",
+			"schedule": [
+				{
+					"command": {
+						"type": "master_request"
+					},
+					"delay": 10.0
+				}
+			]
+		},
+		{
+			"name": "SRF_schedule",
+			"schedule": [
+				{
+					"command": {
+						"type": "slave_response"
+					},
+					"delay": 10.0
+				}
+			]
+		},
+		{
+			"name": "Collision_resolver",
+			"schedule": [
+				{
+					"command": {
+						"frame": "CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "LSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 10.0
+				},
+				{
+					"command": {
+						"frame": "CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "LSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "RSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "LSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 10.0
+				}
+			]
+		}
+	],
+	"signal_encoding_types": [
+		{
+			"name": "Dig2Bit",
+			"values": [
+				{
+					"text": "off",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "on",
+					"type": "logical",
+					"value": 1
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 2
+				},
+				{
+					"text": "void",
+					"type": "logical",
+					"value": 3
+				}
+			]
+		},
+		{
+			"name": "ErrorEncoding",
+			"values": [
+				{
+					"text": "OK",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 1
+				}
+			]
+		},
+		{
+			"name": "FaultStateEncoding",
+			"values": [
+				{
+					"text": "No test result",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "failed",
+					"type": "logical",
+					"value": 1
+				},
+				{
+					"text": "passed",
+					"type": "logical",
+					"value": 2
+				},
+				{
+					"text": "not used",
+					"type": "logical",
+					"value": 3
+				}
+			]
+		},
+		{
+			"name": "LightEncoding",
+			"values": [
+				{
+					"text": "Off",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"max": 254,
+					"min": 1,
+					"offset": 100.0,
+					"scale": 1.0,
+					"type": "physical",
+					"unit": "lux"
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 255
+				}
+			]
+		}
+	],
+	"signal_representations": [
+		{
+			"encoding": "Dig2Bit",
+			"signals": [
+				"InternalLightsRequest"
+			]
+		},
+		{
+			"encoding": "ErrorEncoding",
+			"signals": [
+				"RSMerror",
+				"LSMerror"
+			]
+		},
+		{
+			"encoding": "FaultStateEncoding",
+			"signals": [
+				"IntError"
+			]
+		},
+		{
+			"encoding": "LightEncoding",
+			"signals": [
+				"RightIntLightsSwitch",
+				"LefttIntLightsSwitch"
+			]
+		}
+	],
+	"signals": [
+		{
+			"init_value": 0,
+			"name": "InternalLightsRequest",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM",
+				"RSM"
+			],
+			"width": 2
+		},
+		{
+			"init_value": 0,
+			"name": "RightIntLightsSwitch",
+			"publisher": "RSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LeftIntLightsSwitch",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LSMerror",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "RSMerror",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "IntError",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 2
+		}
+	],
+	"speed": 19200
+}

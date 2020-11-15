@@ -350,7 +350,7 @@ class LDFTransformer(Transformer):
 		return {"type": "assign_frame_id_range"} #TODO: add arguments
 
 	def schedule_table_command_assignframeid(self, tree):
-		return {"type": "assign_frame_id"} # TODO: add arguments
+		return {"type": "assign_frame_id", "node": tree[0], "frame": tree[1]}
 
 	def schedule_table_command_freeformat(self, tree):
 		return {"type": "free_format", "data": tree[0:]}

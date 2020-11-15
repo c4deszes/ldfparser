@@ -1,0 +1,976 @@
+{
+	"frames": [
+		{
+			"frame_id": 32,
+			"length": 3,
+			"name": "VL1_CEM_Frm1",
+			"publisher": "CEM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "RearFogLampInd"
+				},
+				{
+					"offset": 1,
+					"signal": "PositionLampInd"
+				},
+				{
+					"offset": 2,
+					"signal": "FrontFogLampInd"
+				},
+				{
+					"offset": 3,
+					"signal": "IgnitionKeyPos"
+				},
+				{
+					"offset": 8,
+					"signal": "LSMFuncIllum"
+				},
+				{
+					"offset": 12,
+					"signal": "LSMSymbolIllum"
+				},
+				{
+					"offset": 16,
+					"signal": "StartHeater"
+				}
+			]
+		},
+		{
+			"frame_id": 48,
+			"length": null,
+			"name": "VL1_CEM_Frm2",
+			"publisher": "CEM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "CPMReqB0"
+				},
+				{
+					"offset": 8,
+					"signal": "CPMReqB1"
+				},
+				{
+					"offset": 16,
+					"signal": "CPMReqB2"
+				},
+				{
+					"offset": 24,
+					"signal": "CPMReqB3"
+				},
+				{
+					"offset": 32,
+					"signal": "CPMReqB4"
+				},
+				{
+					"offset": 40,
+					"signal": "CPMReqB5"
+				},
+				{
+					"offset": 48,
+					"signal": "CPMReqB6"
+				},
+				{
+					"offset": 56,
+					"signal": "CPMReqB7"
+				}
+			]
+		},
+		{
+			"frame_id": 33,
+			"length": null,
+			"name": "VL1_LSM_Frm1",
+			"publisher": "LSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "ReostatPos"
+				},
+				{
+					"offset": 4,
+					"signal": "HeadLampBeamLev"
+				},
+				{
+					"offset": 8,
+					"signal": "FrontFogLampSw"
+				},
+				{
+					"offset": 9,
+					"signal": "RearFogLampSw"
+				},
+				{
+					"offset": 10,
+					"signal": "MLSOff"
+				},
+				{
+					"offset": 11,
+					"signal": "MLSHeadLight"
+				},
+				{
+					"offset": 12,
+					"signal": "MLSPosLight"
+				},
+				{
+					"offset": 16,
+					"signal": "HBLSortHigh"
+				},
+				{
+					"offset": 17,
+					"signal": "HBLShortLow"
+				},
+				{
+					"offset": 18,
+					"signal": "ReoShortHigh"
+				},
+				{
+					"offset": 19,
+					"signal": "ReoShortLow"
+				}
+			]
+		},
+		{
+			"frame_id": 49,
+			"length": 6,
+			"name": "VL1_LSM_Frm2",
+			"publisher": "LSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "LSMHWPartNoB0"
+				},
+				{
+					"offset": 8,
+					"signal": "LSMHWPartNoB1"
+				},
+				{
+					"offset": 16,
+					"signal": "LSMHWPartNoB2"
+				},
+				{
+					"offset": 32,
+					"signal": "LSMHWPartNoB3"
+				},
+				{
+					"offset": 40,
+					"signal": "LSMSWPartNo"
+				}
+			]
+		},
+		{
+			"frame_id": 50,
+			"length": null,
+			"name": "VL1_CPM_Frm1",
+			"publisher": "CPM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "CPMOutputs"
+				},
+				{
+					"offset": 10,
+					"signal": "HeaterStatus"
+				},
+				{
+					"offset": 16,
+					"signal": "CPMGlowPlug"
+				},
+				{
+					"offset": 24,
+					"signal": "CPMFanPWM"
+				},
+				{
+					"offset": 32,
+					"signal": "WaterTempLow"
+				},
+				{
+					"offset": 40,
+					"signal": "WaterTempHigh"
+				},
+				{
+					"offset": 56,
+					"signal": "CPMFuelPump"
+				}
+			]
+		},
+		{
+			"frame_id": 34,
+			"length": null,
+			"name": "VL1_CPM_Frm2",
+			"publisher": "CPM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "CPMRunTime"
+				},
+				{
+					"offset": 16,
+					"signal": "FanIdealSpeed"
+				},
+				{
+					"offset": 24,
+					"signal": "FanMeasSpeed"
+				}
+			]
+		},
+		{
+			"frame_id": 51,
+			"length": null,
+			"name": "VL1_CPM_Frm3",
+			"publisher": "CPM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "CPMRespB0"
+				},
+				{
+					"offset": 8,
+					"signal": "CPMRespB1"
+				},
+				{
+					"offset": 16,
+					"signal": "CPMRespB2"
+				},
+				{
+					"offset": 24,
+					"signal": "CPMRespB3"
+				},
+				{
+					"offset": 32,
+					"signal": "CPMRespB4"
+				},
+				{
+					"offset": 40,
+					"signal": "CPMRespB5"
+				},
+				{
+					"offset": 48,
+					"signal": "CPMRespB6"
+				},
+				{
+					"offset": 56,
+					"signal": "CPMRespB7"
+				}
+			]
+		}
+	],
+	"header": "lin_description_file",
+	"language_version": 1.3,
+	"nodes": {
+		"master": {
+			"jitter": 0.0001,
+			"name": "CEM",
+			"timebase": 0.005
+		},
+		"slaves": [
+			"LSM",
+			"CPM"
+		]
+	},
+	"protocol_version": 1.3,
+	"schedule_tables": [
+		{
+			"name": "VL1_ST1",
+			"schedule": [
+				{
+					"command": {
+						"frame": "VL1_CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_LSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CPM_Frm1",
+						"type": "frame"
+					},
+					"delay": 20.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CPM_Frm2",
+						"type": "frame"
+					},
+					"delay": 20.0
+				}
+			]
+		},
+		{
+			"name": "VL1_ST2",
+			"schedule": [
+				{
+					"command": {
+						"frame": "VL1_CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CEM_Frm2",
+						"type": "frame"
+					},
+					"delay": 20.0
+				},
+				{
+					"command": {
+						"frame": "VL1_LSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_LSM_Frm2",
+						"type": "frame"
+					},
+					"delay": 20.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CPM_Frm1",
+						"type": "frame"
+					},
+					"delay": 20.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CPM_Frm2",
+						"type": "frame"
+					},
+					"delay": 20.0
+				},
+				{
+					"command": {
+						"frame": "VL1_LSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_CPM_Frm3",
+						"type": "frame"
+					},
+					"delay": 20.0
+				}
+			]
+		}
+	],
+	"signal_encoding_types": [
+		{
+			"name": "State1",
+			"values": [
+				{
+					"text": "off",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "on",
+					"type": "logical",
+					"value": 1
+				}
+			]
+		},
+		{
+			"name": "State2",
+			"values": [
+				{
+					"text": "off",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "on",
+					"type": "logical",
+					"value": 1
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 2
+				},
+				{
+					"text": "void",
+					"type": "logical",
+					"value": 3
+				}
+			]
+		},
+		{
+			"name": "Temp",
+			"values": [
+				{
+					"max": 250,
+					"min": 0,
+					"offset": -40.0,
+					"scale": 0.5,
+					"type": "physical",
+					"unit": "degree"
+				},
+				{
+					"max": 253,
+					"min": 251,
+					"offset": 0.0,
+					"scale": 1.0,
+					"type": "physical",
+					"unit": "undefined"
+				},
+				{
+					"text": "out of range",
+					"type": "logical",
+					"value": 254
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 255
+				}
+			]
+		},
+		{
+			"name": "Speed",
+			"values": [
+				{
+					"max": 65500,
+					"min": 0,
+					"offset": 250.0,
+					"scale": 0.008,
+					"type": "physical",
+					"unit": "km/h"
+				},
+				{
+					"max": 65533,
+					"min": 65501,
+					"offset": 0.0,
+					"scale": 1.0,
+					"type": "physical",
+					"unit": "undefined"
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 65534
+				},
+				{
+					"text": "void",
+					"type": "logical",
+					"value": 65535
+				}
+			]
+		}
+	],
+	"signal_groups": [
+		{
+			"name": "CPMReq",
+			"signals": {
+				"CPMReqB0": 0,
+				"CPMReqB1": 8,
+				"CPMReqB2": 16,
+				"CPMReqB3": 24,
+				"CPMReqB4": 32,
+				"CPMReqB5": 40,
+				"CPMReqB6": 48,
+				"CPMReqB7": 56
+			},
+			"size": 64
+		},
+		{
+			"name": "CPMResp",
+			"signals": {
+				"CPMRespB0": 0,
+				"CPMRespB1": 8,
+				"CPMRespB2": 16,
+				"CPMRespB3": 24,
+				"CPMRespB4": 32,
+				"CPMRespB5": 40,
+				"CPMRespB6": 48,
+				"CPMRespB7": 56
+			},
+			"size": 64
+		}
+	],
+	"signal_representations": [
+		{
+			"encoding": "State1",
+			"signals": [
+				"RearFogLampInd",
+				"PositionLampInd",
+				"FrontFogLampInd"
+			]
+		},
+		{
+			"encoding": "Temp",
+			"signals": [
+				"WaterTempLow",
+				"WaterTempHigh"
+			]
+		},
+		{
+			"encoding": "Speed",
+			"signals": [
+				"FanIdealSpeed",
+				"FanMeasSpeed"
+			]
+		}
+	],
+	"signals": [
+		{
+			"init_value": 0,
+			"name": "RearFogLampInd",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "PositionLampInd",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "FrontFogLampInd",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "IgnitionKeyPos",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM",
+				"CPM"
+			],
+			"width": 3
+		},
+		{
+			"init_value": 0,
+			"name": "LSMFuncIllum",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 4
+		},
+		{
+			"init_value": 0,
+			"name": "LSMSymbolIllum",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 4
+		},
+		{
+			"init_value": 0,
+			"name": "StartHeater",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 3
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB0",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB1",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB2",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB3",
+			"publisher": "CEM",
+			"subscribers": [
+				"CMP"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB4",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB5",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB6",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMReqB7",
+			"publisher": "CEM",
+			"subscribers": [
+				"CPM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "ReostatPos",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 4
+		},
+		{
+			"init_value": 0,
+			"name": "HeadLampBeamLev",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 4
+		},
+		{
+			"init_value": 0,
+			"name": "FrontFogLampSw",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "RearFogLampSw",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "MLSOff",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "MLSHeadLight",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "MLSPosLight",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "HBLSortHigh",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "HBLShortLow",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "ReoShortHigh",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "ReoShortLow",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "LSMHWPartNoB0",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LSMHWPartNoB1",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LSMHWPartNoB2",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LSMHWPartNoB3",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "LSMSWPartNo",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMOutputs",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 10
+		},
+		{
+			"init_value": 0,
+			"name": "HeaterStatus",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 4
+		},
+		{
+			"init_value": 0,
+			"name": "CPMGlowPlug",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 7
+		},
+		{
+			"init_value": 0,
+			"name": "CPMFanPWM",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "WaterTempLow",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "WaterTempHigh",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMFuelPump",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 7
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRunTime",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 13
+		},
+		{
+			"init_value": 0,
+			"name": "FanIdealSpeed",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "FanMeasSpeed",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 8
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB0",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB1",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB2",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB3",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB4",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB5",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB6",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		},
+		{
+			"init_value": 0,
+			"name": "CPMRespB7",
+			"publisher": "CPM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 1
+		}
+	],
+	"speed": 19200
+}

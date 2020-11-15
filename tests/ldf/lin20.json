@@ -1,0 +1,126 @@
+{
+	"frames": [
+		{
+			"frame_id": 1,
+			"length": null,
+			"name": "VL1_CEM_Frm1",
+			"publisher": "CEM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "InternalLightsRequest"
+				}
+			]
+		},
+		{
+			"frame_id": 2,
+			"length": null,
+			"name": "VL1_LSM_Frm1",
+			"publisher": "LSM",
+			"signals": [
+				{
+					"offset": 0,
+					"signal": "InternalLightsSwitch"
+				}
+			]
+		}
+	],
+	"header": "lin_description_file",
+	"language_version": 2.0,
+	"node_attributes": [
+		{
+			"configured_nad": 1,
+			"lin_protocol": 2.0,
+			"name": "LSM"
+		}
+	],
+	"nodes": {
+		"master": {
+			"jitter": 0.0001,
+			"name": "CEM",
+			"timebase": 0.005
+		},
+		"slaves": [
+			"LSM"
+		]
+	},
+	"protocol_version": 2.0,
+	"schedule_tables": [
+		{
+			"name": "MySchedule1",
+			"schedule": [
+				{
+					"command": {
+						"frame": "VL1_CEM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				},
+				{
+					"command": {
+						"frame": "VL1_LSM_Frm1",
+						"type": "frame"
+					},
+					"delay": 15.0
+				}
+			]
+		}
+	],
+	"signal_encoding_types": [
+		{
+			"name": "Dig2Bit",
+			"values": [
+				{
+					"text": "off",
+					"type": "logical",
+					"value": 0
+				},
+				{
+					"text": "on",
+					"type": "logical",
+					"value": 1
+				},
+				{
+					"text": "error",
+					"type": "logical",
+					"value": 2
+				},
+				{
+					"text": "void",
+					"type": "logical",
+					"value": 3
+				}
+			]
+		}
+	],
+	"signal_representations": [
+		{
+			"encoding": "Dig2Bit",
+			"signals": [
+				"InternalLightsRequest",
+				"InternalLightsSwitch"
+			]
+		}
+	],
+	"signals": [
+		{
+			"init_value": 0,
+			"name": "InternalLightsRequest",
+			"publisher": "CEM",
+			"subscribers": [
+				"LSM"
+			],
+			"width": 2
+		},
+		{
+			"init_value": 0,
+			"name": "InternalLightsSwitch",
+			"publisher": "LSM",
+			"subscribers": [
+				"CEM"
+			],
+			"width": 2
+		}
+	],
+	"speed": 19200
+}

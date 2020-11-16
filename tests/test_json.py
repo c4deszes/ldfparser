@@ -5,9 +5,11 @@ import glob
 import difflib
 import pytest
 
+
 ldf_directory = os.path.join(os.path.dirname(__file__), 'ldf')
 snapshot_directory = os.path.join(os.path.dirname(__file__), 'snapshot')
 ldf_files = glob.glob(ldf_directory + '/*.ldf')
+
 
 @pytest.mark.snapshot
 @pytest.mark.parametrize(

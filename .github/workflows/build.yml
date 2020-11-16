@@ -133,10 +133,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
 
-      - name: Install base requirements
+      - name: Install base
         working-directory: base
         run: |
           pip install -r requirements.txt
+          python setup.py install
 
       - name: Generate snapshot data
         working-directory: base
@@ -147,10 +148,11 @@ jobs:
         run: |
           mv base/tests/snapshot/* current/tests/snapshot/
 
-      - name: Install current requirements
+      - name: Install current
         working-directory: current
         run: |
           pip install -r requirements.txt
+          python setup.py install
 
       - name: Snapshot test
         working-directory: current

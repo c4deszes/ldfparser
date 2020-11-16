@@ -51,7 +51,7 @@ jobs:
           python setup.py install
 
       - name: Test & Coverage
-        run: pytest --cov=ldfparser --cov-report xml
+        run: pytest -m 'not snapshot' --cov=ldfparser --cov-report xml
 
       - name: Run Examples
         run: |
@@ -110,3 +110,50 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           twine upload dist/*
+
+  snapshot-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    container:
+      image: "python"
+    steps:
+      - name: Checkout (current)
+        uses: actions/checkout@v2
+        with:
+          path: current
+
+      - name: Checkout (base)
+        uses: actions/checkout@v2
+        with:
+          path: base
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Setup
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Install base
+        working-directory: base
+        run: |
+          pip install -r requirements.txt
+          python setup.py install
+
+      - name: Generate snapshot data
+        working-directory: base
+        run: |
+          python tests/snapshot_data.py
+      
+      - name: Move snapshot data
+        run: |
+          mv base/tests/snapshot/* current/tests/snapshot/
+
+      - name: Install current
+        working-directory: current
+        run: |
+          pip install -r requirements.txt
+          python setup.py install
+
+      - name: Snapshot test
+        working-directory: current
+        run: pytest -m 'snapshot'

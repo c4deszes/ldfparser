@@ -146,6 +146,7 @@ jobs:
       
       - name: Move snapshot data
         run: |
+          mkdir current/tests/snapshot/
           mv base/tests/snapshot/* current/tests/snapshot/
 
       - name: Install current

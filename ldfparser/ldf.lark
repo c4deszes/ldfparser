@@ -73,7 +73,7 @@ node_definition_configurable_frames_21: "configurable_frames" "{" (ldf_identifie
 schedule_tables: "Schedule_tables" "{" (schedule_table_definition+) "}" 
 schedule_table_definition: ldf_identifier "{" (schedule_table_entry+) "}"
 schedule_table_entry: schedule_table_command "delay" ldf_float "ms" ";"
-schedule_table_command: schedule_table_command_masterreq | schedule_table_command_slaveresp | schedule_table_command_assignnad | schedule_table_command_conditionalchangenad  | schedule_table_command_datadump | schedule_table_command_saveconfiguration | schedule_table_command_assignframeidrange | schedule_table_command_assignframeid | schedule_table_command_freeformat | schedule_table_command_frame
+schedule_table_command: schedule_table_command_masterreq | schedule_table_command_slaveresp | schedule_table_command_assignnad | schedule_table_command_conditionalchangenad  | schedule_table_command_datadump | schedule_table_command_saveconfiguration | schedule_table_command_assignframeidrange | schedule_table_command_assignframeid | schedule_table_command_unassignframeid | schedule_table_command_freeformat | schedule_table_command_frame
 schedule_table_command_masterreq: "MasterReq"
 schedule_table_command_slaveresp: "SlaveResp"
 schedule_table_command_assignnad: "AssignNAD" "{" ldf_identifier "}"
@@ -82,6 +82,7 @@ schedule_table_command_datadump: "DataDump" "{" ldf_identifier "," ldf_integer "
 schedule_table_command_saveconfiguration: "SaveConfiguration" "{" ldf_identifier "}"
 schedule_table_command_assignframeidrange: "AssignFrameIdRange" "{" ldf_identifier "," ldf_integer ("," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer )? "}"
 schedule_table_command_assignframeid: "AssignFrameId" "{" ldf_identifier "," ldf_identifier "}"
+schedule_table_command_unassignframeid: "UnassignFrameId" "{" ldf_identifier "," ldf_identifier "}"
 schedule_table_command_freeformat: "FreeFormat" "{" ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_frame: ldf_identifier
 

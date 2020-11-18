@@ -363,6 +363,9 @@ class LDFTransformer(Transformer):
 	def schedule_table_command_assignframeid(self, tree):
 		return {"type": "assign_frame_id", "node": tree[0], "frame": tree[1]}
 
+	def schedule_table_command_unassignframeid(self, tree):
+		return {"type": "unassign_frame_id", "node": tree[0], "frame": tree[1]}
+
 	def schedule_table_command_freeformat(self, tree):
 		return {"type": "free_format", "data": tree[0:]}
 

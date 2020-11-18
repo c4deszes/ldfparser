@@ -349,8 +349,7 @@ class LDFTransformer(Transformer):
 		return {"type": "assign_nad", "node": tree[0]}
 
 	def schedule_table_command_conditionalchangenad(self, tree):
-		# TODO: add arguments
-		return {"type": "conditional_change_nad"}
+		return {"type": "conditional_change_nad", "nad": tree[0], "id": tree[1], "byte": tree[2], "mask": tree[3], "inv": tree[4], "new_nad": tree[5]}
 
 	def schedule_table_command_datadump(self, tree):
 		return {"type": "data_dump", "node": tree[0], "data": tree[1:]}
@@ -359,11 +358,10 @@ class LDFTransformer(Transformer):
 		return {"type": "save_configuration", "node": tree[0]}
 
 	def schedule_table_command_assignframeidrange(self, tree):
-		# TODO: add arguments
-		return {"type": "assign_frame_id_range"}
+		return {"type": "assign_frame_id_range", "node": tree[0], "frame_index": tree[1], "pids": tree[2:]}
 
 	def schedule_table_command_assignframeid(self, tree):
-		return {"type": "assign_frame_id"}
+		return {"type": "assign_frame_id", "node": tree[0], "frame": tree[1]}
 
 	def schedule_table_command_freeformat(self, tree):
 		return {"type": "free_format", "data": tree[0:]}

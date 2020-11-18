@@ -80,7 +80,7 @@ schedule_table_command_assignnad: "AssignNAD" "{" ldf_identifier "}"
 schedule_table_command_conditionalchangenad: "ConditionalChangeNAD" "{" ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_datadump: "DataDump" "{" ldf_identifier "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_saveconfiguration: "SaveConfiguration" "{" ldf_identifier "}"
-schedule_table_command_assignframeidrange: "AssignFrameIdRange" "{" ldf_identifier "," ldf_integer ("," ldf_integer )* "}"
+schedule_table_command_assignframeidrange: "AssignFrameIdRange" "{" ldf_identifier "," ldf_integer ("," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer )? "}"
 schedule_table_command_assignframeid: "AssignFrameId" "{" ldf_identifier "," ldf_identifier "}"
 schedule_table_command_freeformat: "FreeFormat" "{" ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_frame: ldf_identifier

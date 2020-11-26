@@ -8,9 +8,11 @@ from .encoding import LinSignalType
 class LinSignal:
 
 	def __init__(self, name: str, width: int, init_value: Union[int, List[int]]):
-		self.name = name
-		self.width = width
-		self.init_value = init_value
+		self.name: str = name
+		self.width: int = width
+		self.init_value: Union[int, List[int]] = init_value
+		self.publisher = None
+		self.subscribers = []
 
 	def is_array(self):
 		return isinstance(self.init_value, List)
@@ -34,6 +36,7 @@ class LinFrame:
 	def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
 		self.frame_id = frame_id
 		self.name = name
+		self.publisher = None
 		self.length = length
 		orderedSignals = sorted(signals.items(), key=lambda x: x[0])
 		self.signals = [i[1] for i in orderedSignals]

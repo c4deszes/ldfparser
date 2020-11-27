@@ -4,8 +4,9 @@ from lark import Lark, Transformer
 
 from .lin import LinFrame, LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
-from .node import LinNode, LinMaster, LinProductId, LinSlave
+from .node import LinMaster, LinProductId, LinSlave
 from .comment import parseComments
+
 
 class LDF:
 	def __init__(self):
@@ -26,7 +27,7 @@ class LDF:
 		"""
 		return next((x for x in self.signals if x.name == name), None)
 
-	def frame(self, frame_id:Union[int, str]) -> LinFrame:
+	def frame(self, frame_id: Union[int, str]) -> LinFrame:
 		"""
 		Returns a Frame with the given id, or the given name
 		"""
@@ -42,6 +43,7 @@ class LDF:
 		"""
 		return next((x for x in self.slaves if x.name == name), None)
 
+
 def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict[str, Any]:
 	lark = os.path.join(os.path.dirname(__file__), 'ldf.lark')
 	parser = Lark(grammar=open(lark), parser='lalr')
@@ -51,6 +53,7 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
 	if captureComments:
 		json['comments'] = parseComments(ldf_file)
 	return json
+
 
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
 	json = parseLDFtoDict(path, captureComments, encoding)
@@ -62,10 +65,13 @@ def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> 
 	_populate_ldf_nodes(json, ldf)
 	_populate_ldf_encoding_types(json, ldf)
 
+	_link_ldf_nodes(json, ldf)
+
 	if captureComments:
 		ldf.comments = json['comments']
 
 	return ldf
+
 
 def _populate_ldf_header(json: dict, ldf: LDF):
 	ldf.protocol_version = _require_key(json, 'protocol_version', 'LDF missing protocol version.')
@@ -73,20 +79,24 @@ def _populate_ldf_header(json: dict, ldf: LDF):
 	ldf.baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
 	ldf.channel = json.get('channel_name')
 
+
 def _populate_ldf_signals(json: dict, ldf: LDF):
 	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
 		ldf.signals.append(LinSignal.create(signal['name'], signal['width'], signal['init_value']))
 
-def _populate_ldf_frames(json:dict, ldf: LDF):
+
+def _populate_ldf_frames(json: dict, ldf: LDF):
 	for frame in _require_key(json, 'frames', 'LDF missing Frames section.'):
 		signals = {}
+
 		for signal in frame['signals']:
 			s = ldf.signal(signal['signal'])
 			if s is None:
 				raise ValueError(f"{frame['name']} references non existing signal {signal['signal']}")
 			signals[signal['offset']] = s
+
 		length = frame['length']
-		if length is None and ldf.language_version > 2.0 :
+		if length is None and ldf.language_version > 2.0:
 			raise ValueError(f"Frame({frame['frame_id']}, {frame['name']}) has no length specified, only allowed in LIN 2.0 and below.")
 		if length is None:
 			if 0 <= frame['frame_id'] <= 31:
@@ -95,33 +105,77 @@ def _populate_ldf_frames(json:dict, ldf: LDF):
 				length = 4
 			elif 48 <= frame['frame_id'] <= 63:
 				length = 8
+
 		ldf.frames.append(LinFrame(frame['frame_id'], frame['name'], length, signals))
 
-def _populate_ldf_nodes(json:dict, ldf: LDF):
+
+def _populate_ldf_nodes(json: dict, ldf: LDF):
 	nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
 	master_node = nodes['master']
 	ldf.master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
 
 	if ldf.language_version >= 2.0:
-		for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LIN 2.0 LIN descriptions and above.'):
-			name = node['name']
-			if name not in nodes['slaves']:
-				raise ValueError(f"Node {name} is configured but not listed as a slave.")
-			lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
-			slave = LinSlave(name)
-			slave.lin_protocol = lin_protocol
-			slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
-			slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
-
-			if node.get('product_id') is not None:
-				product_id = LinProductId(node['product_id']['supplier_id'], node['product_id']['function_id'], node['product_id'].get('variant'))
-				slave.product_id = product_id
-			ldf.slaves.append(slave)
+		for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LDF 2.0+'):
+			if node['name'] not in nodes['slaves']:
+				raise ValueError(f"Node {node['name']} is configured but not listed as a slave.")
+			ldf.slaves.append(_create_ldf2x_node(node, ldf.language_version))
 	else:
 		for slave in nodes['slaves']:
 			node = LinSlave(slave)
 			node.lin_protocol = ldf.protocol_version
 			ldf.slaves.append(node)
+
+
+def _create_ldf2x_node(node: dict, language_version: float):
+	name = node['name']
+	lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
+	slave = LinSlave(name)
+	slave.lin_protocol = lin_protocol
+	slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
+	slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
+
+	if node.get('product_id') is not None:
+		product_id = LinProductId(node['product_id']['supplier_id'], node['product_id']['function_id'], node['product_id'].get('variant'))
+		slave.product_id = product_id
+	elif language_version >= 2.1:
+		raise ValueError(f"Node {name} has no product_id specified, required for LDF 2.1+")
+
+	if node.get('P2_min') is not None:
+		slave.p2_min = node['P2_min']
+	if node.get('ST_min') is not None:
+		slave.st_min = node['ST_min']
+	if node.get('N_As_timeout') is not None:
+		slave.n_as_timeout = node['N_As_timeout']
+	if node.get('N_Cr_timeout') is not None:
+		slave.n_cr_timeout = node['N_Cr_timeout']
+
+	return slave
+
+
+def _link_ldf_nodes(json: dict, ldf: LDF):
+	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
+		signal_obj = ldf.signal(signal['name'])
+		if signal['publisher'] == ldf.master.name:
+			ldf.master.publishes.append(signal_obj)
+			signal_obj.publisher = ldf.master
+		else:
+			slave = ldf.slave(signal['publisher'])
+			if slave is None:
+				raise ValueError(f"Signal {signal_obj.name} references non existent node {signal['publisher']}")
+			slave.publishes_frames.append(signal_obj)
+			signal_obj.publisher = slave
+
+		if ldf.master.name in signal['subscribers']:
+			ldf.master.subscribes_to.append(signal_obj)
+			signal_obj.subscribers.append(ldf.master)
+		for subscriber in signal['subscribers']:
+			if subscriber != ldf.master.name:
+				slave = ldf.slave(subscriber)
+				if slave is None:
+					raise ValueError(f"Signal {signal_obj.name} references non existent node {subscriber}")
+				slave.subscribes_to.append(signal)
+				signal_obj.subscribers.append(slave)
+
 
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
 	if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
@@ -136,6 +190,7 @@ def _populate_ldf_encoding_types(json: dict, ldf: LDF):
 		for signal in representations['signals']:
 			ldf.converters[signal] = signalTypes[representations['encoding']]
 
+
 def _convert_encoding_value(json: dict) -> ValueConverter:
 	if json['type'] == 'logical':
 		return LogicalValue(json['value'], json['text'])
@@ -147,22 +202,24 @@ def _convert_encoding_value(json: dict) -> ValueConverter:
 		return ASCIIValue()
 	raise ValueError(f"Unsupported value type {json['type']}")
 
+
 def _require_key(a: dict, k: str, msg: str) -> Any:
 	if a.get(k) is None:
 		raise ValueError(msg)
 	return a[k]
 
+
 class LDFTransformer(Transformer):
-	def parse_integer(self, i:str):
+	def parse_integer(self, i: str):
 		try:
 			return int(i)
-		except ValueError as e:
+		except ValueError:
 			return int(i, 16)
 
-	def parse_real_or_integer(self, i:str):
+	def parse_real_or_integer(self, i: str):
 		try:
 			return float(i)
-		except ValueError as e:
+		except ValueError:
 			return self.parse_int(i)
 
 	def ldf_identifier(self, tree):
@@ -324,7 +381,7 @@ class LDFTransformer(Transformer):
 
 	def schedule_table_entry(self, tree):
 		return {"command": tree[0], "delay": tree[1]}
-	
+
 	def schedule_table_command(self, tree):
 		return tree[0]
 
@@ -338,7 +395,7 @@ class LDFTransformer(Transformer):
 		return {"type": "assign_nad", "node": tree[0]}
 
 	def schedule_table_command_conditionalchangenad(self, tree):
-		return {"type": "conditional_change_nad"} #TODO: add arguments
+		return {"type": "conditional_change_nad", "nad": tree[0], "id": tree[1], "byte": tree[2], "mask": tree[3], "inv": tree[4], "new_nad": tree[5]}
 
 	def schedule_table_command_datadump(self, tree):
 		return {"type": "data_dump", "node": tree[0], "data": tree[1:]}
@@ -347,10 +404,13 @@ class LDFTransformer(Transformer):
 		return {"type": "save_configuration", "node": tree[0]}
 
 	def schedule_table_command_assignframeidrange(self, tree):
-		return {"type": "assign_frame_id_range"} #TODO: add arguments
+		return {"type": "assign_frame_id_range", "node": tree[0], "frame_index": tree[1], "pids": tree[2:]}
 
 	def schedule_table_command_assignframeid(self, tree):
-		return {"type": "assign_frame_id"} # TODO: add arguments
+		return {"type": "assign_frame_id", "node": tree[0], "frame": tree[1]}
+
+	def schedule_table_command_unassignframeid(self, tree):
+		return {"type": "unassign_frame_id", "node": tree[0], "frame": tree[1]}
 
 	def schedule_table_command_freeformat(self, tree):
 		return {"type": "free_format", "data": tree[0:]}

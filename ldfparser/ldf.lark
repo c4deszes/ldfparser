@@ -25,7 +25,7 @@ node_compositions_composite: ldf_identifier "{" ldf_identifier ("," ldf_identifi
 
 // LIN 2.1 Specification, section 9.2.3
 signals: "Signals" "{" (signal_definition)+ "}"
-signal_definition: ldf_identifier ":" ldf_integer "," signal_default_value "," ldf_identifier ("," ldf_identifier)+ ";"
+signal_definition: ldf_identifier ":" ldf_integer "," signal_default_value "," ldf_identifier ("," ldf_identifier)* ";"
 signal_default_value: signal_default_value_array | signal_default_value_single
 signal_default_value_single: C_INT
 signal_default_value_array: "{" C_INT ("," C_INT)* "}"
@@ -53,7 +53,7 @@ diagnostic_frames: "Diagnostic_frames" "{" (diagnostic_frame_definition)+ "}"
 diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" (ANY_SEMICOLON_TERMINATED_LINE)* "}"
 
 // LIN 2.1 Specification, section 9.2.2.2
-node_attributes: "Node_attributes" "{" (node_definition+) "}"
+node_attributes: "Node_attributes" "{" (node_definition*) "}"
 node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames)* "}"
 node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_float "\""] | ldf_float) ";"
 node_definition_configured_nad: "configured_NAD" "=" ldf_integer ";"
@@ -73,15 +73,16 @@ node_definition_configurable_frames_21: "configurable_frames" "{" (ldf_identifie
 schedule_tables: "Schedule_tables" "{" (schedule_table_definition+) "}" 
 schedule_table_definition: ldf_identifier "{" (schedule_table_entry+) "}"
 schedule_table_entry: schedule_table_command "delay" ldf_float "ms" ";"
-schedule_table_command: schedule_table_command_masterreq | schedule_table_command_slaveresp | schedule_table_command_assignnad | schedule_table_command_conditionalchangenad  | schedule_table_command_datadump | schedule_table_command_saveconfiguration | schedule_table_command_assignframeidrange | schedule_table_command_assignframeid | schedule_table_command_freeformat | schedule_table_command_frame
+schedule_table_command: schedule_table_command_masterreq | schedule_table_command_slaveresp | schedule_table_command_assignnad | schedule_table_command_conditionalchangenad  | schedule_table_command_datadump | schedule_table_command_saveconfiguration | schedule_table_command_assignframeidrange | schedule_table_command_assignframeid | schedule_table_command_unassignframeid | schedule_table_command_freeformat | schedule_table_command_frame
 schedule_table_command_masterreq: "MasterReq"
 schedule_table_command_slaveresp: "SlaveResp"
 schedule_table_command_assignnad: "AssignNAD" "{" ldf_identifier "}"
 schedule_table_command_conditionalchangenad: "ConditionalChangeNAD" "{" ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_datadump: "DataDump" "{" ldf_identifier "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_saveconfiguration: "SaveConfiguration" "{" ldf_identifier "}"
-schedule_table_command_assignframeidrange: "AssignFrameIdRange" "{" ldf_identifier "," ldf_integer ("," ldf_integer )* "}"
+schedule_table_command_assignframeidrange: "AssignFrameIdRange" "{" ldf_identifier "," ldf_integer ("," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer )? "}"
 schedule_table_command_assignframeid: "AssignFrameId" "{" ldf_identifier "," ldf_identifier "}"
+schedule_table_command_unassignframeid: "UnassignFrameId" "{" ldf_identifier "," ldf_identifier "}"
 schedule_table_command_freeformat: "FreeFormat" "{" ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "," ldf_integer "}"
 schedule_table_command_frame: ldf_identifier
 

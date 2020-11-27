@@ -69,6 +69,8 @@ Node_attributes {
 		fault_state_signals = IntTest;
 		P2_min = 150 ms;
 		ST_min = 50 ms;
+		N_As_timeout = 1000 ms;
+		N_Cr_timeout = 1000 ms;
 		configurable_frames {
 			Node_Status_Event;
 			CEM_Frm1;
@@ -82,9 +84,14 @@ Schedule_tables {
 	Configuration_Schedule {
 		AssignNAD {LSM} delay 15 ms;
 		AssignFrameIdRange {LSM, 0} delay 15 ms;
+		AssignFrameIdRange {LSM, 0, 1, 2, 3, 4} delay 15 ms;
+		ConditionalChangeNAD {0x17, 0, 0x20, 0xFF, 0x00, 0x18} delay 15 ms;
+		DataDump {LSM, 1, 2, 3, 4, 5} delay 15 ms;
+		SaveConfiguration {LSM} delay 15 ms;
 		AssignFrameId {RSM, CEM_Frm1} delay 15 ms;
 		AssignFrameId {RSM, RSM_Frm1} delay 15 ms;
 		AssignFrameId {RSM, RSM_Frm2} delay 15 ms;
+		FreeFormat {1, 2, 3, 4, 5, 6, 7, 8} delay 15 ms;
 	}
 	Normal_Schedule {
 		CEM_Frm1 delay 15 ms;

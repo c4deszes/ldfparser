@@ -1,10 +1,10 @@
 from typing import List, Union, Any
-
 """
 Contains classes that are used to encode and decode Lin Signals.
 
 Signal encoding is specified in the LIN 2.1 Specification, section 9.2.6.1
 """
+
 
 class ValueConverter():
 	"""
@@ -24,6 +24,7 @@ class ValueConverter():
 		"""
 		raise NotImplementedError()
 
+
 class PhysicalValue(ValueConverter):
 
 	def __init__(self, phy_min: int, phy_max: int, scale: float, offset: float, unit: str = None):
@@ -39,21 +40,22 @@ class PhysicalValue(ValueConverter):
 			num = float(value[:-len(self.unit)])
 		else:
 			num = float(value)
-		
+
 		raw = self.offset
 		if self.scale != 0:
 			raw = int((num - self.offset) / self.scale)
-		
+
 		if raw < self.phy_min or raw > self.phy_max:
 			raise ValueError("value: " + str(raw) + " out of range (" + str(self.phy_min) + ", " + str(self.phy_max) + ")")
-		
+
 		return raw
 
 	def decode(self, value: int, signal) -> float:
 		if value < self.phy_min or value > self.phy_max:
 			raise ValueError("value: " + str(value) + " out of range (" + str(self.phy_min) + ", " + str(self.phy_max) + ")")
-		
+
 		return float(value * self.scale + self.offset)
+
 
 class LogicalValue(ValueConverter):
 
@@ -73,6 +75,7 @@ class LogicalValue(ValueConverter):
 			return self.info if self.info is not None else self.phy_value
 		raise ValueError("value: " + str(value) + " not equal to " + str(self.phy_value))
 
+
 class BCDValue(ValueConverter):
 
 	def encode(self, value: int, signal) -> List[int]:
@@ -87,8 +90,9 @@ class BCDValue(ValueConverter):
 		out = 0
 		length = int(signal.width / 8)
 		for i in range(length):
-			out += value[i] * 10**(length-i-1)
+			out += value[i] * 10**(length - i - 1)
 		return out
+
 
 class ASCIIValue(ValueConverter):
 
@@ -97,6 +101,7 @@ class ASCIIValue(ValueConverter):
 
 	def decode(self, value: List[int], signal) -> str:
 		return bytes(value).decode()
+
 
 class LinSignalType:
 
@@ -112,7 +117,7 @@ class LinSignalType:
 				break
 			except ValueError:
 				pass
-		
+
 		if out is None:
 			raise ValueError("cannot encode " + str(value) + " as " + self.name)
 		return out
@@ -125,7 +130,7 @@ class LinSignalType:
 				break
 			except ValueError:
 				pass
-		
+
 		if out is None:
 			raise ValueError("cannot decode " + str(value) + " as " + self.name)
 		return out

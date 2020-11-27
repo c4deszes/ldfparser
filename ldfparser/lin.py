@@ -1,15 +1,18 @@
 import bitstruct
 
-from typing import List, Dict, Union, Any, Tuple
+from typing import List, Dict, Union, Tuple
 
 from .encoding import LinSignalType
+
 
 class LinSignal:
 
 	def __init__(self, name: str, width: int, init_value: Union[int, List[int]]):
-		self.name = name
-		self.width = width
-		self.init_value = init_value
+		self.name: str = name
+		self.width: int = width
+		self.init_value: Union[int, List[int]] = init_value
+		self.publisher = None
+		self.subscribers = []
 
 	def is_array(self):
 		return isinstance(self.init_value, List)
@@ -27,11 +30,13 @@ class LinSignal:
 			raise ValueError(f"scalar signal {name}:{width} must be 1-16bits long")
 		return LinSignal(name, width, init_value)
 
+
 class LinFrame:
 
 	def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
 		self.frame_id = frame_id
 		self.name = name
+		self.publisher = None
 		self.length = length
 		orderedSignals = sorted(signals.items(), key=lambda x: x[0])
 		self.signals = [i[1] for i in orderedSignals]
@@ -51,7 +56,7 @@ class LinFrame:
 			if offset + signal[1].width > frame_bits:
 				raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside {self}")
 			if signal[1].is_array():
-				pattern += f"u8" * int(signal[1].width / 8)
+				pattern += "u8" * int(signal[1].width / 8)
 			else:
 				pattern += f"u{signal[1].width}"
 			offset += signal[1].width
@@ -102,7 +107,7 @@ class LinFrame:
 		while i < len(unpacked):
 			if self.signals[signal_index].is_array():
 				signal_size = int(self.signals[signal_index].width / 8)
-				message[self.signals[signal_index].name] = list(unpacked[i:i+signal_size])
+				message[self.signals[signal_index].name] = list(unpacked[i:i + signal_size])
 				i += signal_size - 1
 			else:
 				message[self.signals[signal_index].name] = unpacked[i]
@@ -127,4 +132,3 @@ class LinFrame:
 		for i in data:
 			flipped.append(int('{:08b}'.format(i)[::-1], 2))
 		return flipped
-

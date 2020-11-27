@@ -1,9 +1,10 @@
 # LDF Parser
 
 [![Workflow](https://github.com/c4deszes/ldfparser/workflows/CI/badge.svg?branch=master)](https://github.com/c4deszes/ldfparser/actions)
-[![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://badge.fury.io/py/ldfparser)
+[![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://pypi.org/project/ldfparser/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ldfparser.svg)](https://pypi.org/project/ldfparser/)
 [![codecov.io](https://codecov.io/github/c4deszes/ldfparser/coverage.svg?branch=master)](https://codecov.io/github/c4deszes/ldfparser?branch=master)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > This tool is able parse LIN Description Files, retrieve signal names and frames from them, as well as encoding messages using frame definitions and decoding them.
 
@@ -77,6 +78,12 @@ Install via `pip install ldfparser`
 
 ---
 
+## Contributors
+
+@c4deszes (Author)
+
+---
+
 ## Credits
 
 Inspired by [uCAN-LIN LinUSBConverter](https://github.com/uCAN-LIN/LinUSBConverter), specifically the LDF parsing mechanism via [Lark](https://github.com/lark-parser/lark). Previously the library included most of the lark file, parsing code and examples, since 0.5.0 they've been completely rewritten to better accomodate the different LIN standards.
@@ -85,4 +92,4 @@ Inspired by [uCAN-LIN LinUSBConverter](https://github.com/uCAN-LIN/LinUSBConvert
 
 ## License
 
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)

@@ -14,7 +14,7 @@ class LinNode:
 
 	def __init__(self, name: str):
 		self.name = name
-		self.subscribed_to: List[LinSignal] = []
+		self.subscribes_to: List[LinSignal] = []
 		self.publishes: List[LinSignal] = []
 		self.publishes_frames: List[LinFrame] = []
 

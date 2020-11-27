@@ -69,6 +69,8 @@ Node_attributes {
 		fault_state_signals = IntTest;
 		P2_min = 150 ms;
 		ST_min = 50 ms;
+		N_As_timeout = 1000 ms;
+		N_Cr_timeout = 1000 ms;
 		configurable_frames {
 			Node_Status_Event;
 			CEM_Frm1;

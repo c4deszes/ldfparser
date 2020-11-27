@@ -36,6 +36,8 @@ Node_attributes {
 		response_error = RSMerror;
 		P2_min = 150 ms;
 		ST_min = 50 ms;
+		N_As_timeout = 1000 ms;
+		N_Cr_timeout = 1000 ms;
 		configurable_frames {
 			CEM_Frm1 = 0x0001; LSM_Frm1 = 0x0002; LSM_Frm2 = 0x0003;
 		}

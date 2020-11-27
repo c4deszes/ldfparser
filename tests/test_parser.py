@@ -45,8 +45,14 @@ def test_load_valid_lin21():
 	assert ldf.baudrate == 19200
 	assert ldf.channel == 'DB'
 
-	assert ldf.signal('InternalLightsRequest') is not None
+	internalLightRequest = ldf.signal('InternalLightsRequest')
+	assert internalLightRequest is not None
+	assert internalLightRequest.publisher.name == 'CEM'
+	assert len(internalLightRequest.subscribers) == 2
+	assert internalLightRequest in ldf.master.publishes
+
 	assert ldf.frame('LSM_Frm2') is not None
+	assert ldf.frame(0x03) is not None
 	assert ldf.slave('LSM') is not None
 
 
@@ -60,8 +66,14 @@ def test_load_valid_lin22():
 	assert ldf.baudrate == 19200
 	assert ldf.channel == 'DB'
 
-	assert ldf.signal('InternalLightsRequest') is not None
+	internalLightRequest = ldf.signal('InternalLightsRequest')
+	assert internalLightRequest is not None
+	assert internalLightRequest.publisher.name == 'CEM'
+	assert len(internalLightRequest.subscribers) == 2
+	assert internalLightRequest in ldf.master.publishes
+
 	assert ldf.frame('LSM_Frm2') is not None
+	assert ldf.frame(0x03) is not None
 
 	LSM = ldf.slave('LSM')
 	assert LSM is not None

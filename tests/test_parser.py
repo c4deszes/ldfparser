@@ -84,6 +84,7 @@ def test_load_valid_lin22():
 	assert converter.name == 'Dig2Bit'
 	assert isinstance(converter._converters[0], LogicalValue)
 
+
 @pytest.mark.unit
 def test_no_signal_subscribers():
 	path = os.path.join(os.path.dirname(__file__), "ldf", "no_signal_subscribers.ldf")
@@ -92,6 +93,6 @@ def test_no_signal_subscribers():
 	assert ldf.protocol_version == 2.2
 	assert ldf.language_version == 2.2
 	assert ldf.baudrate == 19200
-	
+
 	assert ldf.signal('DummySignal_0') is not None
 	assert ldf.frame('DummyFrame') is not None

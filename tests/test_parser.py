@@ -52,7 +52,9 @@ def test_load_valid_lin21():
 	assert internalLightRequest in ldf.master.publishes
 
 	assert ldf.frame('LSM_Frm2') is not None
+	assert ldf.frame(0x03) is not None
 	assert ldf.slave('LSM') is not None
+
 
 @pytest.mark.unit
 def test_load_valid_lin22():
@@ -71,6 +73,7 @@ def test_load_valid_lin22():
 	assert internalLightRequest in ldf.master.publishes
 
 	assert ldf.frame('LSM_Frm2') is not None
+	assert ldf.frame(0x03) is not None
 
 	LSM = ldf.slave('LSM')
 	assert LSM is not None

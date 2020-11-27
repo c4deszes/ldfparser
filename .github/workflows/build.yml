@@ -1,7 +1,6 @@
 name: CI
 
 on:
-  create: {}
   push:
     paths-ignore:
       - '*.md'
@@ -76,40 +75,6 @@ jobs:
           flags: unittests,${{ matrix.python-version }}
           name: Python-${{ matrix.python-version }}
           fail_ci_if_error: true
-
-  release:
-    needs: [build]
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    container:
-      image: "python"
-    steps:
-      - name: Install requirements
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-
-      - name: Download package
-        uses: actions/download-artifact@v2
-        with:
-          name: package-3.6
-          path: dist
-
-      - name: Publish to Test PyPi
-        if: github.ref == 'refs/heads/development'
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-        run: |
-          twine upload --repository testpypi dist/*
-
-      - name: Publish to PyPi
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          twine upload dist/*
 
   snapshot-test:
     if: github.event_name == 'pull_request'

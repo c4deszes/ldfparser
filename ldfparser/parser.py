@@ -10,6 +10,7 @@ from .comment import parseComments
 
 class LDF:
 	def __init__(self):
+		self._source = None
 		self.protocol_version: float = None
 		self.language_version: float = None
 		self.baudrate: int = None
@@ -58,6 +59,7 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
 	json = parseLDFtoDict(path, captureComments, encoding)
 	ldf = LDF()
+	ldf._source = json
 
 	_populate_ldf_header(json, ldf)
 	_populate_ldf_signals(json, ldf)
@@ -162,7 +164,7 @@ def _link_ldf_nodes(json: dict, ldf: LDF):
 			slave = ldf.slave(signal['publisher'])
 			if slave is None:
 				raise ValueError(f"Signal {signal_obj.name} references non existent node {signal['publisher']}")
-			slave.publishes_frames.append(signal_obj)
+			slave.publishes.append(signal_obj)
 			signal_obj.publisher = slave
 
 		if ldf.master.name in signal['subscribers']:

@@ -1,9 +1,20 @@
-from ldfparser.node import LinMaster, LinSlave
 import sys
+import os
 import argparse
 import json
 
-from .parser import parseLDF, LDF
+from ldfparser.lin import LinFrame
+from ldfparser.node import LinMaster, LinSlave
+from ldfparser.parser import parseLDF, LDF
+
+
+def auto_int(x):
+	return int(x, 0)
+
+
+def exit_with_error(code: int, message: str):
+	print(message, file=sys.stderr)
+	exit(code)
 
 
 def parse_args(args):
@@ -24,6 +35,12 @@ def parse_args(args):
 	nodearggroup.add_argument('--master', action="store_true")
 	nodearggroup.add_argument('--slave', type=str)
 
+	frameparser = subparser.add_parser('frame')
+	framearggroup = frameparser.add_mutually_exclusive_group()
+	framearggroup.add_argument('--list', action="store_true")
+	framearggroup.add_argument('--id', type=auto_int)
+	framearggroup.add_argument('--name', type=str)
+
 	return parser.parse_args(args)
 
 
@@ -38,22 +55,45 @@ def main():
 	elif args.subparser_name == 'export':
 		export_ldf(ldf, args.output)
 	elif args.subparser_name == 'node':
-		if args.list:
-			# TODO: print list
-			print("Printing node list..")
-		elif args.master:
-			print_master_info(ldf.master)
-		else:
-			if not ldf.slave(args.slave):
-				print(f"Slave '{args.slave}' not found.")
-				exit(1)
-			print_slave_info(ldf.slave(args.slave))
+		handle_node_subcommand(args, ldf)
+	elif args.subparser_name == 'frame':
+		handle_frame_subcommand(args, ldf)
+	else:
+		exit_with_error(1, f"Unable to interpret subcommand {args.subparser_name}", file=sys.stderr)
+	exit(0)
+
+
+def handle_node_subcommand(args, ldf: LDF):
+	if args.list:
+		# TODO: print list
+		pass
+	elif args.master:
+		print_master_info(ldf.master)
+	else:
+		if not ldf.slave(args.slave):
+			exit_with_error(1, f"Slave '{args.slave}' not found.")
+		print_slave_info(ldf.slave(args.slave))
+
+
+def handle_frame_subcommand(args, ldf: LDF):
+	if args.list:
+		# TODO: print list
+		pass
+	elif args.id:
+		if not ldf.frame(args.id):
+			exit_with_error(1, f"Frame with id '{args.id}' not found.")
+		print_frame_info(ldf.frame(args.id))
+	else:
+		if not ldf.frame(args.name):
+			exit_with_error(1, f"Frame with name '{args.name}' not found")
+		print_frame_info(ldf.frame(args.name))
 
 
 def export_ldf(ldf: LDF, output: str = None):
 	if output is None:
 		json.dump(ldf._source, sys.stdout, indent=4)
 	else:
+		os.makedirs(os.path.dirname(output), exist_ok=True)
 		with open(output, 'w+') as file:
 			json.dump(ldf._source, file, indent=4)
 
@@ -102,3 +142,13 @@ def print_master_info(master: LinMaster):
 	print(f"Name: {master.name}")
 	print(f"Timebase: {master.timebase * 1000:.02f} ms")
 	print(f"Jitter: {master.jitter * 1000:.02f} ms")
+
+
+def print_frame_info(frame: LinFrame):
+	print(f"Id: {frame.frame_id}")
+	print(f"Name: {frame.name}")
+	print(f"Length: {frame.length} byte(s)")
+	print(f"Publisher: {frame.publisher}")
+	print("Signals:")
+	for signal in frame.signal_map:
+		print(f"\toffset={signal[0]},name={signal[1].name},width={signal[1].width}")

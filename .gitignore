@@ -1,5 +1,6 @@
 .vscode/
 tests/snapshot/
+tests/tmp
 
 #
 # Byte-compiled / optimized / DLL files

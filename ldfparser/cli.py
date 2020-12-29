@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 
-from ldfparser.lin import LinFrame
+from ldfparser.lin import LinFrame, LinSignal
 from ldfparser.node import LinMaster, LinSlave
 from ldfparser.parser import parseLDF, LDF
 
@@ -41,6 +41,11 @@ def parse_args(args):
 	framearggroup.add_argument('--id', type=auto_int)
 	framearggroup.add_argument('--name', type=str)
 
+	signalparser = subparser.add_parser('signal')
+	signalarggroup = signalparser.add_mutually_exclusive_group()
+	signalarggroup.add_argument('--list', action="store_true")
+	signalarggroup.add_argument('--name', type=str)
+
 	return parser.parse_args(args)
 
 
@@ -58,6 +63,8 @@ def main():
 		handle_node_subcommand(args, ldf)
 	elif args.subparser_name == 'frame':
 		handle_frame_subcommand(args, ldf)
+	elif args.subparser_name == 'signal':
+		handle_signal_subcommand(args, ldf)
 	else:
 		exit_with_error(1, f"Unable to interpret subcommand {args.subparser_name}", file=sys.stderr)
 	exit(0)
@@ -65,8 +72,9 @@ def main():
 
 def handle_node_subcommand(args, ldf: LDF):
 	if args.list:
-		# TODO: print list
-		pass
+		print(f"{ldf.master.name} (master)")
+		for node in ldf.slaves:
+			print(node.name)
 	elif args.master:
 		print_master_info(ldf.master)
 	else:
@@ -77,8 +85,8 @@ def handle_node_subcommand(args, ldf: LDF):
 
 def handle_frame_subcommand(args, ldf: LDF):
 	if args.list:
-		# TODO: print list
-		pass
+		for frame in ldf.frames:
+			print(frame.name)
 	elif args.id:
 		if not ldf.frame(args.id):
 			exit_with_error(1, f"Frame with id '{args.id}' not found.")
@@ -87,6 +95,16 @@ def handle_frame_subcommand(args, ldf: LDF):
 		if not ldf.frame(args.name):
 			exit_with_error(1, f"Frame with name '{args.name}' not found")
 		print_frame_info(ldf.frame(args.name))
+
+
+def handle_signal_subcommand(args, ldf: LDF):
+	if args.list:
+		for signal in ldf.signals:
+			print(signal.name)
+	else:
+		if not ldf.signal(args.name):
+			exit_with_error(1, f"Signal with name '{args.name}' not found")
+		print_signal_info(ldf.signal(args.name))
 
 
 def export_ldf(ldf: LDF, output: str = None):
@@ -152,3 +170,13 @@ def print_frame_info(frame: LinFrame):
 	print("Signals:")
 	for signal in frame.signal_map:
 		print(f"\toffset={signal[0]},name={signal[1].name},width={signal[1].width}")
+
+
+def print_signal_info(signal: LinSignal):
+	print(f"Name: {signal.name}")
+	print(f"Width: {signal.width} bit(s)")
+	print(f"Initial value: {signal.init_value}")
+	print(f"Publisher: {signal.publisher.name}")
+	print("Subscribers:")
+	for subscriber in signal.subscribers:
+		print(f"\t{subscriber.name}")

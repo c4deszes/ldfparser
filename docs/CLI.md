@@ -39,6 +39,8 @@ These commands print information about LIN nodes.
 
 ## Frames
 
+The `frame` subcommand can be used to access information about the LIN frames in the LDF.
+
 ### List of frames
 
 `ldfparser --ldf <file> frame --list`
@@ -55,8 +57,12 @@ These commands print information about the LIN frames.
 
 ## Signals
 
-These commands print information about the LIN signals.
+The `signal` subcommand can be used to access information about the LIN frames in the LDF.
+
+### List of signals
 
 `ldfparser --ldf <file> signal --list`
+
+### Signal information
 
 `ldfparser --ldf <file> signal --name <name>`

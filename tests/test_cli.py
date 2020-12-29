@@ -18,6 +18,8 @@ from ldfparser.cli import main
 	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'frame', '--id', '1'],
 	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'frame', '--id', '0x01'],
 	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'frame', '--name', 'LSM_Frm1'],
+	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'signal', '--list'],
+	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'signal', '--name', 'InternalLightsRequest']
 ])
 def test_valid_commands(command):
 	with pytest.raises(SystemExit) as exit_ex, patch.object(sys, 'argv', command):
@@ -27,7 +29,9 @@ def test_valid_commands(command):
 
 @pytest.mark.parametrize('command', [
 	['ldfparser', '--ldf'],
-	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'node', '--slave', 'ABC']
+	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'node', '--slave', 'ABC'],
+	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'frame', '--name', 'ABC'],
+	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'signal', '--name', 'ABC']
 ])
 def test_invalid_commands(command):
 	with pytest.raises(SystemExit) as exit_ex, patch.object(sys, 'argv', command):

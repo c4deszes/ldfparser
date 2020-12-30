@@ -10,6 +10,7 @@ from .comment import parseComments
 
 class LDF:
 	def __init__(self):
+		self._source = None
 		self.protocol_version: float = None
 		self.language_version: float = None
 		self.baudrate: int = None
@@ -58,6 +59,7 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
 	json = parseLDFtoDict(path, captureComments, encoding)
 	ldf = LDF()
+	ldf._source = json
 
 	_populate_ldf_header(json, ldf)
 	_populate_ldf_signals(json, ldf)
@@ -65,7 +67,8 @@ def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> 
 	_populate_ldf_nodes(json, ldf)
 	_populate_ldf_encoding_types(json, ldf)
 
-	_link_ldf_nodes(json, ldf)
+	_link_ldf_signals(json, ldf)
+	_link_ldf_frames(json, ldf)
 
 	if captureComments:
 		ldf.comments = json['comments']
@@ -135,7 +138,10 @@ def _create_ldf2x_node(node: dict, language_version: float):
 	slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
 
 	if node.get('product_id') is not None:
-		product_id = LinProductId(node['product_id']['supplier_id'], node['product_id']['function_id'], node['product_id'].get('variant'))
+		supplier = node['product_id']['supplier_id']
+		function = node['product_id']['function_id']
+		variant = node['product_id']['variant']
+		product_id = LinProductId(supplier, function, variant)
 		slave.product_id = product_id
 	elif language_version >= 2.1:
 		raise ValueError(f"Node {name} has no product_id specified, required for LDF 2.1+")
@@ -152,7 +158,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
 	return slave
 
 
-def _link_ldf_nodes(json: dict, ldf: LDF):
+def _link_ldf_signals(json: dict, ldf: LDF):
 	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
 		signal_obj = ldf.signal(signal['name'])
 		if signal['publisher'] == ldf.master.name:
@@ -162,7 +168,7 @@ def _link_ldf_nodes(json: dict, ldf: LDF):
 			slave = ldf.slave(signal['publisher'])
 			if slave is None:
 				raise ValueError(f"Signal {signal_obj.name} references non existent node {signal['publisher']}")
-			slave.publishes_frames.append(signal_obj)
+			slave.publishes.append(signal_obj)
 			signal_obj.publisher = slave
 
 		if ldf.master.name in signal['subscribers']:
@@ -175,6 +181,20 @@ def _link_ldf_nodes(json: dict, ldf: LDF):
 					raise ValueError(f"Signal {signal_obj.name} references non existent node {subscriber}")
 				slave.subscribes_to.append(signal)
 				signal_obj.subscribers.append(slave)
+
+
+def _link_ldf_frames(json: dict, ldf: LDF):
+	for frame in _require_key(json, 'frames', 'LDF missing Frames sections.'):
+		frame_obj = ldf.frame(frame['frame_id'])
+		if frame['publisher'] == ldf.master.name:
+			ldf.master.publishes_frames.append(frame_obj)
+			frame_obj.publisher = ldf.master
+		else:
+			slave = ldf.slave(frame['publisher'])
+			if slave is None:
+				raise ValueError(f"Frame {frame_obj.name} references non existent node {frame['publisher']}")
+			slave.publishes_frames.append(frame_obj)
+			frame_obj.publisher = slave
 
 
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
@@ -340,7 +360,7 @@ class LDFTransformer(Transformer):
 		return ("initial_nad", tree[0])
 
 	def node_definition_product_id(self, tree):
-		return ("product_id", {"supplier_id": tree[0], "function_id": tree[1], "variant": tree[2] if len(tree) > 2 else None})
+		return ("product_id", {"supplier_id": tree[0], "function_id": tree[1], "variant": tree[2] if len(tree) > 2 else 0})
 
 	def node_definition_response_error(self, tree):
 		return ("response_error", tree[0])

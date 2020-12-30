@@ -4,7 +4,7 @@ from .lin import LinFrame, LinSignal
 
 
 class LinProductId:
-	def __init__(self, supplier_id: int, function_id: int, variant: int = None) -> None:
+	def __init__(self, supplier_id: int, function_id: int, variant: int = 0):
 		self.supplier_id: int = supplier_id
 		self.function_id: int = function_id
 		self.variant: int = variant

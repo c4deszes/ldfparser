@@ -27,7 +27,7 @@ def parse_args(args):
 	infoparser.add_argument('--details', action='store_true')
 
 	exportparser = subparser.add_parser('export')
-	exportparser.add_argument('--output', required=False, type=str, default=None)
+	exportparser.add_argument('--output', required=False, default=None)
 
 	nodeparser = subparser.add_parser('node')
 	nodearggroup = nodeparser.add_mutually_exclusive_group()
@@ -66,7 +66,7 @@ def main():
 	elif args.subparser_name == 'signal':
 		handle_signal_subcommand(args, ldf)
 	else:
-		exit_with_error(1, f"Unable to interpret subcommand {args.subparser_name}", file=sys.stderr)
+		exit_with_error(1, f"Unknown subcommand {args.subparser_name}")
 	exit(0)
 
 
@@ -131,16 +131,16 @@ def print_ldf_info(ldf: LDF, extended: bool = False):
 		print(f"Node count: {len(ldf.slaves) + 1}")
 
 	if extended:
-		print("Frames:")
+		print("Frames (id, length, name):")
 		for frame in ldf.frames:
-			print(f"\tid={frame.frame_id},name={frame.name},length={frame.length}\t")
+			print(f"\t{frame.frame_id},{frame.length},{frame.name}")
 	else:
 		print(f"Frame count: {len(ldf.frames)}")
 
 	if extended:
-		print("Signals:")
+		print("Signals (width, name):")
 		for signal in ldf.signals:
-			print(f"\tname={signal.name},width={signal.width}")
+			print(f"\t{signal.width},{signal.name}")
 	else:
 		print(f"Signal count: {len(ldf.signals)}")
 
@@ -153,7 +153,7 @@ def print_slave_info(slave: LinSlave):
 	print("Product Id:")
 	print(f"\tSupplier Id: 0x{slave.product_id.supplier_id:04x}")
 	print(f"\tFunction Id: 0x{slave.product_id.function_id:04x}")
-	print(f"\tVariant: {slave.product_id.variant if slave.product_id.variant else '-'}")
+	print(f"\tVariant: {slave.product_id.variant}")
 
 
 def print_master_info(master: LinMaster):
@@ -166,10 +166,10 @@ def print_frame_info(frame: LinFrame):
 	print(f"Id: {frame.frame_id}")
 	print(f"Name: {frame.name}")
 	print(f"Length: {frame.length} byte(s)")
-	print(f"Publisher: {frame.publisher}")
-	print("Signals:")
+	print(f"Publisher: {frame.publisher.name}")
+	print("Signals (offset, width, name):")
 	for signal in frame.signal_map:
-		print(f"\toffset={signal[0]},name={signal[1].name},width={signal[1].width}")
+		print(f"\t{signal[0]},{signal[1].width},{signal[1].name}")
 
 
 def print_signal_info(signal: LinSignal):

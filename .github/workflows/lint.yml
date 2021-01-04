@@ -6,8 +6,8 @@ on:
       - '*.md'
       - '**/*.md'
     branches:
-        - master
-        - development
+      - master
+      - development**
   pull_request:
     paths-ignore:
       - '*.md'

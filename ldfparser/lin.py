@@ -39,6 +39,7 @@ class LinFrame:
 		self.publisher = None
 		self.length = length
 		orderedSignals = sorted(signals.items(), key=lambda x: x[0])
+		self.signal_map = orderedSignals
 		self.signals = [i[1] for i in orderedSignals]
 		self._pattern = self._frame_pattern(length * 8, orderedSignals)
 		self._packer = bitstruct.compile(self._pattern)

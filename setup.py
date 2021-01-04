@@ -17,6 +17,9 @@ setup(
 	install_requires=['lark-parser>=0.10.0', 'bitstruct'],
 	python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4',
 	py_modules=['lin', 'parser'],
+	entry_points={
+		'console_scripts': ['ldfparser=ldfparser.cli:main']
+	},
 	classifiers=[
 		"Programming Language :: Python :: 3.6",
 		"Programming Language :: Python :: 3.7",

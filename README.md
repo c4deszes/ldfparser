@@ -62,6 +62,8 @@ print(binascii.hexlify(message))
 
 + Retrieve Node attributes
 
++ Command Line Interface
+
 + Capturing comments
 
 ### Currently not supported

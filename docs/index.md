@@ -28,7 +28,7 @@ variable names are all subject to change
 
 [Parsing LDF files](parser.md)
 
-[Using the command line interface](cli.md)
+[Using the command line interface](commandline.md)
 
 ## License
 

@@ -1,4 +1,7 @@
-# Command Line Interface
+---
+layout: page
+title: LDF Parser - Command Line Interface
+---
 
 ## Commons
 

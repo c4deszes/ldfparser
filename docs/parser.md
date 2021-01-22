@@ -1,6 +1,6 @@
 ---
 layout: page
-title: LDF Parser Documentation
+title: LDF Parser - Parsing
 ---
 
 ## About the parser
@@ -36,7 +36,7 @@ print(ldf['nodes']['slaves'])
 ```
 
 If you're just looking to convert into JSON so that some other tool can interpret
-it then have a look at `export` command in the [CLI](cli.md).
+it then have a look at `export` command in the [CLI](commandline.md).
 
 ---
 

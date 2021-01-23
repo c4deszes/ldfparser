@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: LDF Parser Documentation
 ---
 
@@ -21,8 +21,8 @@ Releases are automatically published to PyPI, so you can install it using pip.
 pip install ldfparser
 ```
 
-Since the library is still in a pre-release state the interfaces, functions,
-variable names are all subject to change
+Since the library is still in a pre-release state it's recommended that in
+production use cases you pin the version to a minor release in your requirements.txt
 
 ## Documentation
 

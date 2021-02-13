@@ -1,12 +1,14 @@
 # LDF Parser
 
 [![Workflow](https://github.com/c4deszes/ldfparser/workflows/CI/badge.svg?branch=master)](https://github.com/c4deszes/ldfparser/actions)
+[![Github Pages](https://img.shields.io/static/v1?style=flat&logo=github&label=gh-pages&color=green&message=deployed)](https://c4deszes.github.io/ldfparser/)
 [![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://pypi.org/project/ldfparser/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ldfparser.svg)](https://pypi.org/project/ldfparser/)
 [![Workflow](https://github.com/c4deszes/ldfparser/workflows/Lint/badge.svg?branch=master)](https://github.com/c4deszes/ldfparser/actions)
 [![codecov.io](https://codecov.io/github/c4deszes/ldfparser/coverage.svg?branch=master)](https://codecov.io/github/c4deszes/ldfparser?branch=master)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/c4deszes/ldfparser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/c4deszes/ldfparser/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/c4deszes/ldfparser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/c4deszes/ldfparser/context:python)
+![GitHub last commit](https://img.shields.io/github/last-commit/c4deszes/ldfparser)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > This tool is able parse LIN Description Files, retrieve signal names and frames from them, as well as encoding messages using frame definitions and decoding them.
@@ -42,7 +44,7 @@ pip install ldfparser
 
 ---
 
-## Example
+## Examples
 
 ```python
 import ldfparser
@@ -57,19 +59,26 @@ print(ldf.baudrate)
 # Encode signal values into frame
 message = frame.raw({"Signal_1": 123, "Signal_2": 0})
 print(binascii.hexlify(message))
-# >> 0x7B00
+>>> 0x7B00
 
 # Decode message into dictionary of signal names and values
 received = bytearray([0x7B, 0x00])
 print(frame.parse(received))
-# >> {"Signal_1": 123, "Signal_2": 0}
+>>> {"Signal_1": 123, "Signal_2": 0}
 
 # Encode signal values through converters
 message = frame.data({"MotorRPM": 100, "FanState": "ON"}, ldf.converters)
 print(binascii.hexlify(message))
-# >> 0xFE01
-
+>>> 0xFE01
 ```
+
+More examples can be found in the [examples directory](./examples).
+
+---
+
+## Documentation
+
+Documentation is published to [Github Pages](https://c4deszes.github.io/ldfparser/).
 
 ---
 
@@ -94,6 +103,18 @@ print(binascii.hexlify(message))
 + Scheduling table
 
 + Diagnostics
+
+---
+
+## Development
+
+Install the requirements via `pip install -r requirements.txt`
+
+Install the library locally by running `python setup.py install`
+
+[Pytest](https://pytest.org/) is used for testing, to execute all tests run `pytest -m 'not snapshot'`
+
+[Flake8](https://flake8.pycqa.org/en/latest/) is used for linting, run `flake8` to print out all linting errors.
 
 ---
 

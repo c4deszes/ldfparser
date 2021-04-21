@@ -19,6 +19,7 @@ def test_frame_raw_encoding():
 
 	assert list(content) == [100, 10 | 1 << 7]
 
+
 @pytest.mark.unit
 def test_frame_raw_encoding_zero():
 	signal1 = LinSignal('Signal_1', 8, 255)
@@ -34,6 +35,7 @@ def test_frame_raw_encoding_zero():
 
 	assert list(content) == [0, 10 | 1 << 7]
 
+
 @pytest.mark.unit
 def test_frame_raw_encoding_no_signal():
 	signal1 = LinSignal('Signal_1', 8, 255)
@@ -47,6 +49,7 @@ def test_frame_raw_encoding_no_signal():
 	})
 
 	assert list(content) == [255, 10 | 1 << 7]
+
 
 @pytest.mark.unit
 def test_frame_raw_encoding_array():

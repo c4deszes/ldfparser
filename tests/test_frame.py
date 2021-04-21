@@ -19,6 +19,34 @@ def test_frame_raw_encoding():
 
 	assert list(content) == [100, 10 | 1 << 7]
 
+@pytest.mark.unit
+def test_frame_raw_encoding_zero():
+	signal1 = LinSignal('Signal_1', 8, 255)
+	signal2 = LinSignal('Signal_2', 4, 15)
+	signal3 = LinSignal('Signal_3', 1, 1)
+
+	frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+	content = frame.raw({
+		'Signal_1': 0,
+		'Signal_2': 10,
+		'Signal_3': 1
+	})
+
+	assert list(content) == [0, 10 | 1 << 7]
+
+@pytest.mark.unit
+def test_frame_raw_encoding_no_signal():
+	signal1 = LinSignal('Signal_1', 8, 255)
+	signal2 = LinSignal('Signal_2', 4, 255)
+	signal3 = LinSignal('Signal_3', 1, 255)
+
+	frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+	content = frame.raw({
+		'Signal_2': 10,
+		'Signal_3': 1
+	})
+
+	assert list(content) == [255, 10 | 1 << 7]
 
 @pytest.mark.unit
 def test_frame_raw_encoding_array():

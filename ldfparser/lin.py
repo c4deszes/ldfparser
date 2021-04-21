@@ -74,7 +74,7 @@ class LinFrame:
 		"""
 		message = []
 		for signal in self.signals:
-			if data.get(signal.name):
+			if signal.name in data.keys():
 				if signal.is_array():
 					message += data.get(signal.name)
 				else:

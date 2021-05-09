@@ -32,4 +32,6 @@ production use cases you pin the version to a minor release in your requirements
 
 ## License
 
-Distributed under the terms of [MIT license](../LICENSE), ldfparser is free to use and modify.
+Distributed under the terms of
+[MIT license](https://opensource.org/licenses/MITs),
+ldfparser is free to use and modify.

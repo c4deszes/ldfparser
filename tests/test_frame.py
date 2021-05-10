@@ -156,6 +156,7 @@ def test_frame_encode_data():
 		converters
 	)
 
+
 @pytest.mark.unit
 def test_frame_encode_data_missing_encoder():
 	motorSpeed = LinSignal('MotorSpeed', 8, 0)
@@ -168,6 +169,7 @@ def test_frame_encode_data_missing_encoder():
 
 	with pytest.raises(ValueError):
 		frame.data({'MissingSignal': 0}, converters)
+
 
 @pytest.mark.unit
 def test_frame_decode_data():
@@ -198,6 +200,7 @@ def test_frame_decode_data():
 		[0x88, 0x88],
 		converters
 	)
+
 
 @pytest.mark.unit
 def test_frame_decode_data_missing_decoder():

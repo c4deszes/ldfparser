@@ -122,7 +122,7 @@ def test_frame_signal_out_of_frame():
 		LinFrame(1, 'Frame_1', 2, {0: signal1, 14: signal2})
 
 
-@pytest.mark.integration
+@pytest.mark.unit
 def test_frame_encode_data():
 	motorSpeed = LinSignal('MotorSpeed', 7, 0)
 	motorValues = [
@@ -155,3 +155,56 @@ def test_frame_encode_data():
 		},
 		converters
 	)
+
+@pytest.mark.unit
+def test_frame_encode_data_missing_encoder():
+	motorSpeed = LinSignal('MotorSpeed', 8, 0)
+	motorValues = [PhysicalValue(0, 255, 0, 100)]
+
+	converters = {
+		'MotorSpeed': LinSignalType('MotorSpeedType', motorValues)
+	}
+	frame = LinFrame(1, 'Status', 1, {0: motorSpeed})
+
+	with pytest.raises(ValueError):
+		frame.data({'MissingSignal': 0}, converters)
+
+@pytest.mark.unit
+def test_frame_decode_data():
+	motorSpeed = LinSignal('MotorSpeed', 7, 0)
+	motorValues = [
+		LogicalValue(0, 'off'),
+		PhysicalValue(1, 99, 1, 0, 'rpm'),
+		PhysicalValue(100, 128, 0, 100)]
+
+	temperature = LinSignal('Temperature', 8, 255)
+	temperatureValues = [
+		LogicalValue(0, 'MEASUREMENT_ERROR'),
+		PhysicalValue(1, 255, 1, -50, 'C')]
+
+	errorState = LinSignal('Error', 1, 0)
+	errorValues = [
+		LogicalValue(0, 'NO_ERROR'),
+		LogicalValue(1, 'ERROR')]
+
+	converters = {
+		'MotorSpeed': LinSignalType('MotorSpeedType', motorValues),
+		'Temperature': LinSignalType('TemperatureType', temperatureValues),
+		'Error': LinSignalType('ErrorType', errorValues)
+	}
+
+	frame = LinFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
+	frame.parse(
+		[0x88, 0x88],
+		converters
+	)
+
+@pytest.mark.unit
+def test_frame_decode_data_missing_decoder():
+	motorSpeed = LinSignal('MotorSpeed', 8, 0)
+
+	converters = {}
+	frame = LinFrame(1, 'Status', 1, {0: motorSpeed})
+
+	with pytest.raises(ValueError):
+		frame.parse([0x88], converters)

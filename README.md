@@ -48,9 +48,10 @@ pip install ldfparser
 
 ```python
 import ldfparser
+import binascii
 
 # Load LDF
-ldf = ldfparser.LDF(path = "network.ldf")
+ldf = ldfparser.parseLDF(path = "network.ldf")
 frame = ldf.frame('Frame_1')
 
 # Get baudrate from LDF
@@ -63,7 +64,7 @@ print(binascii.hexlify(message))
 
 # Decode message into dictionary of signal names and values
 received = bytearray([0x7B, 0x00])
-print(frame.parse(received))
+print(frame.parse(received, ldf.converters))
 >>> {"Signal_1": 123, "Signal_2": 0}
 
 # Encode signal values through converters

@@ -1,4 +1,3 @@
-import jsonschema
 import ldfparser
 import os
 import glob

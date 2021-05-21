@@ -65,6 +65,176 @@
 			  "init_value",
 			  "publisher"
 			]
+		},
+		"frame": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"frame_id": {
+					"type": "integer"
+				},
+				"publisher": {
+					"type": "string"
+				},
+				"length": {
+					"type": ["integer", "null"]
+				},
+				"signals": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"signal": {
+								"type": "string"
+							},
+							"offset": {
+								"type": "integer"
+							}
+						},
+						"required": [
+							"signal",
+							"offset"
+						]
+					}
+				}
+			},
+			"required": [
+				"name",
+				"frame_id",
+				"publisher",
+				"length",
+				"signals"
+			]
+		},
+		"event_triggered_frame": {
+			"type": "object",
+			"properties": {
+			  "name": {
+				"type": "string"
+			  }
+			},
+			"required": [
+			  "name"
+			]
+		},
+		"node": {
+			"type": "object",
+			"properties": {
+			  "name": {
+				"type": "string"
+			  },
+			  "lin_protocol": {
+				"type": "number"
+			  },
+			  "configured_nad": {
+				"type": "integer"
+			  },
+			  "initial_nad": {
+				"type": "integer"
+			  },
+			  "product_id": {
+				"type": "object",
+				"properties": {
+				  "supplier_id": {
+					"type": "integer"
+				  },
+				  "function_id": {
+					"type": "integer"
+				  },
+				  "variant": {
+					"type": "integer"
+				  }
+				},
+				"required": [
+				  "supplier_id",
+				  "function_id"
+				]
+			  },
+			  "response_error": {
+				"type": "string"
+			  },
+			  "fault_state_signals": {
+				"type": "array",
+				"items":{
+					"type": "string"
+				}
+			  },
+			  "P2_min": {
+				"type": "number"
+			  },
+			  "ST_min": {
+				"type": "number"
+			  },
+			  "N_As_timeout": {
+				"type": "number"
+			  },
+			  "N_Cr_timeout": {
+				"type": "number"
+			  },
+			  "configurable_frames": {
+				"type": ["array", "object"],
+				"items": {
+					"type": "string"
+				}
+			  }
+			},
+			"required": [
+			  "name",
+			  "lin_protocol",
+			  "configured_nad"
+			]
+		},
+		"logical_value_encoder": {
+			"type": "object",
+			"properties": {
+				"type": {
+				"type": "string"
+				},
+				"value": {
+				"type": "integer"
+				},
+				"text": {
+				"type": "string"
+				}
+			},
+			"required": [
+				"type",
+				"value",
+				"text"
+			]
+		},
+		"physical_value_encoder": {
+			"type": "object",
+			"properties": {
+				"type": {
+				"type": "string"
+				},
+				"min": {
+				"type": "number"
+				},
+				"max": {
+				"type": "number"
+				},
+				"scale": {
+				"type": "number"
+				},
+				"offset": {
+				"type": "number"
+				},
+				"unit": {
+				"type": "string"
+				}
+			},
+			"required": [
+				"type",
+				"min",
+				"max",
+				"scale",
+				"offset",
+				"unit"
+			]
 		}
 	},
 	"properties": {
@@ -107,1008 +277,25 @@
 	  },
 	  "frames": {
 		"type": "array",
-		"items": [
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "frame_id": {
-				"type": "integer"
-			  },
-			  "publisher": {
-				"type": "string"
-			  },
-			  "length": {
-				"type": "integer"
-			  },
-			  "signals": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "signal": {
-						"type": "string"
-					  },
-					  "offset": {
-						"type": "integer"
-					  }
-					},
-					"required": [
-					  "signal",
-					  "offset"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "frame_id",
-			  "publisher",
-			  "length",
-			  "signals"
-			]
-		  }
-		]
+		"items": {
+			"$ref": "#/definitions/frame"
+		}
 	  },
 	  "event_triggered_frames": {
 		"type": "array",
-		"items": [
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  }
-			},
-			"required": [
-			  "name"
-			]
-		  }
-		]
+		"items": {
+			"$ref": "#/definitions/event_triggered_frame"
+		}
 	  },
 	  "node_attributes": {
 		"type": "array",
-		"items": [
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "lin_protocol": {
-				"type": "number"
-			  },
-			  "configured_nad": {
-				"type": "integer"
-			  },
-			  "initial_nad": {
-				"type": "integer"
-			  },
-			  "product_id": {
-				"type": "object",
-				"properties": {
-				  "supplier_id": {
-					"type": "integer"
-				  },
-				  "function_id": {
-					"type": "integer"
-				  },
-				  "variant": {
-					"type": "integer"
-				  }
-				},
-				"required": [
-				  "supplier_id",
-				  "function_id",
-				  "variant"
-				]
-			  },
-			  "response_error": {
-				"type": "string"
-			  },
-			  "fault_state_signals": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "string"
-				  }
-				]
-			  },
-			  "P2_min": {
-				"type": "number"
-			  },
-			  "ST_min": {
-				"type": "number"
-			  },
-			  "N_As_timeout": {
-				"type": "number"
-			  },
-			  "N_Cr_timeout": {
-				"type": "number"
-			  },
-			  "configurable_frames": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "string"
-				  },
-				  {
-					"type": "string"
-				  },
-				  {
-					"type": "string"
-				  },
-				  {
-					"type": "string"
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "lin_protocol",
-			  "configured_nad",
-			  "initial_nad",
-			  "product_id",
-			  "response_error",
-			  "fault_state_signals",
-			  "P2_min",
-			  "ST_min",
-			  "N_As_timeout",
-			  "N_Cr_timeout",
-			  "configurable_frames"
-			]
-		  }
-		]
-	  },
-	  "schedule_tables": {
-		"type": "array",
-		"items": [
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "schedule": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "node"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "frame_index": {
-							"type": "integer"
-						  },
-						  "pids": {
-							"type": "array",
-							"items": {}
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "frame_index",
-						  "pids"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "frame_index": {
-							"type": "integer"
-						  },
-						  "pids": {
-							"type": "array",
-							"items": [
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  }
-							]
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "frame_index",
-						  "pids"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "nad": {
-							"type": "integer"
-						  },
-						  "id": {
-							"type": "integer"
-						  },
-						  "byte": {
-							"type": "integer"
-						  },
-						  "mask": {
-							"type": "integer"
-						  },
-						  "inv": {
-							"type": "integer"
-						  },
-						  "new_nad": {
-							"type": "integer"
-						  }
-						},
-						"required": [
-						  "type",
-						  "nad",
-						  "id",
-						  "byte",
-						  "mask",
-						  "inv",
-						  "new_nad"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "data": {
-							"type": "array",
-							"items": [
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  }
-							]
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "data"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "node"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "node": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "node",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "data": {
-							"type": "array",
-							"items": [
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  },
-							  {
-								"type": "integer"
-							  }
-							]
-						  }
-						},
-						"required": [
-						  "type",
-						  "data"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "schedule"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "schedule": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "schedule"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "schedule": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "schedule"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "schedule": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "schedule"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "schedule": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "command": {
-						"type": "object",
-						"properties": {
-						  "type": {
-							"type": "string"
-						  },
-						  "frame": {
-							"type": "string"
-						  }
-						},
-						"required": [
-						  "type",
-						  "frame"
-						]
-					  },
-					  "delay": {
-						"type": "number"
-					  }
-					},
-					"required": [
-					  "command",
-					  "delay"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "schedule"
-			]
-		  }
-		]
+		"items": {
+			"$ref": "#/definitions/node"
+		}
 	  },
 	  "signal_encoding_types": {
 		"type": "array",
-		"items": [
-		  {
+		"items": {
 			"type": "object",
 			"properties": {
 			  "name": {
@@ -1116,318 +303,12 @@
 			  },
 			  "values": {
 				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
+				"items": {
+					"oneOf": [
+						{"$ref": "#/definitions/logical_value_encoder"},
+						{"$ref": "#/definitions/physical_value_encoder"}
 					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "values"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "values": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "values"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "values": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "name",
-			  "values"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "values": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "min": {
-						"type": "number"
-					  },
-					  "max": {
-						"type": "number"
-					  },
-					  "scale": {
-						"type": "number"
-					  },
-					  "offset": {
-						"type": "number"
-					  },
-					  "unit": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "min",
-					  "max",
-					  "scale",
-					  "offset",
-					  "unit"
-					]
-				  },
-				  {
-					"type": "object",
-					"properties": {
-					  "type": {
-						"type": "string"
-					  },
-					  "value": {
-						"type": "integer"
-					  },
-					  "text": {
-						"type": "string"
-					  }
-					},
-					"required": [
-					  "type",
-					  "value",
-					  "text"
-					]
-				  }
-				]
+				}
 			  }
 			},
 			"required": [
@@ -1435,12 +316,10 @@
 			  "values"
 			]
 		  }
-		]
 	  },
 	  "signal_representations": {
 		"type": "array",
-		"items": [
-		  {
+		"items": {
 			"type": "object",
 			"properties": {
 			  "encoding": {
@@ -1448,77 +327,9 @@
 			  },
 			  "signals": {
 				"type": "array",
-				"items": [
-				  {
+				"items": {
 					"type": "string"
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "encoding",
-			  "signals"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "encoding": {
-				"type": "string"
-			  },
-			  "signals": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "string"
-				  },
-				  {
-					"type": "string"
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "encoding",
-			  "signals"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "encoding": {
-				"type": "string"
-			  },
-			  "signals": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "string"
-				  }
-				]
-			  }
-			},
-			"required": [
-			  "encoding",
-			  "signals"
-			]
-		  },
-		  {
-			"type": "object",
-			"properties": {
-			  "encoding": {
-				"type": "string"
-			  },
-			  "signals": {
-				"type": "array",
-				"items": [
-				  {
-					"type": "string"
-				  },
-				  {
-					"type": "string"
-				  }
-				]
+				}
 			  }
 			},
 			"required": [
@@ -1526,7 +337,6 @@
 			  "signals"
 			]
 		  }
-		]
 	  }
 	},
 	"required": [
@@ -1534,14 +344,9 @@
 	  "protocol_version",
 	  "language_version",
 	  "speed",
-	  "channel_name",
 	  "nodes",
 	  "signals",
 	  "frames",
-	  "event_triggered_frames",
-	  "node_attributes",
-	  "schedule_tables",
-	  "signal_encoding_types",
-	  "signal_representations"
+	  "schedule_tables"
 	]
   }

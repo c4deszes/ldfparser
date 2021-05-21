@@ -7,5 +7,6 @@ setuptools
 wheel
 pytest
 pytest-cov
+pytest-benchmark
 flake8
 jsonschema

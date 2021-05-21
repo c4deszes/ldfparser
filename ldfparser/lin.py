@@ -92,7 +92,7 @@ class LinFrame:
 		"""
 		converted = {}
 		for value in data.items():
-			if converters[value[0]] is None:
+			if value[0] not in converters.keys():
 				raise ValueError('No encoder found for ' + value[0])
 			converted[value[0]] = converters[value[0]].encode(value[1], self._get_signal(value[0]))
 		return self.raw(converted)
@@ -123,7 +123,7 @@ class LinFrame:
 		tmp = self.parse_raw(data)
 		output = {}
 		for value in tmp.items():
-			if converters[value[0]] is None:
+			if value[0] not in converters.keys():
 				raise ValueError('No decoder found for ' + value[0])
 			output[value[0]] = converters[value[0]].decode(value[1], self._get_signal(value[0]))
 		return output

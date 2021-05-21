@@ -7,28 +7,28 @@
 			"type": "string",
 			"pattern": "lin_description_file"
 		},
-		"version" : {
+		"version": {
 			"type": "number",
-			"minimum": 0.0,
+			"minimum": 0,
 			"maximum": 2.2
 		},
 		"master": {
 			"type": "object",
 			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "timebase": {
-				"type": "number"
-			  },
-			  "jitter": {
-				"type": "number"
-			  }
+				"name": {
+					"type": "string"
+				},
+				"timebase": {
+					"type": "number"
+				},
+				"jitter": {
+					"type": "number"
+				}
 			},
 			"required": [
-			  "name",
-			  "timebase",
-			  "jitter"
+				"name",
+				"timebase",
+				"jitter"
 			]
 		},
 		"slaves": {
@@ -40,30 +40,30 @@
 		"signal": {
 			"type": "object",
 			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "width": {
-				"type": "integer"
-			  },
-			  "init_value": {
-				"type": "integer"
-			  },
-			  "publisher": {
-				"type": "string"
-			  },
-			  "subscribers": {
-				"type": "array",
-				"items": {
+				"name": {
 					"type": "string"
+				},
+				"width": {
+					"type": "integer"
+				},
+				"init_value": {
+					"type": "integer"
+				},
+				"publisher": {
+					"type": "string"
+				},
+				"subscribers": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
 				}
-			  }
 			},
 			"required": [
-			  "name",
-			  "width",
-			  "init_value",
-			  "publisher"
+				"name",
+				"width",
+				"init_value",
+				"publisher"
 			]
 		},
 		"frame": {
@@ -79,7 +79,10 @@
 					"type": "string"
 				},
 				"length": {
-					"type": ["integer", "null"]
+					"type": [
+						"integer",
+						"null"
+					]
 				},
 				"signals": {
 					"type": "array",
@@ -111,92 +114,287 @@
 		"event_triggered_frame": {
 			"type": "object",
 			"properties": {
-			  "name": {
-				"type": "string"
-			  }
+				"name": {
+					"type": "string"
+				}
 			},
 			"required": [
-			  "name"
+				"name"
 			]
 		},
 		"node": {
 			"type": "object",
 			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "lin_protocol": {
-				"type": "number"
-			  },
-			  "configured_nad": {
-				"type": "integer"
-			  },
-			  "initial_nad": {
-				"type": "integer"
-			  },
-			  "product_id": {
-				"type": "object",
-				"properties": {
-				  "supplier_id": {
-					"type": "integer"
-				  },
-				  "function_id": {
-					"type": "integer"
-				  },
-				  "variant": {
-					"type": "integer"
-				  }
+				"name": {
+					"type": "string"
 				},
-				"required": [
-				  "supplier_id",
-				  "function_id"
-				]
-			  },
-			  "response_error": {
-				"type": "string"
-			  },
-			  "fault_state_signals": {
-				"type": "array",
-				"items":{
+				"lin_protocol": {
+					"type": "number"
+				},
+				"configured_nad": {
+					"type": "integer"
+				},
+				"initial_nad": {
+					"type": "integer"
+				},
+				"product_id": {
+					"type": "object",
+					"properties": {
+						"supplier_id": {
+							"type": "integer"
+						},
+						"function_id": {
+							"type": "integer"
+						},
+						"variant": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"supplier_id",
+						"function_id"
+					]
+				},
+				"response_error": {
 					"type": "string"
+				},
+				"fault_state_signals": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"P2_min": {
+					"type": "number"
+				},
+				"ST_min": {
+					"type": "number"
+				},
+				"N_As_timeout": {
+					"type": "number"
+				},
+				"N_Cr_timeout": {
+					"type": "number"
+				},
+				"configurable_frames": {
+					"type": [
+						"array",
+						"object"
+					],
+					"items": {
+						"type": "string"
+					}
 				}
-			  },
-			  "P2_min": {
-				"type": "number"
-			  },
-			  "ST_min": {
-				"type": "number"
-			  },
-			  "N_As_timeout": {
-				"type": "number"
-			  },
-			  "N_Cr_timeout": {
-				"type": "number"
-			  },
-			  "configurable_frames": {
-				"type": ["array", "object"],
-				"items": {
-					"type": "string"
-				}
-			  }
 			},
 			"required": [
-			  "name",
-			  "lin_protocol",
-			  "configured_nad"
+				"name",
+				"lin_protocol",
+				"configured_nad"
 			]
+		},
+		"assign_nad_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "assign_nad"
+				},
+				"node": {
+					"type": "string"
+				}
+			}
+		},
+		"assign_frame_id_range_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "assign_frame_id_range"
+				},
+				"node": {
+					"type": "string"
+				},
+				"frame_index": {
+					"type": "integer"
+				},
+				"pids": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				}
+			}
+		},
+		"conditional_change_nad_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "conditional_change_nad"
+				},
+				"nad": {
+					"type": "integer"
+				},
+				"id": {
+					"type": "integer"
+				},
+				"byte": {
+					"type": "integer"
+				},
+				"mask": {
+					"type": "integer"
+				},
+				"inv": {
+					"type": "integer"
+				},
+				"new_nad": {
+					"type": "integer"
+				}
+			}
+		},
+		"data_dump_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "data_dump"
+				},
+				"node": {
+					"type": "string"
+				},
+				"data": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				}
+			}
+		},
+		"save_configuration_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "save_configuration"
+				},
+				"node": {
+					"type": "string"
+				}
+			}
+		},
+		"assign_frame_id_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "assign_frame_id"
+				},
+				"node": {
+					"type": "string"
+				},
+				"frame": {
+					"type": "string"
+				}
+			}
+		},
+		"free_format_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "free_format"
+				},
+				"data": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				}
+			}
+		},
+		"frame_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "frame"
+				},
+				"frame": {
+					"type": "string"
+				}
+			}
+		},
+		"master_request_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "master_request"
+				}
+			}
+		},
+		"slave_response_entry": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "slave_response"
+				}
+			}
+		},
+		"schedule_table_entry": {
+			"type": "object",
+			"properties": {
+				"command": {
+					"oneOf": [
+						{
+							"$ref": "#/definitions/assign_nad_entry"
+						},
+						{
+							"$ref": "#/definitions/assign_frame_id_range_entry"
+						},
+						{
+							"$ref": "#/definitions/conditional_change_nad_entry"
+						},
+						{
+							"$ref": "#/definitions/data_dump_entry"
+						},
+						{
+							"$ref": "#/definitions/save_configuration_entry"
+						},
+						{
+							"$ref": "#/definitions/assign_frame_id_entry"
+						},
+						{
+							"$ref": "#/definitions/free_format_entry"
+						},
+						{
+							"$ref": "#/definitions/frame_entry"
+						},
+						{
+							"$ref": "#/definitions/master_request_entry"
+						},
+						{
+							"$ref": "#/definitions/slave_response_entry"
+						}
+					]
+				},
+				"delay": {
+					"type": "integer"
+				}
+			}
 		},
 		"logical_value_encoder": {
 			"type": "object",
 			"properties": {
 				"type": {
-				"type": "string"
+					"type": "string"
 				},
 				"value": {
-				"type": "integer"
+					"type": "integer"
 				},
 				"text": {
-				"type": "string"
+					"type": "string"
 				}
 			},
 			"required": [
@@ -209,22 +407,22 @@
 			"type": "object",
 			"properties": {
 				"type": {
-				"type": "string"
+					"type": "string"
 				},
 				"min": {
-				"type": "number"
+					"type": "number"
 				},
 				"max": {
-				"type": "number"
+					"type": "number"
 				},
 				"scale": {
-				"type": "number"
+					"type": "number"
 				},
 				"offset": {
-				"type": "number"
+					"type": "number"
 				},
 				"unit": {
-				"type": "string"
+					"type": "string"
 				}
 			},
 			"required": [
@@ -238,115 +436,136 @@
 		}
 	},
 	"properties": {
-	  "header": {
-		"$ref": "#/definitions/header"
-	  },
-	  "protocol_version": {
-		"$ref": "#/definitions/version",
-		"description": ""
-	  },
-	  "language_version": {
-		"$ref": "#/definitions/version"
-	  },
-	  "speed": {
-		"type": "integer"
-	  },
-	  "channel_name": {
-		"type": "string"
-	  },
-	  "nodes": {
-		"type": "object",
-		"properties": {
-		  "master": {
-			"$ref": "#/definitions/master"
-		  },
-		  "slaves": {
-			"$ref": "#/definitions/slaves"
-		  }
+		"header": {
+			"$ref": "#/definitions/header"
 		},
-		"required": [
-		  "master",
-		  "slaves"
-		]
-	  },
-	  "signals": {
-		"type": "array",
-		"items": {
-			"$ref": "#/definitions/signal"
-		}
-	  },
-	  "frames": {
-		"type": "array",
-		"items": {
-			"$ref": "#/definitions/frame"
-		}
-	  },
-	  "event_triggered_frames": {
-		"type": "array",
-		"items": {
-			"$ref": "#/definitions/event_triggered_frame"
-		}
-	  },
-	  "node_attributes": {
-		"type": "array",
-		"items": {
-			"$ref": "#/definitions/node"
-		}
-	  },
-	  "signal_encoding_types": {
-		"type": "array",
-		"items": {
+		"protocol_version": {
+			"$ref": "#/definitions/version",
+			"description": ""
+		},
+		"language_version": {
+			"$ref": "#/definitions/version"
+		},
+		"speed": {
+			"type": "integer"
+		},
+		"channel_name": {
+			"type": "string"
+		},
+		"nodes": {
 			"type": "object",
 			"properties": {
-			  "name": {
-				"type": "string"
-			  },
-			  "values": {
-				"type": "array",
-				"items": {
-					"oneOf": [
-						{"$ref": "#/definitions/logical_value_encoder"},
-						{"$ref": "#/definitions/physical_value_encoder"}
-					]
+				"master": {
+					"$ref": "#/definitions/master"
+				},
+				"slaves": {
+					"$ref": "#/definitions/slaves"
 				}
-			  }
 			},
 			"required": [
-			  "name",
-			  "values"
+				"master",
+				"slaves"
 			]
-		  }
-	  },
-	  "signal_representations": {
-		"type": "array",
-		"items": {
-			"type": "object",
-			"properties": {
-			  "encoding": {
-				"type": "string"
-			  },
-			  "signals": {
-				"type": "array",
-				"items": {
-					"type": "string"
+		},
+		"signals": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/signal"
+			}
+		},
+		"frames": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/frame"
+			}
+		},
+		"event_triggered_frames": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/event_triggered_frame"
+			}
+		},
+		"node_attributes": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/node"
+			}
+		},
+		"schedule_tables": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"schedule": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/schedule_table_entry"
+						}
+					}
 				}
-			  }
-			},
-			"required": [
-			  "encoding",
-			  "signals"
-			]
-		  }
-	  }
+			}
+		},
+		"signal_encoding_types": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"values": {
+						"type": "array",
+						"items": {
+							"oneOf": [
+								{
+									"$ref": "#/definitions/logical_value_encoder"
+								},
+								{
+									"$ref": "#/definitions/physical_value_encoder"
+								}
+							]
+						}
+					}
+				},
+				"required": [
+					"name",
+					"values"
+				]
+			}
+		},
+		"signal_representations": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"encoding": {
+						"type": "string"
+					},
+					"signals": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				},
+				"required": [
+					"encoding",
+					"signals"
+				]
+			}
+		}
 	},
 	"required": [
-	  "header",
-	  "protocol_version",
-	  "language_version",
-	  "speed",
-	  "nodes",
-	  "signals",
-	  "frames",
-	  "schedule_tables"
+		"header",
+		"protocol_version",
+		"language_version",
+		"speed",
+		"nodes",
+		"signals",
+		"frames",
+		"schedule_tables"
 	]
-  }
+}

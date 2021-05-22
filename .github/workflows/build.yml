@@ -148,4 +148,4 @@ jobs:
           save-data-file: false
           fail-on-alert: true
           alert-threshold: "125%"
-          comment-on-alert: true
+          comment-on-alert: false

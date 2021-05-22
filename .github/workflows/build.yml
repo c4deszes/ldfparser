@@ -136,5 +136,16 @@ jobs:
         run: |
           python setup.py install
 
-      - name: Test & Coverage
-        run: pytest -m 'performance'
+      - name: Test performance
+        run: pytest -m 'performance' --benchmark-json output.json
+
+      - name: Store benchmark result
+        uses: rhysd/github-action-benchmark@v1
+        with:
+          tool: 'pytest'
+          output-file-path: output.json
+          external-data-json-path: ./cache/benchmark-data.json
+          save-data-file: false
+          fail-on-alert: true
+          alert-threshold: "125%"
+          comment-on-alert: true

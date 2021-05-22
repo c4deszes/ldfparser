@@ -28,6 +28,10 @@ production use cases you pin the version to a minor release in your requirements
 
 [Parsing LDF files](parser.md)
 
+[Encoding and decoding frames](frames.md)
+
+[Using signals and encoders](signals.md)
+
 [Using the command line interface](commandline.md)
 
 ## License

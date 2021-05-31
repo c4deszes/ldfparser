@@ -4,7 +4,6 @@
 [![Github Pages](https://img.shields.io/static/v1?style=flat&logo=github&label=gh-pages&color=green&message=deployed)](https://c4deszes.github.io/ldfparser/)
 [![PyPI version](https://badge.fury.io/py/ldfparser.svg)](https://pypi.org/project/ldfparser/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ldfparser.svg)](https://pypi.org/project/ldfparser/)
-[![Workflow](https://github.com/c4deszes/ldfparser/workflows/Lint/badge.svg?branch=master)](https://github.com/c4deszes/ldfparser/actions)
 [![codecov.io](https://codecov.io/github/c4deszes/ldfparser/coverage.svg?branch=master)](https://codecov.io/github/c4deszes/ldfparser?branch=master)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/c4deszes/ldfparser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/c4deszes/ldfparser/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/c4deszes/ldfparser.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/c4deszes/ldfparser/context:python)

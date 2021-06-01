@@ -29,7 +29,7 @@ setup(
 		"Operating System :: OS Independent",
 	],
 	project_urls={
-		"Documentation": "https://github.com/c4deszes/ldfparser/tree/master/README.md",
+		"Documentation": "https://c4deszes.github.io/ldfparser/",
 		"Source Code": "https://github.com/c4deszes/ldfparser",
 	}
 )

@@ -2,19 +2,16 @@ name: Release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    container:
+      image: python:3.6
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
 
       - name: Install requirements
         run: |
@@ -26,11 +23,24 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
 
-      - name: Archive package
-        uses: actions/upload-artifact@v2
+      - name: Get the tag name
+        run: echo "TAG=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+
+      - name: Generate changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
         with:
-          name: release
-          path: dist/
+          version: ${{ env.TAG }}
+          path: ./CHANGELOG.md
+
+      - name: Upload release assets & changelog
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*
+          file_glob: true
+          tag: ${{ github.ref }}
+          body: ${{ steps.changelog.outputs.changes }}
 
       - name: Publish to PyPi
         env:

@@ -4,6 +4,7 @@ from unittest.mock import patch
 from ldfparser.cli import main
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('command', [
 	['ldfparser', '-h'],
 	['ldfparser', '--ldf', './tests/ldf/lin22.ldf'],
@@ -27,6 +28,7 @@ def test_valid_commands(command):
 	assert exit_ex.value.code == 0
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('command', [
 	['ldfparser', '--ldf'],
 	['ldfparser', '--ldf', './tests/ldf/lin22.ldf', 'node', '--slave', 'ABC'],

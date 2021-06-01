@@ -8,7 +8,6 @@ on:
       - 'docs/**.*'
     branches:
       - master
-      - development**
   pull_request:
     paths-ignore:
       - '*.md'
@@ -24,34 +23,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10.0b1']
     runs-on: ubuntu-latest
+    container:
+      image: python:${{ matrix.python-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install requirements
         run: |
-          sudo apt-get -y install crudini
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Modify version
-        if: github.ref == 'refs/heads/development'
-        run: |
-          crudini --set setup.cfg metadata version $(crudini --get setup.cfg metadata version).dev$GITHUB_RUN_NUMBER
 
       - name: Install package
         run: |
           python setup.py install
 
       - name: Test & Coverage
-        run: pytest -m 'not snapshot' --cov=ldfparser --cov-report xml
+        run: pytest -m 'unit or integration' --cov=ldfparser --cov-report xml
 
       - name: Run Examples
         run: |
@@ -63,12 +53,6 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
 
-      - name: Archive package
-        uses: actions/upload-artifact@v2
-        with:
-          name: package-${{ matrix.python-version }}
-          path: dist/
-
       - name: Upload coverage results
         uses: codecov/codecov-action@v1
         with:
@@ -77,11 +61,28 @@ jobs:
           name: Python-${{ matrix.python-version }}
           fail_ci_if_error: true
 
+  flake8:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Lint using Flake8
+        run: |
+          flake8 --count --show-source --statistics
+
   snapshot-test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     container:
-      image: "python"
+      image: python:3.6
     steps:
       - name: Checkout (current)
         uses: actions/checkout@v2
@@ -124,3 +125,24 @@ jobs:
       - name: Snapshot test
         working-directory: current
         run: pytest -m 'snapshot'
+
+  performance-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install package
+        run: |
+          python setup.py install
+
+      - name: Test performance
+        run: pytest -m 'performance' --benchmark-json output.json

@@ -24,9 +24,11 @@ jobs:
           python setup.py sdist bdist_wheel
 
       - name: Get the tag name
+        if: ${{false}}
         run: echo "TAG=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
 
       - name: Generate changelog
+        if: ${{false}}
         id: changelog
         uses: mindsers/changelog-reader-action@v2
         with:
@@ -34,6 +36,7 @@ jobs:
           path: ./CHANGELOG.md
 
       - name: Upload release assets & changelog
+        if: ${{false}}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}

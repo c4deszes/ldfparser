@@ -1,4 +1,4 @@
-from ldfparser.encoding import LogicalValue, BCDValue, ASCIIValue
+from ldfparser.encoding import PhysicalValue, LogicalValue, BCDValue, ASCIIValue
 import os
 import pytest
 import ldfparser
@@ -119,8 +119,27 @@ def test_load_valid_lin_encoders():
 	assert len(ascii_signal.subscribers) == 1
 	assert ascii_signal in ldf.slave('remote_node').publishes
 
-	assert ldf.frame('dummy_frame') is not None
+	byte_array_signal_0 = ldf.signal('byte_array_signal_0')
+	assert byte_array_signal_0 is not None
+	assert byte_array_signal_0.publisher.name == 'remote_node'
+	assert len(byte_array_signal_0.subscribers) == 1
+	assert byte_array_signal_0 in ldf.slave('remote_node').publishes
+	assert byte_array_signal_0.is_array()
+	assert byte_array_signal_0.init_value == [17, 34, 51, 68]
+
+	byte_array_signal_1 = ldf.signal('byte_array_signal_1')
+	assert byte_array_signal_1 is not None
+	assert byte_array_signal_1.publisher.name == 'remote_node'
+	assert len(byte_array_signal_1.subscribers) == 1
+	assert byte_array_signal_1 in ldf.slave('remote_node').publishes
+	assert byte_array_signal_1.is_array()
+	assert byte_array_signal_1.init_value == [85, 102, 119, 136]
+
+	assert ldf.frame('dummy_frame_0') is not None
 	assert ldf.frame(0x25) is not None
+
+	assert ldf.frame('dummy_frame_1') is not None
+	assert ldf.frame(0x26) is not None
 
 	remote_node = ldf.slave('remote_node')
 	assert remote_node is not None
@@ -136,3 +155,16 @@ def test_load_valid_lin_encoders():
 	assert converter.name == 'AsciiEncoding'
 	assert len(converter._converters) == 1
 	assert isinstance(converter._converters[0], ASCIIValue)
+
+	converter = ldf.converters['byte_array_signal_0']
+	assert converter.name == 'LargePhysicalEncoding'
+	assert len(converter._converters) == 1
+	assert isinstance(converter._converters[0], PhysicalValue)
+
+	converter = ldf.converters['byte_array_signal_1']
+	assert converter.name == 'LargeLogicalEncoding'
+	assert len(converter._converters) == 5
+	logical_values = [0x88776655, 0x00000000, 0xFF00FF00, 0x00FFFF00, 0xFFFFFFFF]
+	for c, value in zip(converter._converters, logical_values):
+		assert isinstance(c, LogicalValue)
+		assert c.phy_value == value

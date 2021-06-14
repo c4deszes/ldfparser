@@ -303,10 +303,10 @@ class LDFTransformer(Transformer):
 		return tree[0]
 
 	def signal_default_value_single(self, tree):
-		return int(tree[0])
+		return int(tree[0], 0)
 
 	def signal_default_value_array(self, tree):
-		return tree[0]
+		return [int(v, 0) for v in tree]
 
 	def diagnostic_signals(self, tree):
 		return ("diagnostic_signals", [])

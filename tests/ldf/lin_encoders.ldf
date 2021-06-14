@@ -17,14 +17,20 @@ Nodes {
 }
 
 Signals {
-    bcd_signal: 16, 0, remote_node, main_node ;
-    ascii_signal: 16, 0, remote_node, main_node ;
+    bcd_signal: 16, 0x42, remote_node, main_node ;
+    ascii_signal: 48, {72, 0x65, 0x6C, 0x6C, 111, 33}, remote_node, main_node ;
+    byte_array_signal_0: 32, {0x11, 0x22, 0x33, 0x44}, remote_node, main_node ;
+    byte_array_signal_1: 32, {0x55, 0x66, 0x77, 0x88}, remote_node, main_node ;
 }
 
 Frames {
-  dummy_frame: 0x25, remote_node, 8 {
+  dummy_frame_0: 0x25, remote_node, 8 {
     bcd_signal, 0;
     ascii_signal, 16;
+  }
+  dummy_frame_1: 0x26, remote_node, 8 {
+    byte_array_signal_0, 0;
+    byte_array_signal_1, 32;
   }
 }
 
@@ -39,21 +45,23 @@ Node_attributes {
     N_As_timeout = 1000 ms ;
     N_Cr_timeout = 1000 ms ;
     configurable_frames {
-      dummy_frame ;
+      dummy_frame_0;
+      dummy_frame_1;
     }
   }
 }
 
 Schedule_tables {
- MRF_schedule {
-		MasterReq delay 10 ms;
+    MRF_schedule {
+        MasterReq delay 10 ms;
 	}
 	SRF_schedule {
 		SlaveResp delay 10 ms;
 	}
     Normal_Schedule {
-    dummy_frame delay 15 ms ;
-  }
+        dummy_frame_0 delay 15 ms ;
+        dummy_frame_1 delay 15 ms ;
+    }
 }
 
 Signal_encoding_types {
@@ -96,9 +104,21 @@ Signal_encoding_types {
   BCDEncoding {
     bcd_value;
   }
+  LargePhysicalEncoding {
+      physical_value, 0, 0xFFFFFFFF, 1, 0, "count";
+  }
+  LargeLogicalEncoding {
+      logical_value, 0x88776655, "condition_default";
+      logical_value, 0x00000000, "condition_0";
+      logical_value, 0xFF00FF00, "condition_1";
+      logical_value, 0x00FFFF00, "condition_2";
+      logical_value, 0xFFFFFFFF, "condition_3";
+  }
 }
 
 Signal_representation {
   BCDEncoding: bcd_signal;
   AsciiEncoding: ascii_signal;
+  LargePhysicalEncoding: byte_array_signal_0;
+  LargeLogicalEncoding: byte_array_signal_1;
 }

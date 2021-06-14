@@ -92,7 +92,7 @@ signal_group: ldf_identifier ":" ldf_integer "{" (ldf_identifier "," ldf_integer
 
 // LIN 2.1 Specification, section 9.2.6.1
 signal_encoding_types: "Signal_encoding_types" "{" (signal_encoding_type+) "}" 
-signal_encoding_type: ldf_identifier "{" (signal_encoding_logical_value | signal_encoding_physical_value)+ "}"
+signal_encoding_type: ldf_identifier "{" (signal_encoding_logical_value | signal_encoding_physical_value | signal_encoding_bcd_value | signal_encoding_ascii_value)+ "}"
 signal_encoding_logical_value: "logical_value" "," ldf_integer ("," signal_encoding_text_value)? ";"
 signal_encoding_physical_value: "physical_value" "," ldf_integer "," ldf_integer "," ldf_float "," ldf_float ("," signal_encoding_text_value)? ";"
 signal_encoding_bcd_value: "bcd_value" ";"

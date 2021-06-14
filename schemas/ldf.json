@@ -433,7 +433,29 @@
 				"offset",
 				"unit"
 			]
-		}
+		},
+        "bcd_value_encoder": {
+            "type":"object",
+            "properties": {
+                "type": {
+                    "enum": ["bcd"]
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "ascii_value_encoder": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": ["ascii"]
+                }
+            },
+            "required": [
+                "type"
+            ]
+        }
 	},
 	"properties": {
 		"header": {
@@ -525,6 +547,12 @@
 								},
 								{
 									"$ref": "#/definitions/physical_value_encoder"
+								},
+								{
+									"$ref": "#/definitions/bcd_value_encoder"
+								},
+								{
+									"$ref": "#/definitions/ascii_value_encoder"
 								}
 							]
 						}

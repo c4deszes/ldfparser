@@ -1,0 +1,105 @@
+/*******************************************************/
+/* This is a synthetic example LDF from the LIN 2.2A   */
+/* specification that combines all examples of signal  */
+/* encodings.                                          */
+/*******************************************************/
+
+// Source: https://lin-cia.org/fileadmin/microsites/lin-cia.org/resources/documents/LIN_2.2A.pdf
+
+LIN_description_file;
+LIN_protocol_version = "2.1";
+LIN_language_version = "2.1";
+LIN_speed = 19.2 kbps;
+
+Nodes {
+  Master: main_node, 5 ms, 1 ms ;
+  Slaves: remote_node;
+}
+
+Signals {
+    bcd_signal: 16, 0, remote_node, main_node ;
+  //ascii_signal: 48, {0,0,0,0,0,0} , remote_node, main_node ;
+    ascii_signal: 16, 0, remote_node, main_node ;
+}
+
+Frames {
+  dummy_frame: 0x25, remote_node, 8 {
+    bcd_signal, 0;
+    ascii_signal, 16;
+  }
+}
+
+Node_attributes {
+  remote_node {
+    LIN_protocol = "2.1" ;
+    configured_NAD = 0x20 ;
+    product_id = 0x5, 0xA5A5, 0 ;
+    response_error = RE;
+    P2_min = 50 ms ;
+    ST_min = 0 ms ;
+    N_As_timeout = 1000 ms ;
+    N_Cr_timeout = 1000 ms ;
+    configurable_frames {
+      dummy_frame ;
+    }
+  }
+}
+
+Schedule_tables {
+ MRF_schedule {
+		MasterReq delay 10 ms;
+	}
+	SRF_schedule {
+		SlaveResp delay 10 ms;
+	}
+    Normal_Schedule {
+    dummy_frame delay 15 ms ;
+  }
+}
+
+Signal_encoding_types {
+  power_state {
+    logical_value, 0, "off";
+    logical_value, 1, "on";
+  }
+  V_battery {
+    logical_value, 0, "under voltage";
+    physical_value, 1, 63, 0.0625, 7.0, "Volt";
+    physical_value, 64, 191, 0.0104, 11.0, "Volt";
+    physical_value, 192, 253, 0.0625, 13.0, "Volt";
+    logical_value, 254, "over voltage";
+    logical_value, 255, "invalid";
+  }
+  Dig2Bit {
+    logical_value, 0, "off";
+    logical_value, 1, "on";
+    logical_value, 2, "error";
+    logical_value, 3, "void";
+  }
+  ErrorEncoding {
+    logical_value, 0, "OK";
+    logical_value, 1, "error";
+  }
+  FaultStateEncoding {
+    logical_value, 0, "No test result";
+    logical_value, 1, "failed";
+    logical_value, 2, "passed";
+    logical_value, 3, "not used";
+  }
+  LightEncoding {
+    logical_value, 0, "Off";
+    physical_value, 1, 254, 1, 100, "lux";
+    logical_value, 255, "error";
+  }
+  AsciiEncoding {
+    ascii_value;
+  }
+  BCDEncoding {
+    bcd_value;
+  }
+}
+
+Signal_representation {
+  BCDEncoding: bcd_signal;
+  AsciiEncoding: ascii_signal;
+}

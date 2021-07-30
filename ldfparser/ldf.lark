@@ -15,8 +15,8 @@ header_channel: "Channel_name" "=" "\"" ldf_identifier "\"" ";"
 
 // LIN 2.1 Specification, section 9.2.2
 nodes: "Nodes" "{" nodes_master nodes_slaves "}"
-nodes_master: "Master:" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ";"
-nodes_slaves: "Slaves:" ldf_identifier ("," ldf_identifier)* ";"
+nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ";"
+nodes_slaves: "Slaves" ":" ldf_identifier ("," ldf_identifier)* ";"
 
 // LIN 2.1 Specification, section 9.2.2.3
 node_compositions: "composite" "{" (node_compositions_configuration+) "}"

@@ -7,8 +7,8 @@ LIN_language_version = "1.3";
 LIN_speed = 19.2 kbps;
 
 Nodes {
-	Master:CEM,5 ms, 0.1 ms;
-	Slaves:LSM,CPM;
+	Master : CEM,5 ms, 0.1 ms;
+	Slaves : LSM,CPM;
 }
 
 Signals {

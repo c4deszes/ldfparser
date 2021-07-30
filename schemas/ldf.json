@@ -47,7 +47,19 @@
 					"type": "integer"
 				},
 				"init_value": {
-					"type": "integer"
+					"oneOf":[
+						{
+							"type": "integer"
+						},
+						{
+							"type": "array",
+							"items": {
+								"type":"integer"
+							},
+							"minItems": 1,
+							"maxItems": 8
+						}
+					]
 				},
 				"publisher": {
 					"type": "string"

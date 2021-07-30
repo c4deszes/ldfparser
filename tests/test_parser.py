@@ -116,12 +116,14 @@ def test_load_valid_lin_encoders():
 	assert bcd_signal.publisher.name == 'remote_node'
 	assert len(bcd_signal.subscribers) == 1
 	assert bcd_signal in ldf.slave('remote_node').publishes
+	assert bcd_signal.init_value == [0x32, 32]
 
 	ascii_signal = ldf.signal('ascii_signal')
 	assert ascii_signal is not None
 	assert ascii_signal.publisher.name == 'remote_node'
 	assert len(ascii_signal.subscribers) == 1
 	assert ascii_signal in ldf.slave('remote_node').publishes
+	assert ascii_signal.init_value == [16, 0x16]
 
 	assert ldf.frame('dummy_frame') is not None
 	assert ldf.frame(0x25) is not None

@@ -179,7 +179,7 @@ def _link_ldf_signals(json: dict, ldf: LDF):
 				slave = ldf.slave(subscriber)
 				if slave is None:
 					raise ValueError(f"Signal {signal_obj.name} references non existent node {subscriber}")
-				slave.subscribes_to.append(signal)
+				slave.subscribes_to.append(signal_obj)
 				signal_obj.subscribers.append(slave)
 
 

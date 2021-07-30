@@ -1,3 +1,4 @@
+from ldfparser.lin import LinFrame, LinSignal
 from ldfparser.encoding import LogicalValue, BCDValue, ASCIIValue
 import os
 import pytest
@@ -77,6 +78,9 @@ def test_load_valid_lin22():
 
 	LSM = ldf.slave('LSM')
 	assert LSM is not None
+	assert isinstance(LSM.subscribes_to[0], LinSignal)
+	assert isinstance(LSM.publishes[0], LinSignal)
+	assert isinstance(LSM.publishes_frames[0], LinFrame)
 	assert LSM.product_id.supplier_id == 0x4A4F
 	assert LSM.product_id.function_id == 0x4841
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed ASCII and BCD encoding types missing from the syntax ( #56 )
 - Fixed `subscribed_to` variable on `LinSlave` containing the wrong objects ( #59 )
+- Fixed whitespace not being allowed in the `Nodes` section before the colons ( #61 )
 
 ## [0.8.0] - 2021-06-01
 

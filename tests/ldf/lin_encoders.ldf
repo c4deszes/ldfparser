@@ -17,8 +17,8 @@ Nodes {
 }
 
 Signals {
-    bcd_signal: 16, 0, remote_node, main_node ;
-    ascii_signal: 16, 0, remote_node, main_node ;
+    bcd_signal: 16, {0x32, 32}, remote_node, main_node ;
+    ascii_signal: 16, {16, 0x16}, remote_node, main_node ;
 }
 
 Frames {

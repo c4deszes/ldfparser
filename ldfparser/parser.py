@@ -240,7 +240,8 @@ class LDFTransformer(Transformer):
 		try:
 			return float(i)
 		except ValueError:
-			return self.parse_int(i)
+			# TODO: dead code
+			return self.parse_integer(i)
 
 	def ldf_identifier(self, tree):
 		return tree[0][0:]
@@ -303,10 +304,10 @@ class LDFTransformer(Transformer):
 		return tree[0]
 
 	def signal_default_value_single(self, tree):
-		return int(tree[0])
+		return tree[0]
 
 	def signal_default_value_array(self, tree):
-		return tree[0]
+		return tree[0:]
 
 	def diagnostic_signals(self, tree):
 		return ("diagnostic_signals", [])

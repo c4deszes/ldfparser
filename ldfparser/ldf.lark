@@ -27,8 +27,8 @@ node_compositions_composite: ldf_identifier "{" ldf_identifier ("," ldf_identifi
 signals: "Signals" "{" (signal_definition)+ "}"
 signal_definition: ldf_identifier ":" ldf_integer "," signal_default_value "," ldf_identifier ("," ldf_identifier)* ";"
 signal_default_value: signal_default_value_array | signal_default_value_single
-signal_default_value_single: C_INT
-signal_default_value_array: "{" C_INT ("," C_INT)* "}"
+signal_default_value_single: ldf_integer
+signal_default_value_array: "{" ldf_integer ("," ldf_integer)* "}"
 
 // LIN 2.1 Specification, section 9.2.3.2
 diagnostic_signals: "Diagnostic_signals" "{" (ANY_SEMICOLON_TERMINATED_LINE)* "}"

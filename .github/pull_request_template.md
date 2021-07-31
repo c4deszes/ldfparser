@@ -4,6 +4,11 @@ Please provide brief information, what this pull request provides or fixes.
 
 <!-- You can remove this section if the PR is purely enhancement -->
 
+### Checklist
+
+- [ ] Check test result and code coverage
+- [ ] Update changelog
+
 ## Fixes
 
 + Describe bug, link to issue

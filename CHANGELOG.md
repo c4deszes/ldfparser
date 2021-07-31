@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Fixed
+
+## [0.9.0] - 2021-07-31
+
 ### Fixed
 
 - Fixed ASCII and BCD encoding types missing from the syntax ( #56 )

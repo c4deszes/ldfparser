@@ -181,6 +181,22 @@ def _link_ldf_signals(json: dict, ldf: LDF):
 					raise ValueError(f"Signal {signal_obj.name} references non existent node {subscriber}")
 				slave.subscribes_to.append(signal_obj)
 				signal_obj.subscribers.append(slave)
+	if ldf.protocol_version < 2.0:
+		return
+	for node in json['node_attributes']:
+		slave = ldf.slave(node['name'])
+		if node.get('response_error'):
+			slave.response_error = ldf.signal(node['response_error'])
+		if node.get('fault_state_signals'):
+			for signal in node['fault_state_signals']:
+				slave.fault_state_signals.append(ldf.signal(signal))
+		if node.get('configurable_frames'):
+			if isinstance(node['configurable_frames'], Dict):
+				for (frame, pid) in node['configurable_frames'].items():
+					slave.configurable_frames[pid] = ldf.frame(frame)
+			elif isinstance(node['configurable_frames'], List):
+				for (id, frame) in enumerate(node['configurable_frames']):
+					slave.configurable_frames[id] = ldf.frame(frame)
 
 
 def _link_ldf_frames(json: dict, ldf: LDF):

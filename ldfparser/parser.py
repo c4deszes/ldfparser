@@ -158,7 +158,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
 	return slave
 
 
-def _link_ldf_signals(json: dict, ldf: LDF):
+def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
 	for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
 		signal_obj = ldf.signal(signal['name'])
 		if signal['publisher'] == ldf.master.name:

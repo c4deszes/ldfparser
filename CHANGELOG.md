@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.9.1] - 2021-09-11
+
+### Added
+
+- Missing node attributes: Response Error, Fault State Signals and Configurable frames are now
+linked to the `LinSlave` object ( #66 )
+
 ## [0.9.0] - 2021-07-31
 
 ### Fixed

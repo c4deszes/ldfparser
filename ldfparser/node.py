@@ -40,7 +40,7 @@ class LinSlave(LinNode):
 		self.st_min: float = 0
 		self.n_as_timeout: float = 1
 		self.n_cr_timeout: float = 1
-		self.configurable_frames = []
+		self.configurable_frames = {}
 
 
 class LinNodeCompositionConfiguration:

@@ -83,6 +83,18 @@ def test_load_valid_lin22():
 	assert isinstance(LSM.publishes_frames[0], LinFrame)
 	assert LSM.product_id.supplier_id == 0x4A4F
 	assert LSM.product_id.function_id == 0x4841
+	assert LSM.fault_state_signals == [ldf.signal('IntTest')]
+	assert LSM.response_error == ldf.signal('LSMerror')
+	assert LSM.configurable_frames[0] == ldf.frame('Node_Status_Event')
+	assert LSM.configurable_frames[1] == ldf.frame('CEM_Frm1')
+	assert LSM.configurable_frames[2] == ldf.frame('LSM_Frm1')
+	assert LSM.configurable_frames[3] == ldf.frame('LSM_Frm2')
+
+	RSM = ldf.slave('RSM')
+	assert RSM.configurable_frames[0] == ldf.frame('Node_Status_Event')
+	assert RSM.configurable_frames[1] == ldf.frame('CEM_Frm1')
+	assert RSM.configurable_frames[2] == ldf.frame('RSM_Frm1')
+	assert RSM.configurable_frames[3] == ldf.frame('RSM_Frm2')
 
 	converter = ldf.converters['InternalLightsRequest']
 	assert converter.name == 'Dig2Bit'

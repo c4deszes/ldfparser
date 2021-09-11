@@ -235,12 +235,10 @@ def _convert_encoding_value(json: dict) -> ValueConverter:
         return ASCIIValue()
     raise ValueError(f"Unsupported value type {json['type']}")
 
-
 def _require_key(a: dict, k: str, msg: str) -> Any:
     if a.get(k) is None:
         raise ValueError(msg)
     return a[k]
-
 
 class LDFTransformer(Transformer):
     def parse_integer(self, i: str):

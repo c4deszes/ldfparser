@@ -13,6 +13,9 @@ class LinVersion:
     def __str__(self) -> str:
         return f"{self.version:.01f}"
 
+    def __ne__(self, o: object) -> bool:
+        return not self.__eq__(o)
+
     def __eq__(self, o: object) -> bool:
         if isinstance(o, (float, int)):
             return self.version == o
@@ -35,15 +38,12 @@ class LinVersion:
         raise TypeError()
 
     def __ge__(self, o) -> bool:
-        if isinstance(o, (float, int)):
-            return self.version >= o
-        if isinstance(o, LinVersion):
-            return self.version >= o.version
-        raise TypeError()
+        return not self.__lt__(o)
 
     def __le__(self, o) -> bool:
-        if isinstance(o, (float, int)):
-            return self.version <= o
-        if isinstance(o, LinVersion):
-            return self.version <= o.version
-        raise TypeError()
+        return not self.__gt__(o)
+
+LIN_VERSION_1_3 = LinVersion(1.3)
+LIN_VERSION_2_0 = LinVersion(2.0)
+LIN_VERSION_2_1 = LinVersion(2.1)
+LIN_VERSION_2_2 = LinVersion(2.2)

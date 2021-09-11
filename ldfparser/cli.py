@@ -1,3 +1,5 @@
+"""Command Line Interface
+"""
 import argparse
 import json
 import os
@@ -5,12 +7,12 @@ import sys
 
 from ldfparser import LDF, LinFrame, LinMaster, LinSignal, LinSlave, parseLDF
 
-def auto_int(x):
-    return int(x, 0)
+def auto_int(number):
+    return int(number, 0)
 
 def exit_with_error(code: int, message: str):
     print(message, file=sys.stderr)
-    exit(code)
+    sys.exit(code)
 
 def parse_args(args):
     parser = argparse.ArgumentParser()

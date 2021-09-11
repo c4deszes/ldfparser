@@ -47,7 +47,7 @@ Please follow the process described in [Pull Request template](.github/PULL_REQU
 
 Code inside source and test folders are linted using Flake8.
 
-+ Prefer tabs over spaces
++ Prefer spaces over tabs
 + Avoid platform-dependent code
 
 ### Documentation

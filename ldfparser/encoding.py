@@ -1,9 +1,9 @@
-from typing import List, Union, Any
 """
 Contains classes that are used to encode and decode Lin Signals.
 
 Signal encoding is specified in the LIN 2.1 Specification, section 9.2.6.1
 """
+from typing import List, Union, Any
 
 class ValueConverter():
     """
@@ -24,6 +24,10 @@ class ValueConverter():
         raise NotImplementedError()
 
 class PhysicalValue(ValueConverter):
+    """Value converter for physical values
+    
+    
+    """
 
     def __init__(self, phy_min: int, phy_max: int, scale: float, offset: float, unit: str = None):
         self.phy_min = phy_min
@@ -44,13 +48,13 @@ class PhysicalValue(ValueConverter):
             raw = int((num - self.offset) / self.scale)
 
         if raw < self.phy_min or raw > self.phy_max:
-            raise ValueError("value: " + str(raw) + " out of range (" + str(self.phy_min) + ", " + str(self.phy_max) + ")")
+            raise ValueError(f"value: {raw} out of range ({self.phy_min}, {self.phy_max})")
 
         return raw
 
     def decode(self, value: int, signal) -> float:
         if value < self.phy_min or value > self.phy_max:
-            raise ValueError("value: " + str(value) + " out of range (" + str(self.phy_min) + ", " + str(self.phy_max) + ")")
+            raise ValueError(f"value: {value} out of range ({self.phy_min}, {self.phy_max})")
 
         return float(value * self.scale + self.offset)
 
@@ -65,12 +69,12 @@ class LogicalValue(ValueConverter):
             return self.phy_value
         if self.info is not None and value == self.info:
             return self.phy_value
-        raise ValueError("value: " + str(value) + " not equal to signal info")
+        raise ValueError(f"value: {value} not equal to signal info")
 
     def decode(self, value: int, signal) -> Union[str, int]:
         if value == self.phy_value:
             return self.info if self.info is not None else self.phy_value
-        raise ValueError("value: " + str(value) + " not equal to " + str(self.phy_value))
+        raise ValueError(f"value: {value} not equal to {self.phy_value}")
 
 class BCDValue(ValueConverter):
 
@@ -113,7 +117,7 @@ class LinSignalType:
                 pass
 
         if out is None:
-            raise ValueError("cannot encode " + str(value) + " as " + self.name)
+            raise ValueError(f"cannot encode {value} as {self.name}")
         return out
 
     def decode(self, value: int, signal) -> Union[str, int, float]:
@@ -126,5 +130,5 @@ class LinSignalType:
                 pass
 
         if out is None:
-            raise ValueError("cannot decode " + str(value) + " as " + self.name)
+            raise ValueError(f"cannot decode {value} as {self.name}")
         return out

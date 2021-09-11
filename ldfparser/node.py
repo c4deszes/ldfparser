@@ -4,12 +4,19 @@ from .frame import LinFrame
 from .signal import LinSignal
 
 class LinProductId:
+    """
+    
+    """
+
     def __init__(self, supplier_id: int, function_id: int, variant: int = 0):
         self.supplier_id: int = supplier_id
         self.function_id: int = function_id
         self.variant: int = variant
 
 class LinNode:
+    """
+    
+    """
 
     def __init__(self, name: str):
         self.name = name
@@ -18,6 +25,9 @@ class LinNode:
         self.publishes_frames: List[LinFrame] = []
 
 class LinMaster(LinNode):
+    """
+    
+    """
 
     def __init__(self, name: str, timebase: float, jitter: float):
         super().__init__(name)
@@ -25,6 +35,10 @@ class LinMaster(LinNode):
         self.jitter: float = jitter
 
 class LinSlave(LinNode):
+    """
+    
+    """
+
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.lin_protocol: float = None

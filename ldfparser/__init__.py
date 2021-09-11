@@ -1,3 +1,4 @@
 from .parser import LDF, parseLDF, parseLDFtoDict
-from .lin import LinFrame, LinSignal
+from .frame import LinFrame
+from .signal import LinSignal
 from .node import LinMaster, LinSlave, LinProductId

@@ -1,4 +1,4 @@
-from ldfparser.lin import LinFrame, LinSignal
+from ldfparser import LinFrame, LinSignal
 from ldfparser.encoding import LogicalValue, BCDValue, ASCIIValue
 import os
 import pytest

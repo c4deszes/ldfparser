@@ -1,4 +1,4 @@
-from ldfparser.lin import LinSignal
+from ldfparser import LinSignal
 import pytest
 from ldfparser.encoding import ASCIIValue, BCDValue, LinSignalType, PhysicalValue, LogicalValue
 

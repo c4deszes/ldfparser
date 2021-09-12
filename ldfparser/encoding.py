@@ -33,12 +33,13 @@ class PhysicalValue(ValueConverter):
     A physical value encoder converts a range of values into a different range of values.
 
     :Example:
-    
+
     `PhysicalValue(phy_min=0, phy_max=100, scale=50, offset=400, unit='rpm')` maps signal values
     from 0-100 into a range of 400 - 5400 rpm.
     """
 
     def __init__(self, phy_min: int, phy_max: int, scale: float, offset: float, unit: str = None):
+        # pylint: disable=too-many-arguments
         self.phy_min = phy_min
         self.phy_max = phy_max
         self.scale = scale
@@ -97,6 +98,9 @@ class LogicalValue(ValueConverter):
         raise ValueError(f"value: {value} not equal to {self.phy_value}")
 
 class BCDValue(ValueConverter):
+    """
+    Value converter for Binary Coded Decimal values
+    """
 
     def encode(self, value: int, signal: 'LinSignal') -> List[int]:
         if value > 10**int(signal.width / 8):
@@ -114,6 +118,9 @@ class BCDValue(ValueConverter):
         return out
 
 class ASCIIValue(ValueConverter):
+    """
+    Value converter for ASCII values
+    """
 
     def encode(self, value: str, signal: 'LinSignal') -> List[int]:
         return list(value.encode())
@@ -149,6 +156,9 @@ class LinSignalType():
         self._converters: List[ValueConverter] = converters
 
     def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
+        """
+        Encodes the given value into the physical value
+        """
         out = None
         for encoder in self._converters:
             try:
@@ -162,6 +172,9 @@ class LinSignalType():
         return out
 
     def decode(self, value: int, signal: 'LinSignal') -> Union[str, int, float]:
+        """
+        Decodes the given physical value into the signal value
+        """
         out = None
         for decoder in self._converters:
             try:

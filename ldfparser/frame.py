@@ -1,14 +1,17 @@
 """
-
+LIN Frame utilities
 """
-import bitstruct
-
 from typing import Dict, List, Tuple, Union
+
+import bitstruct
 
 from .signal import LinSignal
 from .encoding import LinSignalType
 
 class LinFrame():
+    """
+    LinFrame represents an unconditional frame consisting of signals
+    """
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
         self.frame_id = frame_id

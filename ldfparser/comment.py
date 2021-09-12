@@ -20,14 +20,16 @@ def parse_comments(content: str) -> List[str]:
     return CommentCollector().transform(tree)
 
 def parseComments(content: str) -> List[str]:
+    # pylint: disable=C0103
     """Deprecated, use `parse_comments` instead
 
     This method will be removed in 1.0.0
     """
-    warnings.warn("'parseComments' is deprecated, please use 'parse_comments' instead")
+    warnings.warn("'parseComments' is deprecated, use 'parse_comments' instead")
     return parse_comments(content)
 
 class CommentCollector(Transformer):
+    # pylint: disable=C0116,R0201
     """
     Transforms grammar tree into dictionary containing the comments
     """

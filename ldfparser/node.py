@@ -1,11 +1,12 @@
 """
-
+LIN Node utilities
 """
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .frame import LinFrame
     from .signal import LinSignal
+    from .lin import LinVersion
 
 class LinProductId:
     """
@@ -37,6 +38,10 @@ class LinProductId:
             raise ValueError(f"{variant} is invalid, must be 0-255 (8bit)")
 
         return LinProductId(supplier_id, function_id, variant)
+
+    def __str__(self) -> str:
+        return f"LinProductId(supplier=0x{self.supplier_id:02x},"\
+                f"function=0x{self.function_id:02x},variant={self.variant})"
 
 class LinNode:
     """
@@ -77,12 +82,35 @@ class LinMaster(LinNode):
 
 class LinSlave(LinNode):
     """
-    LinSlave is a LinNode that is listens to frame headers and publishes 
+    LinSlave is a LinNode that is listens to frame headers and publishes signals
+
+    :param lin_protocol: LIN protocol version that the node conforms with
+    :type lin_protocol: LinVersion
+    :param configured_nad: Network address of the node after network setup
+    :type configured_nad: int
+    :param initial_nad: Initial network address of the node
+    :type intial_nad: int
+    :param product_id: Product identifier of the node
+    :type product_id: LinProductId
+    :param response_error: A signal that the node uses to indicate frame errors
+    :type response_error: LinSignal
+    :param fault_state_signals: Signals that the node uses to indicate operating errors
+    :type fault_state_signals: List[LinSignal]
+    :param p2_min:
+    :type p2_min:
+    :param st_min:
+    :type st_min:
+    :param n_as_timeout:
+    :type n_as_timeout:
+    :param n_cr_timeout:
+    :type n_cr_timeout:
+    :param configurable_frames:
+    :type configurable_frames:
     """
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        self.lin_protocol: float = None
+        self.lin_protocol: 'LinVersion' = None
         self.configured_nad: int = None
         self.initial_nad: int = None
         self.product_id: LinProductId = None

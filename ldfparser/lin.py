@@ -4,7 +4,7 @@ Utility classes for LIN objects
 
 class LinVersion:
     """
-    
+
     """
 
     def __init__(self, version: float) -> None:
@@ -17,22 +17,16 @@ class LinVersion:
         return not self.__eq__(o)
 
     def __eq__(self, o: object) -> bool:
-        if isinstance(o, (float, int)):
-            return self.version == o
         if isinstance(o, LinVersion):
             return self.version == o.version
-        raise False
+        return False
 
     def __gt__(self, o) -> bool:
-        if isinstance(o, (float, int)):
-            return self.version > o
         if isinstance(o, LinVersion):
             return self.version > o.version
         raise TypeError()
 
     def __lt__(self, o) -> bool:
-        if isinstance(o, (float, int)):
-            return self.version < o
         if isinstance(o, LinVersion):
             return self.version < o.version
         raise TypeError()

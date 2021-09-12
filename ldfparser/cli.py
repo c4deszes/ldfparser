@@ -7,10 +7,12 @@ import sys
 
 from ldfparser import LDF, LinFrame, LinMaster, LinSignal, LinSlave, parseLDF
 
-def auto_int(number):
+def auto_int(number: str):
+    """Converts a string to integer"""
     return int(number, 0)
 
 def exit_with_error(code: int, message: str):
+    """Exits with the given exit code and message"""
     print(message, file=sys.stderr)
     sys.exit(code)
 

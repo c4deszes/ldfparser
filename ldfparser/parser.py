@@ -1,4 +1,5 @@
 import os
+import warnings
 from typing import Any, Union, Dict, List
 from lark import Lark, Transformer
 
@@ -6,12 +7,11 @@ from .frame import LinFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
 from .node import LinMaster, LinProductId, LinSlave
-from .comment import parseComments
-
+from .comment import parse_comments
 
 class LDF:
     def __init__(self):
-        self._source = None
+        self._source: Dict = None
         self.protocol_version: float = None
         self.language_version: float = None
         self.baudrate: int = None
@@ -45,16 +45,24 @@ class LDF:
         """
         return next((x for x in self.slaves if x.name == name), None)
 
-
-def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict[str, Any]:
+def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str = None) -> Dict:
     lark = os.path.join(os.path.dirname(__file__), 'lark', 'ldf.lark')
     parser = Lark(grammar=open(lark), parser='lalr')
     ldf_file = open(path, "r", encoding=encoding).read()
     tree = parser.parse(ldf_file)
     json = LDFTransformer().transform(tree)
-    if captureComments:
-        json['comments'] = parseComments(ldf_file)
+    if capture_comments:
+        json['comments'] = parse_comments(ldf_file)
     return json
+
+def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict:
+    """
+    Deprecated, use `parse_ldf_to_dict` instead
+
+    This method will be removed in 1.0.0
+    """
+    warnings.warn("'parseLDFtoDict' is deprecated, use 'parse_ldf_to_dict' instead")
+    return parse_ldf_to_dict(path, captureComments, encoding)
 
 
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:

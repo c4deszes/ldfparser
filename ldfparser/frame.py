@@ -1,3 +1,6 @@
+"""
+
+"""
 import bitstruct
 
 from typing import Dict, List, Tuple, Union
@@ -5,18 +8,18 @@ from typing import Dict, List, Tuple, Union
 from .signal import LinSignal
 from .encoding import LinSignalType
 
-class LinFrame:
+class LinFrame():
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
         self.frame_id = frame_id
         self.name = name
         self.publisher = None
         self.length = length
-        orderedSignals = sorted(signals.items(), key=lambda x: x[0])
-        self.signal_map = orderedSignals
-        self.signals = [i[1] for i in orderedSignals]
-        self._pattern = self._frame_pattern(length * 8, orderedSignals)
-        self._packer = bitstruct.compile(self._pattern)
+        ordered_signals = sorted(signals.items(), key=lambda x: x[0])
+        self.signal_map = ordered_signals
+        self.signals = [i[1] for i in ordered_signals]
+        pattern = self._frame_pattern(length * 8, ordered_signals)
+        self._packer = bitstruct.compile(pattern)
 
     def _frame_pattern(self, frame_bits: int, signals: List[Tuple[int, LinSignal]]) -> str:
         pattern = "<"
@@ -58,9 +61,11 @@ class LinFrame:
                     message += signal.init_value
                 else:
                     message.append(signal.init_value)
-        return self._flip_bytearray(self._packer.pack(*message))
+        return LinFrame._flip_bytearray(self._packer.pack(*message))
 
-    def data(self, data: Dict[str, Union[str, int, float]], converters: Dict[str, LinSignalType]) -> bytearray:
+    def data(self,
+             data: Dict[str, Union[str, int, float]],
+             converters: Dict[str, LinSignalType]) -> bytearray:
         """
         Returns a bytearray (frame content) by using the human readable signal values
         """
@@ -76,7 +81,7 @@ class LinFrame:
         Returns a mapping between Signal names and their raw physical values in the given message
         """
         message = {}
-        unpacked = self._packer.unpack(self._flip_bytearray(data))
+        unpacked = self._packer.unpack(LinFrame._flip_bytearray(data))
         signal_index = 0
         i = 0
         while i < len(unpacked):
@@ -90,7 +95,9 @@ class LinFrame:
             i += 1
         return message
 
-    def parse(self, data: bytearray, converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:
+    def parse(self,
+              data: bytearray,
+              converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:
         """
         Returns a mapping between Signal names and their human readable value
         """
@@ -102,7 +109,8 @@ class LinFrame:
             output[value[0]] = converters[value[0]].decode(value[1], self._get_signal(value[0]))
         return output
 
-    def _flip_bytearray(self, data: bytearray) -> bytearray:
+    @staticmethod
+    def _flip_bytearray(data: bytearray) -> bytearray:
         flipped = bytearray()
         for i in data:
             flipped.append(int('{:08b}'.format(i)[::-1], 2))

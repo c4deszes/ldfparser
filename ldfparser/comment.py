@@ -1,5 +1,5 @@
 """
-
+Utilities for parsing comments from Lark files
 """
 import os
 import warnings

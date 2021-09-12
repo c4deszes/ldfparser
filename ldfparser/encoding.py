@@ -3,7 +3,10 @@ Contains classes that are used to encode and decode Lin Signals.
 
 Signal encoding is specified in the LIN 2.1 Specification, section 9.2.6.1
 """
-from typing import List, Union, Any
+from typing import List, Union, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .signal import LinSignal
 
 class ValueConverter():
     """
@@ -11,22 +14,28 @@ class ValueConverter():
     their human readable form
     """
 
-    def encode(self, value: Any, signal) -> Union[int, List[int]]:
+    def encode(self, value: Any, signal: 'LinSignal') -> Union[int, List[int]]:
         """
         Converts the human readable value into the raw bytes that will be sent
         """
         raise NotImplementedError()
 
-    def decode(self, value: Union[int, List[int]], signal) -> Any:
+    def decode(self, value: Union[int, List[int]], signal: 'LinSignal') -> Any:
         """
         Converts the received raw bytes into the human readable form
         """
         raise NotImplementedError()
 
 class PhysicalValue(ValueConverter):
-    """Value converter for physical values
+    """
+    Value converter for physical values
+
+    A physical value encoder converts a range of values into a different range of values.
+
+    :Example:
     
-    
+    `PhysicalValue(phy_min=0, phy_max=100, scale=50, offset=400, unit='rpm')` maps signal values
+    from 0-100 into a range of 400 - 5400 rpm.
     """
 
     def __init__(self, phy_min: int, phy_max: int, scale: float, offset: float, unit: str = None):
@@ -36,7 +45,7 @@ class PhysicalValue(ValueConverter):
         self.offset = offset
         self.unit = unit
 
-    def encode(self, value: Union[str, int, float], signal) -> int:
+    def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
         num = 0.0
         if isinstance(value, str) and self.unit is not None and value.endswith(self.unit):
             num = float(value[:-len(self.unit)])
@@ -52,33 +61,44 @@ class PhysicalValue(ValueConverter):
 
         return raw
 
-    def decode(self, value: int, signal) -> float:
+    def decode(self, value: int, signal: 'LinSignal') -> float:
         if value < self.phy_min or value > self.phy_max:
             raise ValueError(f"value: {value} out of range ({self.phy_min}, {self.phy_max})")
 
         return float(value * self.scale + self.offset)
 
 class LogicalValue(ValueConverter):
+    """
+    Value converter for logical values
+
+    A logical value encoder converts a particular value into another value.
+
+    :Example:
+
+    `LogicalValue(phy_value=0, unit='off')` maps the signal value `0` into `'off'`
+
+    `LogicalValue(phy_value=1, unit='on')` maps the signal value `1` into `'on'`
+    """
 
     def __init__(self, phy_value: int, info: str = None):
         self.phy_value = phy_value
         self.info = info
 
-    def encode(self, value: Union[str, int], signal) -> int:
+    def encode(self, value: Union[str, int], signal: 'LinSignal') -> int:
         if self.info is None and value == self.phy_value:
             return self.phy_value
         if self.info is not None and value == self.info:
             return self.phy_value
         raise ValueError(f"value: {value} not equal to signal info")
 
-    def decode(self, value: int, signal) -> Union[str, int]:
+    def decode(self, value: int, signal: 'LinSignal') -> Union[str, int]:
         if value == self.phy_value:
             return self.info if self.info is not None else self.phy_value
         raise ValueError(f"value: {value} not equal to {self.phy_value}")
 
 class BCDValue(ValueConverter):
 
-    def encode(self, value: int, signal) -> List[int]:
+    def encode(self, value: int, signal: 'LinSignal') -> List[int]:
         if value > 10**int(signal.width / 8):
             raise ValueError(f"cannot convert value {value} to bcd, out of {signal} bounds")
         bcd = []
@@ -86,7 +106,7 @@ class BCDValue(ValueConverter):
             bcd.append(value // 10**i % 10)
         return bcd
 
-    def decode(self, value: List[int], signal) -> int:
+    def decode(self, value: List[int], signal: 'LinSignal') -> int:
         out = 0
         length = int(signal.width / 8)
         for i in range(length):
@@ -95,19 +115,40 @@ class BCDValue(ValueConverter):
 
 class ASCIIValue(ValueConverter):
 
-    def encode(self, value: str, signal) -> List[int]:
+    def encode(self, value: str, signal: 'LinSignal') -> List[int]:
         return list(value.encode())
 
-    def decode(self, value: List[int], signal) -> str:
+    def decode(self, value: List[int], signal: 'LinSignal') -> str:
         return bytes(value).decode()
 
-class LinSignalType:
+class LinSignalType():
+    """
+    LinSignalType is used to encode and decode LIN signals
 
-    def __init__(self, name, converters: List[ValueConverter]):
-        self.name = name
-        self._converters = converters
+    An encoding type contains multiple value converters.
 
-    def encode(self, value: Union[str, int, float], signal) -> int:
+    :param name: Signal encoding type name
+    :type name: `str`
+    :param converters: Value converters in the encoding type
+    :type converters: `List[ValueConverter]`
+
+    :Example:
+
+    ```
+    LinSignalType(name="MotorSpeed",
+                  [
+                    LogicalValue(phy_value=0, info='off')
+                    PhysicalValue(phy_min=1, phy_max=254, scale=10, offset=100, unit='rpm')
+                    LogicalValue(phy_value=255, info='error')
+                  ])
+    ```
+    """
+
+    def __init__(self, name: str, converters: List[ValueConverter]):
+        self.name: str = name
+        self._converters: List[ValueConverter] = converters
+
+    def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
         out = None
         for encoder in self._converters:
             try:
@@ -117,10 +158,10 @@ class LinSignalType:
                 pass
 
         if out is None:
-            raise ValueError(f"cannot encode {value} as {self.name}")
+            raise ValueError(f"cannot encode '{value}' as {self.name}")
         return out
 
-    def decode(self, value: int, signal) -> Union[str, int, float]:
+    def decode(self, value: int, signal: 'LinSignal') -> Union[str, int, float]:
         out = None
         for decoder in self._converters:
             try:

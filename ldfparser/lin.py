@@ -8,7 +8,7 @@ class LinVersion:
     """
 
     def __init__(self, version: float) -> None:
-        self.version : float = version
+        self.version: float = version
 
     def __str__(self) -> str:
         return f"{self.version:.01f}"

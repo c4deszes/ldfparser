@@ -1,11 +1,22 @@
-from typing import List
+"""
 
-from .frame import LinFrame
-from .signal import LinSignal
+"""
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .frame import LinFrame
+    from .signal import LinSignal
 
 class LinProductId:
     """
-    
+    LinProductId identifies a node's manufacturer and product
+
+    :param supplier_id: a number uniquely identifying the manufacturer of the node
+    :type supplier_id: int
+    :param function_id: a number assigned by the manufacturer that identifies the product
+    :type function_id: int
+    :param variant: an optional number identifying a variant of the product
+    :type variant: int
     """
 
     def __init__(self, supplier_id: int, function_id: int, variant: int = 0):
@@ -13,20 +24,50 @@ class LinProductId:
         self.function_id: int = function_id
         self.variant: int = variant
 
+    @staticmethod
+    def create(supplier_id: int, function_id: int, variant: int = 0):
+        """
+        Creates a new LinProductId object and validates it's fields
+        """
+        if supplier_id < 0 or supplier_id > 0x7FFF:
+            raise ValueError(f"{supplier_id} is invalid, must be 0-32767")
+        if function_id < 0 or function_id > 0xFFFF:
+            raise ValueError(f"{function_id} is invalid, must be 0-65535 (16bit)")
+        if variant < 0 or variant > 0xFF:
+            raise ValueError(f"{variant} is invalid, must be 0-255 (8bit)")
+
+        return LinProductId(supplier_id, function_id, variant)
+
 class LinNode:
     """
-    
+    Abstract LIN Node class
+
+    Contains the following common attributes:
+
+    :param name: Name of the node
+    :type name: str
+    :param subscribes_to: LIN signals that the node is subscribed to
+    :type subscribes_to: List[LinSignal]
+    :param publishes: LIN signals that the node is publishing
+    :type publishes: List[LinSignal]
+    :param publishes_frames: LIN frames that the node is publishing
+    :type publishes_frames: List[LinFrame]
     """
 
     def __init__(self, name: str):
         self.name = name
-        self.subscribes_to: List[LinSignal] = []
-        self.publishes: List[LinSignal] = []
-        self.publishes_frames: List[LinFrame] = []
+        self.subscribes_to: List['LinSignal'] = []
+        self.publishes: List['LinSignal'] = []
+        self.publishes_frames: List['LinFrame'] = []
 
 class LinMaster(LinNode):
     """
-    
+    LinMaster is a LinNode that controls communication on the network
+
+    :param timebase: LIN network timebase
+    :type timebase: float
+    :param jitter: LIN network jitter
+    :type jitter: float
     """
 
     def __init__(self, name: str, timebase: float, jitter: float):
@@ -36,7 +77,7 @@ class LinMaster(LinNode):
 
 class LinSlave(LinNode):
     """
-    
+    LinSlave is a LinNode that is listens to frame headers and publishes 
     """
 
     def __init__(self, name: str) -> None:
@@ -45,8 +86,8 @@ class LinSlave(LinNode):
         self.configured_nad: int = None
         self.initial_nad: int = None
         self.product_id: LinProductId = None
-        self.response_error: LinSignal = None
-        self.fault_state_signals: List[LinSignal] = []
+        self.response_error: 'LinSignal' = None
+        self.fault_state_signals: List['LinSignal'] = []
         self.p2_min: float = 0.05
         self.st_min: float = 0
         self.n_as_timeout: float = 1

@@ -46,6 +46,14 @@ class LDF:
         return next((x for x in self.slaves if x.name == name), None)
 
 def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str = None) -> Dict:
+    """
+    Parses an LDF file into a Python dictionary.
+
+    :param path: Path to the LDF file
+    :type path: str
+    :param encoding: File encoding, for example 'UTF-8'
+    :type encoding: str
+    """
     lark = os.path.join(os.path.dirname(__file__), 'lark', 'ldf.lark')
     parser = Lark(grammar=open(lark), parser='lalr')
     ldf_file = open(path, "r", encoding=encoding).read()
@@ -65,8 +73,16 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
     return parse_ldf_to_dict(path, captureComments, encoding)
 
 
-def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
-    json = parseLDFtoDict(path, captureComments, encoding)
+def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -> LDF:
+    """
+    Parses an LDF file into an object
+
+    :param path: Path to the LDF file
+    :type path: str
+    :param encoding: File encoding, for example 'UTF-8'
+    :type encoding: str
+    """
+    json = parse_ldf_to_dict(path, capture_comments, encoding)
     ldf = LDF()
     ldf._source = json
 
@@ -79,10 +95,19 @@ def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> 
     _link_ldf_signals(json, ldf)
     _link_ldf_frames(json, ldf)
 
-    if captureComments:
+    if capture_comments:
         ldf.comments = json['comments']
 
     return ldf
+
+def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
+    """
+    Deprecated, use `parse_ldf` instead
+
+    This method will be removed in 1.0.0
+    """
+    warnings.warn("'parseLDF' is deprecated, use 'parse_ldf' instead")
+    return parse_ldf(path, captureComments, encoding)
 
 
 def _populate_ldf_header(json: dict, ldf: LDF):

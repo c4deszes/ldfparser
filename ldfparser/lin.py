@@ -12,7 +12,18 @@ class LinVersion:
         self.minor = minor
 
     @staticmethod
-    def from_string(self, version: str) -> 'LinVersion':
+    def from_string(version: str) -> 'LinVersion':
+        """
+        Creates a LinVersion object from the given string
+
+        :Example:
+        `LinVersion.create('2.1')` will return `LinVersion(major=2, minor=1)`
+
+        :param version: Version
+        :type version: str
+        :returns: LIN version
+        :rtype: LinVersion
+        """
         (major, minor) = version.split('.')
 
         return LinVersion(major=int(major), minor=int(minor))

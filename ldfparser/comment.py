@@ -20,7 +20,7 @@ def parse_comments(content: str) -> List[str]:
     return CommentCollector().transform(tree)
 
 def parseComments(content: str) -> List[str]:
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     """Deprecated, use `parse_comments` instead
 
     This method will be removed in 1.0.0

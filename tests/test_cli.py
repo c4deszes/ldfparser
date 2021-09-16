@@ -3,7 +3,6 @@ import sys
 from unittest.mock import patch
 from ldfparser.cli import main
 
-
 @pytest.mark.unit
 @pytest.mark.parametrize('command', [
     ['ldfparser', '-h'],
@@ -26,7 +25,6 @@ def test_valid_commands(command):
     with pytest.raises(SystemExit) as exit_ex, patch.object(sys, 'argv', command):
         main()
     assert exit_ex.value.code == 0
-
 
 @pytest.mark.unit
 @pytest.mark.parametrize('command', [

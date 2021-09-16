@@ -42,7 +42,8 @@ that only use the `ldfparser` package are backwards compatible
 #### Dictionary object
 
 - `protocol_version` and `language_version` were changed to be of string type, the previous floating
-point values were good for comparing versions but it's overall problematic due to precision issues
+point values were good for comparing versions but it's overall problematic due to precision issues,
+if you still need floating point values then you must convert them in your scripts
 
 #### LDF object
 

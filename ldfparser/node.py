@@ -41,7 +41,7 @@ class LinProductId:
 
     def __str__(self) -> str:
         return f"LinProductId(supplier=0x{self.supplier_id:02x},"\
-                f"function=0x{self.function_id:02x},variant={self.variant})"
+               f"function=0x{self.function_id:02x},variant={self.variant})"
 
 class LinNode:
     """

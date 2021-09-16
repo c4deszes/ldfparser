@@ -1,6 +1,6 @@
 import os
 import warnings
-from typing import Any, Union, Dict, List
+from typing import Any, Dict, List
 from lark import Lark, Transformer
 
 from .frame import LinFrame
@@ -29,6 +29,7 @@ def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str =
     return json
 
 def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict:
+    # pylint: disable=invalid-name
     """
     Deprecated, use `parse_ldf_to_dict` instead
 
@@ -65,12 +66,12 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     return ldf
 
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
+    # pylint: disable=invalid-name
     """
     Deprecated, use `parse_ldf` instead, this method will be removed in 1.0.0
     """
     warnings.warn("'parseLDF' is deprecated, use 'parse_ldf' instead", DeprecationWarning)
     return parse_ldf(path, captureComments, encoding)
-
 
 def _populate_ldf_header(json: dict, ldf: LDF):
     ldf.protocol_version = _require_key(json, 'protocol_version', 'LDF missing protocol version.')
@@ -78,11 +79,9 @@ def _populate_ldf_header(json: dict, ldf: LDF):
     ldf.baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
     ldf.channel = json.get('channel_name')
 
-
 def _populate_ldf_signals(json: dict, ldf: LDF):
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
         ldf.signals.append(LinSignal.create(signal['name'], signal['width'], signal['init_value']))
-
 
 def _populate_ldf_frames(json: dict, ldf: LDF):
     for frame in _require_key(json, 'frames', 'LDF missing Frames section.'):
@@ -107,7 +106,6 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
 
         ldf.frames.append(LinFrame(frame['frame_id'], frame['name'], length, signals))
 
-
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
     master_node = nodes['master']
@@ -123,7 +121,6 @@ def _populate_ldf_nodes(json: dict, ldf: LDF):
             node = LinSlave(slave)
             node.lin_protocol = ldf.protocol_version
             ldf.slaves.append(node)
-
 
 def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']
@@ -148,7 +145,6 @@ def _create_ldf2x_node(node: dict, language_version: float):
     slave.n_cr_timeout = node.get('N_Cr_timeout', None)
 
     return slave
-
 
 def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
@@ -187,9 +183,8 @@ def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
                 for (frame, pid) in node['configurable_frames'].items():
                     slave.configurable_frames[pid] = ldf.frame(frame)
             elif isinstance(node['configurable_frames'], List):
-                for (id, frame) in enumerate(node['configurable_frames']):
-                    slave.configurable_frames[id] = ldf.frame(frame)
-
+                for (idx, frame) in enumerate(node['configurable_frames']):
+                    slave.configurable_frames[idx] = ldf.frame(frame)
 
 def _link_ldf_frames(json: dict, ldf: LDF):
     for frame in _require_key(json, 'frames', 'LDF missing Frames sections.'):
@@ -204,20 +199,18 @@ def _link_ldf_frames(json: dict, ldf: LDF):
             slave.publishes_frames.append(frame_obj)
             frame_obj.publisher = slave
 
-
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
     if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
         return
-    signalTypes = {}
+    signal_types = {}
     for encoding_type in json['signal_encoding_types']:
         converters = []
         for encoding_value in encoding_type['values']:
             converters.append(_convert_encoding_value(encoding_value))
-        signalTypes[encoding_type['name']] = LinSignalType(encoding_type['name'], converters)
+        signal_types[encoding_type['name']] = LinSignalType(encoding_type['name'], converters)
     for representations in json['signal_representations']:
         for signal in representations['signals']:
-            ldf.converters[signal] = signalTypes[representations['encoding']]
-
+            ldf.converters[signal] = signal_types[representations['encoding']]
 
 def _convert_encoding_value(json: dict) -> ValueConverter:
     if json['type'] == 'logical':
@@ -230,24 +223,25 @@ def _convert_encoding_value(json: dict) -> ValueConverter:
         return ASCIIValue()
     raise ValueError(f"Unsupported value type {json['type']}")
 
-def _require_key(a: dict, k: str, msg: str) -> Any:
-    if a.get(k) is None:
+def _require_key(value: dict, key: str, msg: str) -> Any:
+    if value.get(key) is None:
         raise ValueError(msg)
-    return a[k]
+    return value[key]
 
 class LDFTransformer(Transformer):
-    def parse_integer(self, i: str):
-        try:
-            return int(i)
-        except ValueError:
-            return int(i, 16)
+    # pylint: disable=missing-function-docstring,no-self-use,too-many-public-methods,unused-argument
+    """
+    Transforms the LDF grammar into a Python dictionary
+    """
 
-    def parse_real_or_integer(self, i: str):
+    def parse_integer(self, value: str):
         try:
-            return float(i)
+            return int(value)
         except ValueError:
-            # TODO: dead code
-            return self.parse_integer(i)
+            return int(value, 16)
+
+    def parse_real_or_integer(self, value: str):
+        return float(value)
 
     def ldf_identifier(self, tree):
         return tree[0][0:]
@@ -395,8 +389,8 @@ class LDFTransformer(Transformer):
 
     def node_definition_configurable_frames_20(self, tree):
         frames = {}
-        a = iter(tree)
-        for frame, msg_id in zip(a, a):
+        value = iter(tree)
+        for frame, msg_id in zip(value, value):
             frames[frame] = msg_id
         return ("configurable_frames", frames)
 
@@ -453,8 +447,8 @@ class LDFTransformer(Transformer):
 
     def signal_group(self, tree):
         signals = {}
-        a = iter(tree[2:])
-        for signal, offset in zip(a, a):
+        value = iter(tree[2:])
+        for signal, offset in zip(value, value):
             signals[signal] = offset
         return {"name": tree[0], "size": tree[1], "signals": signals}
 

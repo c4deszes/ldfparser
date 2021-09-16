@@ -3,7 +3,7 @@ start: ldf
 ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | nodes | node_compositions | signals | diagnostic_signals | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
 
 ldf_identifier: CNAME
-ldf_version: C_INT "." C_INT
+ldf_version: C_VERSION
 ldf_integer: C_INT
 ldf_float: C_FLOAT
 
@@ -106,6 +106,7 @@ signal_representation_node: ldf_identifier ":" ldf_identifier ("," ldf_identifie
 
 C_INT: ("0x"HEXDIGIT+) | ("-"? INT) 
 C_FLOAT: "-"? INT ("." INT)?
+C_VERSION: INT "." INT
 
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 

@@ -252,6 +252,9 @@ class LDFTransformer(Transformer):
     def ldf_identifier(self, tree):
         return tree[0][0:]
 
+    def ldf_version(self, tree):
+        return tree[0][0:]
+
     def ldf_integer(self, tree):
         return self.parse_integer(tree[0])
 

@@ -8,9 +8,7 @@
 			"pattern": "lin_description_file"
 		},
 		"version": {
-			"type": "number",
-			"minimum": 0,
-			"maximum": 2.2
+			"type": "string"
 		},
 		"master": {
 			"type": "object",
@@ -141,7 +139,7 @@
 					"type": "string"
 				},
 				"lin_protocol": {
-					"type": "number"
+					"$ref": "#/definitions/version"
 				},
 				"configured_nad": {
 					"type": "integer"
@@ -474,8 +472,7 @@
 			"$ref": "#/definitions/header"
 		},
 		"protocol_version": {
-			"$ref": "#/definitions/version",
-			"description": ""
+			"$ref": "#/definitions/version"
 		},
 		"language_version": {
 			"$ref": "#/definitions/version"

@@ -25,7 +25,7 @@ def parseComments(content: str) -> List[str]:
 
     This method will be removed in 1.0.0
     """
-    warnings.warn("'parseComments' is deprecated, use 'parse_comments' instead")
+    warnings.warn("'parseComments' is deprecated, use 'parse_comments' instead", DeprecationWarning)
     return parse_comments(content)
 
 class CommentCollector(Transformer):

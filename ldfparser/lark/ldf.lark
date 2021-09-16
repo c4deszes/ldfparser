@@ -3,13 +3,14 @@ start: ldf
 ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | nodes | node_compositions | signals | diagnostic_signals | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
 
 ldf_identifier: CNAME
+ldf_version: C_INT "." C_INT
 ldf_integer: C_INT
 ldf_float: C_FLOAT
 
 // LIN 2.1 Specification, section 9.2.1
 header_lin_description_file: "LIN_description_file" ";"
-header_protocol_version: "LIN_protocol_version" "=" "\"" ldf_float "\"" ";"
-header_language_version: "LIN_language_version" "=" "\"" ldf_float "\"" ";"
+header_protocol_version: "LIN_protocol_version" "=" "\"" ldf_version "\"" ";"
+header_language_version: "LIN_language_version" "=" "\"" ldf_version "\"" ";"
 header_speed: "LIN_speed" "=" ldf_float "kbps" ";"
 header_channel: "Channel_name" "=" "\"" ldf_identifier "\"" ";"
 
@@ -55,7 +56,7 @@ diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" (ANY_SEMICOLON_T
 // LIN 2.1 Specification, section 9.2.2.2
 node_attributes: "Node_attributes" "{" (node_definition*) "}"
 node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames)* "}"
-node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_float "\""] | ldf_float) ";"
+node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_version "\""] | ldf_version) ";"
 node_definition_configured_nad: "configured_NAD" "=" ldf_integer ";"
 node_definition_initial_nad: "initial_NAD" "=" ldf_integer ";"
 node_definition_product_id: "product_id" "=" ldf_integer "," ldf_integer ("," ldf_integer)? ";"

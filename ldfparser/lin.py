@@ -4,7 +4,7 @@ Utility classes for LIN objects
 
 class LinVersion:
     """
-
+    LinVersion represents the LIN protocol and LDF language versions
     """
 
     def __init__(self, major: int, minor: int) -> None:
@@ -19,6 +19,11 @@ class LinVersion:
 
     def __str__(self) -> str:
         return f"{self.major}.{self.minor}"
+
+    def __float__(self) -> float:
+        # This function shall be removed once the properties on the LDF object
+        # have been deprecated and removed
+        return self.major + self.minor * 0.1
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, LinVersion):

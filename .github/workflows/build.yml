@@ -13,10 +13,6 @@ on:
       - '*.md'
       - '**/*.md'
       - 'docs/**.*'
-    types:
-      - opened
-      - edited
-      - synchronize
 
 jobs:
   build:
@@ -121,7 +117,7 @@ jobs:
         working-directory: base
         run: |
           pip install -r requirements.txt
-          python setup.py install
+          pip install -e .
 
       - name: Generate snapshot data
         working-directory: base

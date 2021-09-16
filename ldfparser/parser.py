@@ -8,42 +8,7 @@ from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
 from .node import LinMaster, LinProductId, LinSlave
 from .comment import parse_comments
-
-class LDF:
-    def __init__(self):
-        self._source: Dict = None
-        self.protocol_version: float = None
-        self.language_version: float = None
-        self.baudrate: int = None
-        self.channel: str = None
-        self.master: LinMaster = None
-        self.slaves: List[LinSlave] = []
-        self.signals: List[LinSignal] = []
-        self.frames: List[LinFrame] = []
-        self.converters: Dict[str, LinSignalType] = {}
-        self.comments: List[str] = []
-
-    def signal(self, name: str) -> LinSignal:
-        """
-        Returns Signal with the given name
-        """
-        return next((x for x in self.signals if x.name == name), None)
-
-    def frame(self, frame_id: Union[int, str]) -> LinFrame:
-        """
-        Returns a Frame with the given id, or the given name
-        """
-        if isinstance(frame_id, int):
-            return next((x for x in self.frames if x.frame_id == frame_id), None)
-        elif isinstance(frame_id, str):
-            return next((x for x in self.frames if x.name == frame_id), None)
-        return None
-
-    def slave(self, name: str) -> LinSlave:
-        """
-        Returns Lin Slave with the given name
-        """
-        return next((x for x in self.slaves if x.name == name), None)
+from .ldf import LDF
 
 def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str = None) -> Dict:
     """
@@ -69,9 +34,8 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
 
     This method will be removed in 1.0.0
     """
-    warnings.warn("'parseLDFtoDict' is deprecated, use 'parse_ldf_to_dict' instead")
+    warnings.warn("'parseLDFtoDict' is deprecated, use 'parse_ldf_to_dict' instead", DeprecationWarning)
     return parse_ldf_to_dict(path, captureComments, encoding)
-
 
 def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -> LDF:
     """
@@ -102,11 +66,9 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
 
 def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> LDF:
     """
-    Deprecated, use `parse_ldf` instead
-
-    This method will be removed in 1.0.0
+    Deprecated, use `parse_ldf` instead, this method will be removed in 1.0.0
     """
-    warnings.warn("'parseLDF' is deprecated, use 'parse_ldf' instead")
+    warnings.warn("'parseLDF' is deprecated, use 'parse_ldf' instead", DeprecationWarning)
     return parse_ldf(path, captureComments, encoding)
 
 

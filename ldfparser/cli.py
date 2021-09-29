@@ -139,7 +139,7 @@ def print_ldf_info(ldf: LDF, extended: bool = False):
 
 def print_slave_info(slave: LinSlave):
     print(f"Name: {slave.name}")
-    print(f"Protocol: {slave.lin_protocol:.01f}")
+    print(f"Protocol: {slave.lin_protocol}")
     print(f"Configured NAD: 0x{slave.configured_nad:02x}")
     print(f"Initial NAD: 0x{slave.initial_nad:02x}")
     print("Product Id:")

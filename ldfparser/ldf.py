@@ -111,7 +111,7 @@ class LDF():
                 raise LookupError(f"No frame named '{frame_id}' found!")
             return frame
         if isinstance(frame_id, int):
-            frame = next((x for x in self.frames if x.name == frame_id), None)
+            frame = next((x for x in self.frames if x.frame_id == frame_id), None)
             if frame is None:
                 raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
             return frame
@@ -192,6 +192,10 @@ class LDF():
     def frames(self) -> List[LinFrame]:
         # pylint: disable=missing-function-docstring
         return self.get_frames()
+
+    @property
+    def converters(self) -> Dict[str, LinSignalType]:
+        return None
 
     # These functions are maintained in order to keep compatibility
     # with pre-0.10.0 versions

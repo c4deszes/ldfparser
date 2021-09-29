@@ -23,6 +23,7 @@ def test_linversion_less_than_version():
 
 @pytest.mark.unit()
 def test_linversion_greater_than_version():
+    assert not LIN_VERSION_1_3 > LIN_VERSION_2_0
     assert LIN_VERSION_2_0 > LIN_VERSION_1_3
     assert LIN_VERSION_2_1 > LIN_VERSION_2_0
     assert LIN_VERSION_2_2 > LIN_VERSION_2_1

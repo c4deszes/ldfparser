@@ -69,9 +69,9 @@ class LinMaster(LinNode):
     """
     LinMaster is a LinNode that controls communication on the network
 
-    :param timebase: LIN network timebase
+    :param timebase: LIN network timebase in seconds
     :type timebase: float
-    :param jitter: LIN network jitter
+    :param jitter: LIN network jitter in seconds
     :type jitter: float
     """
 

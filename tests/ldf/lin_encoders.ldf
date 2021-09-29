@@ -33,7 +33,6 @@ Node_attributes {
     LIN_protocol = "2.1" ;
     configured_NAD = 0x20 ;
     product_id = 0x5, 0xA5A5, 0 ;
-    response_error = RE;
     P2_min = 50 ms ;
     ST_min = 0 ms ;
     N_As_timeout = 1000 ms ;

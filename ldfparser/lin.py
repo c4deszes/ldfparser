@@ -43,12 +43,20 @@ class LinVersion:
 
     def __gt__(self, o) -> bool:
         if isinstance(o, LinVersion):
-            return self.major > o.major or self.minor > o.minor
+            if self.major > o.major:
+                return True
+            if self.major == o.major and self.minor > o.minor:
+                return True
+            return False
         raise TypeError()
 
     def __lt__(self, o) -> bool:
         if isinstance(o, LinVersion):
-            return self.major < o.major or self.minor < o.minor
+            if self.major < o.major:
+                return True
+            if self.major == o.major and self.minor < o.minor:
+                return True
+            return False
         raise TypeError()
 
     def __ge__(self, o) -> bool:

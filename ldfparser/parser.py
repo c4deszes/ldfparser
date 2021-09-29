@@ -6,6 +6,7 @@ from lark import Lark, Transformer
 from .frame import LinFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
+from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion
 from .node import LinMaster, LinProductId, LinSlave
 from .comment import parse_comments
 from .ldf import LDF
@@ -74,27 +75,27 @@ def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> 
     return parse_ldf(path, captureComments, encoding)
 
 def _populate_ldf_header(json: dict, ldf: LDF):
-    ldf.protocol_version = _require_key(json, 'protocol_version', 'LDF missing protocol version.')
-    ldf.language_version = _require_key(json, 'language_version', 'LDF missing language version.')
-    ldf.baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
-    ldf.channel = json.get('channel_name')
+    ldf._protocol_version = LinVersion.from_string(_require_key(json, 'protocol_version', 'LDF missing protocol version.'))
+    ldf._language_version = LinVersion.from_string(_require_key(json, 'language_version', 'LDF missing language version.'))
+    ldf._baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
+    ldf._channel = json.get('channel_name')
 
 def _populate_ldf_signals(json: dict, ldf: LDF):
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
-        ldf.signals.append(LinSignal.create(signal['name'], signal['width'], signal['init_value']))
+        ldf._signals[signal['name']] = LinSignal.create(signal['name'], signal['width'], signal['init_value'])
 
 def _populate_ldf_frames(json: dict, ldf: LDF):
     for frame in _require_key(json, 'frames', 'LDF missing Frames section.'):
         signals = {}
 
         for signal in frame['signals']:
-            s = ldf.signal(signal['signal'])
+            s = ldf.get_signal(signal['signal'])
             if s is None:
                 raise ValueError(f"{frame['name']} references non existing signal {signal['signal']}")
             signals[signal['offset']] = s
 
         length = frame['length']
-        if length is None and ldf.language_version > 2.0:
+        if length is None and ldf.get_language_version() > LIN_VERSION_2_0:
             raise ValueError(f"Frame({frame['frame_id']}, {frame['name']}) has no length specified, only allowed in LIN 2.0 and below.")
         if length is None:
             if 0 <= frame['frame_id'] <= 31:
@@ -104,23 +105,23 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
             elif 48 <= frame['frame_id'] <= 63:
                 length = 8
 
-        ldf.frames.append(LinFrame(frame['frame_id'], frame['name'], length, signals))
+        ldf._frames[frame['name']] = LinFrame(frame['frame_id'], frame['name'], length, signals)
 
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
     master_node = nodes['master']
-    ldf.master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
+    ldf._master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
 
-    if ldf.language_version >= 2.0:
+    if ldf.get_language_version() >= LIN_VERSION_2_0:
         for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LDF 2.0+'):
             if node['name'] not in nodes['slaves']:
                 raise ValueError(f"Node {node['name']} is configured but not listed as a slave.")
-            ldf.slaves.append(_create_ldf2x_node(node, ldf.language_version))
+            ldf._slaves[node['name']] = _create_ldf2x_node(node, ldf.get_language_version())
     else:
         for slave in nodes['slaves']:
             node = LinSlave(slave)
             node.lin_protocol = ldf.protocol_version
-            ldf.slaves.append(node)
+            ldf._slaves[node.name] = node
 
 def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']
@@ -136,7 +137,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
         variant = node['product_id']['variant']
         product_id = LinProductId(supplier, function, variant)
         slave.product_id = product_id
-    elif language_version >= 2.1:
+    elif language_version >= LIN_VERSION_2_1:
         raise ValueError(f"Node {name} has no product_id specified, required for LDF 2.1+")
 
     slave.p2_min = node.get('P2_min', None)
@@ -148,10 +149,10 @@ def _create_ldf2x_node(node: dict, language_version: float):
 
 def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
-        signal_obj = ldf.signal(signal['name'])
+        signal_obj = ldf.get_signal(signal['name'])
         if signal['publisher'] == ldf.master.name:
-            ldf.master.publishes.append(signal_obj)
-            signal_obj.publisher = ldf.master
+            ldf._master.publishes.append(signal_obj)
+            signal_obj.publisher = ldf._master
         else:
             slave = ldf.slave(signal['publisher'])
             if slave is None:
@@ -159,9 +160,9 @@ def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
             slave.publishes.append(signal_obj)
             signal_obj.publisher = slave
 
-        if ldf.master.name in signal['subscribers']:
-            ldf.master.subscribes_to.append(signal_obj)
-            signal_obj.subscribers.append(ldf.master)
+        if ldf._master.name in signal['subscribers']:
+            ldf._master.subscribes_to.append(signal_obj)
+            signal_obj.subscribers.append(ldf._master)
         for subscriber in signal['subscribers']:
             if subscriber != ldf.master.name:
                 slave = ldf.slave(subscriber)
@@ -169,31 +170,32 @@ def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
                     raise ValueError(f"Signal {signal_obj.name} references non existent node {subscriber}")
                 slave.subscribes_to.append(signal_obj)
                 signal_obj.subscribers.append(slave)
-    if ldf.protocol_version < 2.0:
+    if ldf.get_protocol_version() < LIN_VERSION_2_0:
         return
     for node in json['node_attributes']:
-        slave = ldf.slave(node['name'])
+        slave = ldf.get_slave(node['name'])
         if node.get('response_error'):
-            slave.response_error = ldf.signal(node['response_error'])
+            slave.response_error = ldf.get_signal(node['response_error'])
         if node.get('fault_state_signals'):
             for signal in node['fault_state_signals']:
-                slave.fault_state_signals.append(ldf.signal(signal))
+                slave.fault_state_signals.append(ldf.get_signal(signal))
         if node.get('configurable_frames'):
-            if isinstance(node['configurable_frames'], Dict):
-                for (frame, pid) in node['configurable_frames'].items():
-                    slave.configurable_frames[pid] = ldf.frame(frame)
-            elif isinstance(node['configurable_frames'], List):
-                for (idx, frame) in enumerate(node['configurable_frames']):
-                    slave.configurable_frames[idx] = ldf.frame(frame)
+            pass
+            # if isinstance(node['configurable_frames'], Dict):
+            #     for (frame, pid) in node['configurable_frames'].items():
+            #         slave.configurable_frames[pid] = ldf.get_frame(frame)
+            # elif isinstance(node['configurable_frames'], List):
+            #     for (idx, frame) in enumerate(node['configurable_frames']):
+            #         slave.configurable_frames[idx] = ldf.get_frame(frame)
 
 def _link_ldf_frames(json: dict, ldf: LDF):
     for frame in _require_key(json, 'frames', 'LDF missing Frames sections.'):
-        frame_obj = ldf.frame(frame['frame_id'])
-        if frame['publisher'] == ldf.master.name:
-            ldf.master.publishes_frames.append(frame_obj)
-            frame_obj.publisher = ldf.master
+        frame_obj = ldf.get_frame(frame['frame_id'])
+        if frame['publisher'] == ldf._master.name:
+            ldf._master.publishes_frames.append(frame_obj)
+            frame_obj.publisher = ldf._master
         else:
-            slave = ldf.slave(frame['publisher'])
+            slave = ldf.get_slave(frame['publisher'])
             if slave is None:
                 raise ValueError(f"Frame {frame_obj.name} references non existent node {frame['publisher']}")
             slave.publishes_frames.append(frame_obj)
@@ -210,7 +212,7 @@ def _populate_ldf_encoding_types(json: dict, ldf: LDF):
         signal_types[encoding_type['name']] = LinSignalType(encoding_type['name'], converters)
     for representations in json['signal_representations']:
         for signal in representations['signals']:
-            ldf.converters[signal] = signal_types[representations['encoding']]
+            ldf._converters[signal] = signal_types[representations['encoding']]
 
 def _convert_encoding_value(json: dict) -> ValueConverter:
     if json['type'] == 'logical':

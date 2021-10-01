@@ -9,13 +9,18 @@ from .signal import LinSignal
 from .encoding import LinSignalType
 
 class LinFrame():
+
+    def __init__(self, frame_id: int, name: str) -> None:
+        self.frame_id = frame_id
+        self.name = name
+
+class LinUnconditionalFrame(LinFrame):
     """
     LinFrame represents an unconditional frame consisting of signals
     """
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
-        self.frame_id = frame_id
-        self.name = name
+        super().__init__(frame_id, name)
         self.publisher = None
         self.length = length
         ordered_signals = sorted(signals.items(), key=lambda x: x[0])
@@ -118,3 +123,10 @@ class LinFrame():
         for i in data:
             flipped.append(int('{:08b}'.format(i)[::-1], 2))
         return flipped
+
+class LinEventTriggeredFrame():
+    # TODO: add schedule table reference
+
+    def __init__(self, name: str, frame_id: int, frames: List[LinFrame]) -> None:
+        self.name = name
+        self.frame_id = frame_id

@@ -195,7 +195,7 @@ class LDF():
 
     @property
     def converters(self) -> Dict[str, LinSignalType]:
-        return None
+        return self._converters
 
     # These functions are maintained in order to keep compatibility
     # with pre-0.10.0 versions

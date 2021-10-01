@@ -181,12 +181,12 @@ def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
                 slave.fault_state_signals.append(ldf.get_signal(signal))
         if node.get('configurable_frames'):
             pass
-            # if isinstance(node['configurable_frames'], Dict):
-            #     for (frame, pid) in node['configurable_frames'].items():
-            #         slave.configurable_frames[pid] = ldf.get_frame(frame)
-            # elif isinstance(node['configurable_frames'], List):
-            #     for (idx, frame) in enumerate(node['configurable_frames']):
-            #         slave.configurable_frames[idx] = ldf.get_frame(frame)
+            if isinstance(node['configurable_frames'], Dict):
+                for (frame, pid) in node['configurable_frames'].items():
+                    slave.configurable_frames[pid] = ldf.get_frame(frame)
+            elif isinstance(node['configurable_frames'], List):
+                for (idx, frame) in enumerate(node['configurable_frames']):
+                    slave.configurable_frames[idx] = ldf.get_frame(frame)
 
 def _link_ldf_frames(json: dict, ldf: LDF):
     for frame in _require_key(json, 'frames', 'LDF missing Frames sections.'):
@@ -339,7 +339,7 @@ class LDFTransformer(Transformer):
         return ("event_triggered_frames", tree[0:])
 
     def event_triggered_frame_definition(self, tree):
-        return {"name": tree[0]}
+        return {"name": tree[0], "collision_resolving_schedule_table": tree[1], "frame_id": tree[2], "frames": tree[3]}
 
     def event_triggered_frame_definition_frames(self, tree):
         return tree[0:]

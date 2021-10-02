@@ -32,7 +32,8 @@ def test_linversion_equal_version(a, b):
     [
         (LIN_VERSION_1_3, LIN_VERSION_2_1),
         (LIN_VERSION_2_0, LIN_VERSION_2_1),
-        (LIN_VERSION_2_2, LIN_VERSION_2_1)
+        (LIN_VERSION_2_2, LIN_VERSION_2_1),
+        (LIN_VERSION_2_2, "2.2")
     ]
 )
 def test_linversion_not_equal_version(a, b):

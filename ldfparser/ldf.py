@@ -2,7 +2,6 @@
 Lin Description File handler objects
 """
 from typing import Union, Dict, List
-import warnings
 
 from .lin import LinVersion
 from .frame import LinFrame, LinUnconditionalFrame, LinEventTriggeredFrame

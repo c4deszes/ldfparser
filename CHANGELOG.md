@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2021-10-02
+
 ### Added
 
 - `LinVersion` class was added that allows better version handling than the previous floating point
@@ -66,7 +68,7 @@ order to allow a better deprecation process in the future.
   directly
   - Getters were added, they are direct replacements of the old member fields, e.g.: `ldf.signals`
   was replaced with `ldf.get_signals()`
-  - Lookup methods in the LDF are now performant because they don't rely on linear search, however
+  - Lookup methods in the LDF are now more performant because they don't rely on linear search, however
   the behavior was changed, instead of returning `None` the new methods will raise a `LookupError`
   - Properties are used to keep compatibility with older versions where these fields are referenced,
   in the future there may be warnings enabled and possibly removed in later releases

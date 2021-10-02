@@ -1,6 +1,7 @@
-import pytest
 import sys
 from unittest.mock import patch
+import pytest
+
 from ldfparser.cli import main
 
 @pytest.mark.unit

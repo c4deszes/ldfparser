@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 import pytest
 from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2
 

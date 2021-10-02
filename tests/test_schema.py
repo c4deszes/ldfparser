@@ -1,9 +1,10 @@
-import ldfparser
-import os
 import glob
 import json
+import os
+
 import pytest
 from jsonschema import validate
+import ldfparser
 
 ldf_directory = os.path.join(os.path.dirname(__file__), 'ldf')
 ldf_files = glob.glob(ldf_directory + '/*.ldf')

@@ -1,5 +1,5 @@
-import pytest
 import os
+import pytest
 import ldfparser
 
 @pytest.mark.integration

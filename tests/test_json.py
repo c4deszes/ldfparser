@@ -3,9 +3,9 @@ import glob
 import json
 import os
 import warnings
-
-import ldfparser
 import pytest
+
+from ldfparser.parser import parse_ldf_to_dict
 
 ldf_directory = os.path.join(os.path.dirname(__file__), 'ldf')
 snapshot_directory = os.path.join(os.path.dirname(__file__), 'snapshot')
@@ -23,6 +23,6 @@ def test_compare_json(ldf_path):
         pytest.skip('Snapshot not found.')
     with open(snapshot_file, 'r') as snapshot:
         snapshot_content = snapshot.read()
-        current = json.dumps(ldfparser.parseLDFtoDict(ldf_path))
+        current = json.dumps(parse_ldf_to_dict(ldf_path))
         diff = ''.join(difflib.unified_diff(snapshot_content, current))
         assert not bool(diff), f"{ldf_path} not matching snapshot: {diff}"

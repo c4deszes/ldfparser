@@ -1,14 +1,16 @@
-from ldfparser import LinFrame, LinSignal
-from ldfparser.encoding import LogicalValue, BCDValue, ASCIIValue
 import os
 import pytest
-import ldfparser
+
+from ldfparser.parser import parseLDF
+from ldfparser.frame import LinFrame
+from ldfparser.signal import LinSignal
+from ldfparser.encoding import ASCIIValue, BCDValue, LogicalValue
 
 
 @pytest.mark.unit
 def test_load_valid_lin13():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin13.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 1.3
     assert ldf.language_version == 1.3
@@ -25,7 +27,7 @@ def test_load_valid_lin13():
 @pytest.mark.unit
 def test_load_valid_lin20():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin20.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 2.0
     assert ldf.language_version == 2.0
@@ -39,7 +41,7 @@ def test_load_valid_lin20():
 @pytest.mark.unit
 def test_load_valid_lin21():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin21.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 2.1
     assert ldf.language_version == 2.1
@@ -60,7 +62,7 @@ def test_load_valid_lin21():
 @pytest.mark.unit
 def test_load_valid_lin22():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin22.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 2.2
     assert ldf.language_version == 2.2
@@ -104,7 +106,7 @@ def test_load_valid_lin22():
 @pytest.mark.unit
 def test_no_signal_subscribers():
     path = os.path.join(os.path.dirname(__file__), "ldf", "no_signal_subscribers.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 2.2
     assert ldf.language_version == 2.2
@@ -117,7 +119,7 @@ def test_no_signal_subscribers():
 @pytest.mark.unit
 def test_load_valid_lin_encoders():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin_encoders.ldf")
-    ldf = ldfparser.parseLDF(path)
+    ldf = parseLDF(path)
 
     assert ldf.protocol_version == 2.1
     assert ldf.language_version == 2.1

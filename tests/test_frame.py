@@ -114,29 +114,29 @@ def test_frame_signal_out_of_frame():
 
 @pytest.mark.unit
 def test_frame_encode_data():
-    motorSpeed = LinSignal('MotorSpeed', 7, 0)
-    motorValues = [
+    motor_speed = LinSignal('MotorSpeed', 7, 0)
+    motor_values = [
         LogicalValue(0, 'off'),
         PhysicalValue(1, 99, 1, 0, 'rpm'),
         PhysicalValue(100, 128, 0, 100)]
 
     temperature = LinSignal('Temperature', 8, 255)
-    temperatureValues = [
+    temperature_values = [
         LogicalValue(0, 'MEASUREMENT_ERROR'),
         PhysicalValue(1, 255, 1, -50, 'C')]
 
-    errorState = LinSignal('Error', 1, 0)
-    errorValues = [
+    error_state = LinSignal('Error', 1, 0)
+    error_values = [
         LogicalValue(0, 'NO_ERROR'),
         LogicalValue(1, 'ERROR')]
 
     converters = {
-        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues),
-        'Temperature': LinSignalEncodingType('TemperatureType', temperatureValues),
-        'Error': LinSignalEncodingType('ErrorType', errorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motor_values),
+        'Temperature': LinSignalEncodingType('TemperatureType', temperature_values),
+        'Error': LinSignalEncodingType('ErrorType', error_values)
     }
 
-    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
+    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motor_speed, 7: error_state, 8: temperature})
     frame.data(
         {
             'Temperature': -30,
@@ -148,42 +148,42 @@ def test_frame_encode_data():
 
 @pytest.mark.unit
 def test_frame_encode_data_missing_encoder():
-    motorSpeed = LinSignal('MotorSpeed', 8, 0)
-    motorValues = [PhysicalValue(0, 255, 0, 100)]
+    motor_speed = LinSignal('MotorSpeed', 8, 0)
+    motor_values = [PhysicalValue(0, 255, 0, 100)]
 
     converters = {
-        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motor_values)
     }
-    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motorSpeed})
+    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motor_speed})
 
     with pytest.raises(ValueError):
         frame.data({'MissingSignal': 0}, converters)
 
 @pytest.mark.unit
 def test_frame_decode_data():
-    motorSpeed = LinSignal('MotorSpeed', 7, 0)
-    motorValues = [
+    motor_speed = LinSignal('MotorSpeed', 7, 0)
+    motor_values = [
         LogicalValue(0, 'off'),
         PhysicalValue(1, 99, 1, 0, 'rpm'),
         PhysicalValue(100, 128, 0, 100)]
 
     temperature = LinSignal('Temperature', 8, 255)
-    temperatureValues = [
+    temperature_values = [
         LogicalValue(0, 'MEASUREMENT_ERROR'),
         PhysicalValue(1, 255, 1, -50, 'C')]
 
-    errorState = LinSignal('Error', 1, 0)
-    errorValues = [
+    error_state = LinSignal('Error', 1, 0)
+    error_values = [
         LogicalValue(0, 'NO_ERROR'),
         LogicalValue(1, 'ERROR')]
 
     converters = {
-        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues),
-        'Temperature': LinSignalEncodingType('TemperatureType', temperatureValues),
-        'Error': LinSignalEncodingType('ErrorType', errorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motor_values),
+        'Temperature': LinSignalEncodingType('TemperatureType', temperature_values),
+        'Error': LinSignalEncodingType('ErrorType', error_values)
     }
 
-    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
+    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motor_speed, 7: error_state, 8: temperature})
     frame.parse(
         [0x88, 0x88],
         converters
@@ -191,10 +191,10 @@ def test_frame_decode_data():
 
 @pytest.mark.unit
 def test_frame_decode_data_missing_decoder():
-    motorSpeed = LinSignal('MotorSpeed', 8, 0)
+    motor_speed = LinSignal('MotorSpeed', 8, 0)
 
     converters = {}
-    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motorSpeed})
+    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motor_speed})
 
     with pytest.raises(ValueError):
         frame.parse([0x88], converters)

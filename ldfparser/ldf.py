@@ -90,9 +90,9 @@ class LDF():
         """
         Returns the unconditional frame with the given name or id
 
-        When `frame_id` is an integer the `LinFrame` with the given id will be returned
+        When `frame_id` is an integer the `LinUnconditionalFrame` with the given id will be returned
 
-        When `frame_id` is a string the `LinFrame` with the given name will be returned
+        When `frame_id` is a string the `LinUnconditionalFrame` with the given name will be returned
 
         :Example:
         Given an LDF:
@@ -109,8 +109,8 @@ class LDF():
 
         :param frame_id:
         :type frame_id: int or str
-        :returns: LIN frame
-        :rtype: LinFrame
+        :returns: Unconditional LIN frame
+        :rtype: LinUnconditionalFrame
         :raises: LookupError if the given frame is not found
         """
         if isinstance(frame_id, str):
@@ -136,7 +136,13 @@ class LDF():
 
     def get_event_triggered_frame(self, frame_id: Union[int, str]) -> LinEventTriggeredFrame:
         """
-        
+        Returns the event triggered frame with the given name or id
+
+        :param frame_id:
+        :type frame_id: int or str
+        :returns: Event triggered LIN frame
+        :rtype: LinEventTriggeredFrame
+        :raises: LookupError if the given frame is not found
         """
         if isinstance(frame_id, str):
             frame = self._event_triggered_frames.get(frame_id)
@@ -152,6 +158,10 @@ class LDF():
 
     def get_event_triggered_frames(self) -> List[LinEventTriggeredFrame]:
         """
+        Returns all event triggered frames
+
+        :returns: List of event triggered LIN frames
+        :rtype: List[LinEventTriggeredFrame]
         """
         return self._event_triggered_frames.values()
 

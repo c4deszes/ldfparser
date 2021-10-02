@@ -106,7 +106,7 @@ jobs:
 
       - name: Lint using Pylint
         run: |
-          pylint tests --fail-under=9.0
+          pylint tests --disable="C0114,C0116" --fail-under=9.0
 
   snapshot-test:
     if: github.event_name == 'pull_request'

@@ -33,7 +33,7 @@ class LinSignal:
         return self.name == o.name
 
     def __ne__(self, o: object) -> bool:
-        return not (self == o)
+        return not self == o
 
     def __hash__(self) -> int:
         return hash((self.name))

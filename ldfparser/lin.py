@@ -1,135 +1,74 @@
-import bitstruct
+"""
+Utility classes for LIN objects
+"""
 
-from typing import List, Dict, Union, Tuple
+class LinVersion:
+    """
+    LinVersion represents the LIN protocol and LDF language versions
+    """
 
-from .encoding import LinSignalType
+    def __init__(self, major: int, minor: int) -> None:
+        self.major = major
+        self.minor = minor
 
+    @staticmethod
+    def from_string(version: str) -> 'LinVersion':
+        """
+        Creates a LinVersion object from the given string
 
-class LinSignal:
+        :Example:
+        `LinVersion.create('2.1')` will return `LinVersion(major=2, minor=1)`
 
-	def __init__(self, name: str, width: int, init_value: Union[int, List[int]]):
-		self.name: str = name
-		self.width: int = width
-		self.init_value: Union[int, List[int]] = init_value
-		self.publisher = None
-		self.subscribers = []
+        :param version: Version
+        :type version: str
+        :returns: LIN version
+        :rtype: LinVersion
+        """
+        (major, minor) = version.split('.')
 
-	def is_array(self):
-		return isinstance(self.init_value, List)
+        return LinVersion(major=int(major), minor=int(minor))
 
-	@staticmethod
-	def create(name: str, width: int, init_value: Union[int, List[int]]):
-		if isinstance(init_value, List):
-			if width % 8 != 0:
-				raise ValueError(f"array signal {name}:{width} must be a multiple of 8 long (8, 16, 24, ..)")
-			if width < 8 or width > 64:
-				raise ValueError(f"array signal {name}:{width} must be 8-64bits long")
-			if len(init_value) != width / 8:
-				raise ValueError(f"array signal {name}:{width} init value is invalid {len(init_value)}")
-		if isinstance(init_value, int) and (width < 1 or width > 16):
-			raise ValueError(f"scalar signal {name}:{width} must be 1-16bits long")
-		return LinSignal(name, width, init_value)
+    def __str__(self) -> str:
+        return f"{self.major}.{self.minor}"
 
+    def __float__(self) -> float:
+        # This function shall be removed once the properties on the LDF object
+        # have been deprecated and removed
+        return self.major + self.minor * 0.1
 
-class LinFrame:
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LinVersion):
+            return self.major == o.major and self.minor == o.minor
+        return False
 
-	def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
-		self.frame_id = frame_id
-		self.name = name
-		self.publisher = None
-		self.length = length
-		orderedSignals = sorted(signals.items(), key=lambda x: x[0])
-		self.signal_map = orderedSignals
-		self.signals = [i[1] for i in orderedSignals]
-		self._pattern = self._frame_pattern(length * 8, orderedSignals)
-		self._packer = bitstruct.compile(self._pattern)
+    def __gt__(self, o) -> bool:
+        if isinstance(o, LinVersion):
+            if self.major > o.major:
+                return True
+            if self.major == o.major and self.minor > o.minor:
+                return True
+            return False
+        raise TypeError()
 
-	def _frame_pattern(self, frame_bits: int, signals: List[Tuple[int, LinSignal]]) -> str:
-		pattern = "<"
-		offset = 0
-		for signal in signals:
-			if signal[0] < offset:
-				raise ValueError(str(self) + ":" + str(signal[1]) + " overlapping")
-			if signal[0] != offset:
-				padding = signal[0] - offset
-				pattern += f"p{padding}"
-				offset += padding
-			if offset + signal[1].width > frame_bits:
-				raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside {self}")
-			if signal[1].is_array():
-				pattern += "u8" * int(signal[1].width / 8)
-			else:
-				pattern += f"u{signal[1].width}"
-			offset += signal[1].width
-		if offset < frame_bits:
-			pattern += f"p{frame_bits - offset}"
-		return pattern
+    def __lt__(self, o) -> bool:
+        if isinstance(o, LinVersion):
+            if self.major < o.major:
+                return True
+            if self.major == o.major and self.minor < o.minor:
+                return True
+            return False
+        raise TypeError()
 
-	def _get_signal(self, name: str):
-		return next((x for x in self.signals if x.name == name), None)
+    def __ge__(self, o) -> bool:
+        return not self.__lt__(o)
 
-	def raw(self, data: Dict[str, int]) -> bytearray:
-		"""
-		Returns a bytearray (frame content) by using the raw signal values provided
-		"""
-		message = []
-		for signal in self.signals:
-			if signal.name in data.keys():
-				if signal.is_array():
-					message += data.get(signal.name)
-				else:
-					message.append(data.get(signal.name))
-			else:
-				if signal.is_array():
-					message += signal.init_value
-				else:
-					message.append(signal.init_value)
-		return self._flip_bytearray(self._packer.pack(*message))
+    def __le__(self, o) -> bool:
+        return not self.__gt__(o)
 
-	def data(self, data: Dict[str, Union[str, int, float]], converters: Dict[str, LinSignalType]) -> bytearray:
-		"""
-		Returns a bytearray (frame content) by using the human readable signal values
-		"""
-		converted = {}
-		for value in data.items():
-			if value[0] not in converters.keys():
-				raise ValueError('No encoder found for ' + value[0])
-			converted[value[0]] = converters[value[0]].encode(value[1], self._get_signal(value[0]))
-		return self.raw(converted)
+    def __ne__(self, o: object) -> bool:
+        return not self.__eq__(o)
 
-	def parse_raw(self, data: bytearray) -> Dict[str, int]:
-		"""
-		Returns a mapping between Signal names and their raw physical values in the given message
-		"""
-		message = {}
-		unpacked = self._packer.unpack(self._flip_bytearray(data))
-		signal_index = 0
-		i = 0
-		while i < len(unpacked):
-			if self.signals[signal_index].is_array():
-				signal_size = int(self.signals[signal_index].width / 8)
-				message[self.signals[signal_index].name] = list(unpacked[i:i + signal_size])
-				i += signal_size - 1
-			else:
-				message[self.signals[signal_index].name] = unpacked[i]
-			signal_index += 1
-			i += 1
-		return message
-
-	def parse(self, data: bytearray, converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:
-		"""
-		Returns a mapping between Signal names and their human readable value
-		"""
-		tmp = self.parse_raw(data)
-		output = {}
-		for value in tmp.items():
-			if value[0] not in converters.keys():
-				raise ValueError('No decoder found for ' + value[0])
-			output[value[0]] = converters[value[0]].decode(value[1], self._get_signal(value[0]))
-		return output
-
-	def _flip_bytearray(self, data: bytearray) -> bytearray:
-		flipped = bytearray()
-		for i in data:
-			flipped.append(int('{:08b}'.format(i)[::-1], 2))
-		return flipped
+LIN_VERSION_1_3 = LinVersion(1, 3)
+LIN_VERSION_2_0 = LinVersion(2, 0)
+LIN_VERSION_2_1 = LinVersion(2, 1)
+LIN_VERSION_2_2 = LinVersion(2, 2)

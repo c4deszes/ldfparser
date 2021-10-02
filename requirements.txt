@@ -1,12 +1,9 @@
-# Project dependencies
-lark-parser>=0.10.0
-bitstruct
-
 # Development
 setuptools
 wheel
 pytest
 pytest-cov
 pytest-benchmark
+pylint
 flake8
 jsonschema

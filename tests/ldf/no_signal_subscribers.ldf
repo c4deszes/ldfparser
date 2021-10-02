@@ -10,27 +10,27 @@ LIN_language_version = "2.2";
 LIN_speed =  19.2 kbps;
 
 Nodes {
-	Master: master, 5.0 ms, 0.1 ms;
-	Slaves: slave1;
+    Master: master, 5.0 ms, 0.1 ms;
+    Slaves: slave1;
 }
 
 Signals {
-	// Signal with no subscribers
-	DummySignal_0: 8, 255, master;
+    // Signal with no subscribers
+    DummySignal_0: 8, 255, master;
 }
 
 Frames {
-	DummyFrame: 59, master, 8 {
-		DummySignal_0, 0;
-	}
+    DummyFrame: 59, master, 8 {
+        DummySignal_0, 0;
+    }
 }
 
 Node_attributes {
-	// Empty
+    // Empty
 }
 
 Schedule_tables {
-	RUN_MAIN { 
-		DummyFrame delay 10.0 ms;
-	}
+    RUN_MAIN { 
+        DummyFrame delay 10.0 ms;
+    }
 }

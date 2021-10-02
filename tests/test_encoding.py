@@ -1,204 +1,188 @@
-from ldfparser.lin import LinSignal
 import pytest
-from ldfparser.encoding import ASCIIValue, BCDValue, LinSignalType, PhysicalValue, LogicalValue
 
+from ldfparser.signal import LinSignal
+from ldfparser.encoding import (
+    ASCIIValue, BCDValue, PhysicalValue, LogicalValue, LinSignalEncodingType
+)
 
 @pytest.mark.unit
 def test_encode_physical_unitless_numeric():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	assert physicalValue.encode(0, motorSignal) == 0
-	assert physicalValue.encode(100, motorSignal) == 254
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    assert physical_value.encode(0, motor_signal) == 0
+    assert physical_value.encode(100, motor_signal) == 254
 
-	with pytest.raises(ValueError):
-		physicalValue.encode(-1, motorSignal)
+    with pytest.raises(ValueError):
+        physical_value.encode(-1, motor_signal)
 
-	with pytest.raises(ValueError):
-		physicalValue.encode(101, motorSignal)
-
+    with pytest.raises(ValueError):
+        physical_value.encode(101, motor_signal)
 
 @pytest.mark.unit
 def test_encode_physical_unitless_string():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	assert physicalValue.encode('0', motorSignal) == 0
-	assert physicalValue.encode('100', motorSignal) == 254
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    assert physical_value.encode('0', motor_signal) == 0
+    assert physical_value.encode('100', motor_signal) == 254
 
-	with pytest.raises(ValueError):
-		physicalValue.encode('-1', motorSignal)
+    with pytest.raises(ValueError):
+        physical_value.encode('-1', motor_signal)
 
-	with pytest.raises(ValueError):
-		physicalValue.encode('101', motorSignal)
-
+    with pytest.raises(ValueError):
+        physical_value.encode('101', motor_signal)
 
 @pytest.mark.unit
 def test_encode_physical_string_with_unit():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	assert physicalValue.encode('0rpm', motorSignal) == 0
-	assert physicalValue.encode('100rpm', motorSignal) == 254
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    assert physical_value.encode('0rpm', motor_signal) == 0
+    assert physical_value.encode('100rpm', motor_signal) == 254
 
-	with pytest.raises(ValueError):
-		physicalValue.encode('-1rpm', motorSignal)
+    with pytest.raises(ValueError):
+        physical_value.encode('-1rpm', motor_signal)
 
-	with pytest.raises(ValueError):
-		physicalValue.encode('101rpm', motorSignal)
-
+    with pytest.raises(ValueError):
+        physical_value.encode('101rpm', motor_signal)
 
 @pytest.mark.unit
 def test_encode_physical_string_with_wrong_unit():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	with pytest.raises(ValueError):
-		physicalValue.encode('50deg', motorSignal)
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    with pytest.raises(ValueError):
+        physical_value.encode('50deg', motor_signal)
 
-	with pytest.raises(ValueError):
-		physicalValue.encode('101deg', motorSignal)
-
+    with pytest.raises(ValueError):
+        physical_value.encode('101deg', motor_signal)
 
 @pytest.mark.unit
 def test_encode_physical_scale_zero():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	value = PhysicalValue(100, 255, 0, 100, 'rpm')
-	assert value.encode(100, motorSignal) == 100
-	assert value.encode(120, motorSignal) == 100
-
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    value = PhysicalValue(100, 255, 0, 100, 'rpm')
+    assert value.encode(100, motor_signal) == 100
+    assert value.encode(120, motor_signal) == 100
 
 @pytest.mark.unit
 def test_decode_physical_valid():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	assert physicalValue.decode(0, motorSignal) == 0
-	assert abs(physicalValue.decode(254, motorSignal) - 100.0) < 0.01
-
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    assert physical_value.decode(0, motor_signal) == 0
+    assert abs(physical_value.decode(254, motor_signal) - 100.0) < 0.01
 
 @pytest.mark.unit
 def test_decode_physical_invalid():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	physicalValue = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
-	with pytest.raises(ValueError):
-		physicalValue.decode(-1, motorSignal)
-
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
+    with pytest.raises(ValueError):
+        physical_value.decode(-1, motor_signal)
 
 @pytest.mark.unit
 def test_encode_logical():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	logicalValue = LogicalValue(1, "on")
-	assert logicalValue.encode("on", motorSignal) == 1
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    logical_value = LogicalValue(1, "on")
+    assert logical_value.encode("on", motor_signal) == 1
 
-	with pytest.raises(ValueError):
-		logicalValue.encode('off', motorSignal)
-
+    with pytest.raises(ValueError):
+        logical_value.encode('off', motor_signal)
 
 @pytest.mark.unit
 def test_decode_logical():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	logicalValue = LogicalValue(1, "on")
-	assert logicalValue.decode(1, motorSignal) == "on"
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    logical_value = LogicalValue(1, "on")
+    assert logical_value.decode(1, motor_signal) == "on"
 
-	with pytest.raises(ValueError):
-		logicalValue.decode(0, motorSignal)
-
+    with pytest.raises(ValueError):
+        logical_value.decode(0, motor_signal)
 
 @pytest.mark.unit
 def test_encode_logical_no_signal_info():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	logicalValue = LogicalValue(1)
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    logical_value = LogicalValue(1)
 
-	assert logicalValue.encode(1, motorSignal) == 1
+    assert logical_value.encode(1, motor_signal) == 1
 
-	with pytest.raises(ValueError):
-		logicalValue.encode(0, motorSignal)
-
+    with pytest.raises(ValueError):
+        logical_value.encode(0, motor_signal)
 
 @pytest.mark.unit
 def test_decode_logical_no_signal_info():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	logicalValue = LogicalValue(1)
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    logical_value = LogicalValue(1)
 
-	assert logicalValue.decode(1, motorSignal) == 1
+    assert logical_value.decode(1, motor_signal) == 1
 
-	with pytest.raises(ValueError):
-		logicalValue.decode(0, motorSignal)
-
+    with pytest.raises(ValueError):
+        logical_value.decode(0, motor_signal)
 
 @pytest.mark.unit
 def test_encode_bcd():
-	bcdValue = BCDValue()
+    bcd_value = BCDValue()
 
-	assert bcdValue.encode(1, LinSignal('Counter', 8, [0])) == [1]
-	assert bcdValue.encode(12, LinSignal('Counter', 16, [0, 0])) == [1, 2]
-	assert bcdValue.encode(123, LinSignal('Counter', 24, [0, 0, 0])) == [1, 2, 3]
-	assert bcdValue.encode(1234, LinSignal('Counter', 32, [0, 0, 0, 0])) == [1, 2, 3, 4]
-	assert bcdValue.encode(12345, LinSignal('Counter', 40, [0, 0, 0, 0, 0])) == [1, 2, 3, 4, 5]
-	assert bcdValue.encode(123456, LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == [1, 2, 3, 4, 5, 6]
-
+    assert bcd_value.encode(1, LinSignal('Counter', 8, [0])) == [1]
+    assert bcd_value.encode(12, LinSignal('Counter', 16, [0, 0])) == [1, 2]
+    assert bcd_value.encode(123, LinSignal('Counter', 24, [0, 0, 0])) == [1, 2, 3]
+    assert bcd_value.encode(1234, LinSignal('Counter', 32, [0, 0, 0, 0])) == [1, 2, 3, 4]
+    assert bcd_value.encode(12345, LinSignal('Counter', 40, [0, 0, 0, 0, 0])) == [1, 2, 3, 4, 5]
+    assert bcd_value.encode(123456, LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == [1, 2, 3, 4, 5, 6]
 
 @pytest.mark.unit
 def test_encode_bcd_out_of_bounds():
-	bcdValue = BCDValue()
+    bcd_value = BCDValue()
 
-	with pytest.raises(ValueError):
-		bcdValue.encode(123, LinSignal('Counter', 16, [0, 0]))
-
+    with pytest.raises(ValueError):
+        bcd_value.encode(123, LinSignal('Counter', 16, [0, 0]))
 
 @pytest.mark.unit
 def test_decode_bcd():
-	bcdValue = BCDValue()
+    bcd_value = BCDValue()
 
-	assert bcdValue.decode([1], LinSignal('Counter', 8, [0])) == 1
-	assert bcdValue.decode([1, 2], LinSignal('Counter', 16, [0, 0])) == 12
-	assert bcdValue.decode([1, 2, 3], LinSignal('Counter', 24, [0, 0, 0])) == 123
-	assert bcdValue.decode([1, 2, 3, 4], LinSignal('Counter', 32, [0, 0, 0, 0])) == 1234
-	assert bcdValue.decode([1, 2, 3, 4, 5], LinSignal('Counter', 40, [0, 0, 0, 0, 0])) == 12345
-	assert bcdValue.decode([1, 2, 3, 4, 5, 6], LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == 123456
-
+    assert bcd_value.decode([1], LinSignal('Counter', 8, [0])) == 1
+    assert bcd_value.decode([1, 2], LinSignal('Counter', 16, [0, 0])) == 12
+    assert bcd_value.decode([1, 2, 3], LinSignal('Counter', 24, [0, 0, 0])) == 123
+    assert bcd_value.decode([1, 2, 3, 4], LinSignal('Counter', 32, [0, 0, 0, 0])) == 1234
+    assert bcd_value.decode([1, 2, 3, 4, 5], LinSignal('Counter', 40, [0, 0, 0, 0, 0])) == 12345
+    assert bcd_value.decode([1, 2, 3, 4, 5, 6], LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == 123456
 
 @pytest.mark.unit
 def test_encode_ascii():
-	idSignal = LinSignal('Id', 48, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
-	asciiValue = ASCIIValue()
+    id_signal = LinSignal('Id', 48, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
+    ascii_value = ASCIIValue()
 
-	assert asciiValue.encode('ABC123', idSignal) == [65, 66, 67, 49, 50, 51]
-
+    assert ascii_value.encode('ABC123', id_signal) == [65, 66, 67, 49, 50, 51]
 
 @pytest.mark.unit
 def test_decode_ascii():
-	idSignal = LinSignal('Id', 48, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
-	asciiValue = ASCIIValue()
+    id_signal = LinSignal('Id', 48, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
+    ascii_value = ASCIIValue()
 
-	assert asciiValue.decode([65, 66, 67, 49, 50, 51], idSignal) == 'ABC123'
-
+    assert ascii_value.decode([65, 66, 67, 49, 50, 51], id_signal) == 'ABC123'
 
 @pytest.mark.integration
 def test_encode_signal_scalar():
-	motorSignal = LinSignal('MotorRPM', 8, 0)
-	offValue = LogicalValue(0, 'off')
-	motorSpeed = PhysicalValue(1, 99, 1, 0, 'rpm')
-	overdrive = PhysicalValue(100, 255, 0, 100)
+    motor_signal = LinSignal('MotorRPM', 8, 0)
+    off_value = LogicalValue(0, 'off')
+    motor_speed = PhysicalValue(1, 99, 1, 0, 'rpm')
+    overdrive = PhysicalValue(100, 255, 0, 100)
 
-	signalType = LinSignalType('MotorType', [motorSpeed, overdrive, offValue])
-	assert signalType.encode('off', motorSignal) == 0
-	assert signalType.encode(99, motorSignal) == 99
-	assert signalType.encode(101, motorSignal) == 100
-	assert signalType.encode(120, motorSignal) == 100
-
+    signal_type = LinSignalEncodingType('MotorType', [motor_speed, overdrive, off_value])
+    assert signal_type.encode('off', motor_signal) == 0
+    assert signal_type.encode(99, motor_signal) == 99
+    assert signal_type.encode(101, motor_signal) == 100
+    assert signal_type.encode(120, motor_signal) == 100
 
 @pytest.mark.integration
 def test_encode_signal_bcd():
-	counterSignal = LinSignal('Counter', 24, [0, 1, 2])
-	counterValue = BCDValue()
+    counter_signal = LinSignal('Counter', 24, [0, 1, 2])
+    counter_value = BCDValue()
 
-	signalType = LinSignalType('CounterType', [counterValue])
-	assert signalType.encode(1, counterSignal) == [0, 0, 1]
-	assert signalType.encode(12, counterSignal) == [0, 1, 2]
-	assert signalType.encode(123, counterSignal) == [1, 2, 3]
-
+    signal_type = LinSignalEncodingType('CounterType', [counter_value])
+    assert signal_type.encode(1, counter_signal) == [0, 0, 1]
+    assert signal_type.encode(12, counter_signal) == [0, 1, 2]
+    assert signal_type.encode(123, counter_signal) == [1, 2, 3]
 
 @pytest.mark.integration
 def test_encode_signal_ascii():
-	textSignal = LinSignal('Text', 24, list("ABC"))
-	textValue = ASCIIValue()
+    text_signal = LinSignal('Text', 24, list("ABC"))
+    text_value = ASCIIValue()
 
-	signalType = LinSignalType('TextType', [textValue])
-	assert signalType.encode("ABC", textSignal) == [65, 66, 67]
+    signal_type = LinSignalEncodingType('TextType', [text_value])
+    assert signal_type.encode("ABC", text_signal) == [65, 66, 67]

@@ -5,7 +5,7 @@ import json
 import os
 import sys
 
-from ldfparser import LDF, LinFrame, LinMaster, LinSignal, LinSlave, parseLDF
+from ldfparser import LDF, LinFrame, LinMaster, LinSignal, LinSlave, parse_ldf
 
 def auto_int(number: str):
     """Converts a string to integer"""
@@ -49,7 +49,7 @@ def parse_args(args):
 
 def main():
     args = parse_args(sys.argv[1:])
-    ldf = parseLDF(args.ldf, encoding=args.encoding)
+    ldf = parse_ldf(args.ldf, encoding=args.encoding)
 
     if args.subparser_name is None:
         print_ldf_info(ldf)

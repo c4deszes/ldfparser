@@ -9,35 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Pylint has been introduced into the CI pipeline
 - `LinVersion` class was added that allows better version handling than the previous floating point
 values
+- Event Triggered Frames are now parsed correctly and stored in `LinEventTriggeredFrame` objects
+- Pylint has been introduced into the CI pipeline
 
 ### Changed
 
 - Tabs have been replaced with spaces in order to conform with [PEP8](https://www.python.org/dev/peps/pep-0008/)
 - Frame, Signal and LDF classes were moved into their on modules
-
-### Removed
-
+- Unconditional frame handling has been moved from `LinFrame` class into `LinUnconditionalFrame`
+- Language and protocol version is now parsed as strings, see migration guide for more information
 - LDF class has been completely replaced, see migration guide on how to update
+
+### Fixed
+
+- Fixed configurable frames being resolved with `None` when event triggered frames were referenced
 
 ### Deprecated
 
 - `parseLDF`, `parseLDFtoDict`, `parseComments` were deprecated in favor of the same methods with a
 snake case signature
-- `LDF::frame(x)`, `LDF::signal(x)`, `LDF::slave(x)` were deprecated, they were replaced with proper
-getters
 
-It's recommended to replace the deprecated functions, most of them have drop in replacements, see
-the deprecated methods for more information.
+- `LDF::frame(x)`, `LDF::signal(x)`, `LDF::slave(x)` were deprecated, they were replaced with proper
+getters but those contracts are slightly different
+
+It's recommended to replace the deprecated functions as they will be removed in `1.0.0`, most of
+them have drop in replacements.
 
 ### Migration guide for 0.10.0
 
-#### Imports
+#### Imports and classes
 
 - A few modules were reorganized, this might cause certain `import` statements to be broken, imports
 that only use the `ldfparser` package are backwards compatible
+
+- Previously `LinFrame` represented unconditional frames and was used to encode and decode frames,
+this was changed in order to support the other frame types later. `LinFrame` now only contains
+the most basic properties, name and identifier, while the rest has been transferred out into
+`LinUnconditionalFrame` and `LinEventTriggeredFrame`. This change should only affect scripts that
+directly reference the `LinFrame` class, when using queries through the `LDF` objects the behavior
+is identical.
 
 #### Dictionary object
 
@@ -54,12 +66,14 @@ order to allow a better deprecation process in the future.
   directly
   - Getters were added, they are direct replacements of the old member fields, e.g.: `ldf.signals`
   was replaced with `ldf.get_signals()`
+  - Lookup methods in the LDF are now performant because they don't rely on linear search, however
+  the behavior was changed, instead of returning `None` the new methods will raise a `LookupError`
   - Properties are used to keep compatibility with older versions where these fields are referenced,
   in the future there may be warnings enabled and possibly removed in later releases
 
 #### Parsing
 
-- Replace `ldf.parseLDF(x)` with `ldf.parse_ldf(x)`
+- Replace `ldf.parseLDF(x)` with `ldf.parse_ldf(x)`, signatures are slightly different but functionally identical
 - Replace `ldf.parseLDFtoDict(x)` with `ldf.parse_ldf_to_dict(x)`
 
 ## [0.9.1] - 2021-09-11

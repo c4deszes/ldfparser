@@ -2,7 +2,7 @@ import glob
 import os
 import pytest
 
-from ldfparser.parser import parseLDF
+from ldfparser.parser import parse_ldf
 from ldfparser.signal import LinSignal
 from ldfparser.encoding import PhysicalValue, LogicalValue
 
@@ -16,7 +16,7 @@ ldf_files = glob.glob(ldf_directory + '/*.ldf')
 @pytest.mark.performance
 def test_performance_load(benchmark, ldf_path):
     path = os.path.join(os.path.dirname(__file__), "ldf", ldf_path)
-    benchmark(parseLDF, path)
+    benchmark(parse_ldf, path)
 
 @pytest.mark.performance
 def test_performance_physical_encoding(benchmark):

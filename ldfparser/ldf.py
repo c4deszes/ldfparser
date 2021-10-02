@@ -245,16 +245,14 @@ class LDF():
 
         Deprecated, use `get_signal` instead, this method will be removed in 1.0.0
         """
-        warnings.warn("'signal(x)' is deprecated, use 'get_signal(x)' instead", DeprecationWarning)
         return self._signals.get(name)
 
-    def frame(self, frame_id: Union[int, str]) -> LinFrame:
+    def frame(self, frame_id: Union[int, str]) -> LinUnconditionalFrame:
         """
         Returns the signal with the given name.
 
-        Deprecated, use `get_signal` instead, this method will be removed in 1.0.0
+        Deprecated, use `get_unconditional_frame` instead, this method will be removed in 1.0.0
         """
-        warnings.warn("'frame(x)' is deprecated, use 'get_unconditional_frame(x)' instead", DeprecationWarning)
         try:
             return self.get_unconditional_frame(frame_id)
         except LookupError:
@@ -266,5 +264,4 @@ class LDF():
 
         Deprecated, use `get_slave` instead, this method will be removed in 1.0.0
         """
-        warnings.warn("'slave(x)' is deprecated, use 'get_slave(x)' instead", DeprecationWarning)
         return self._slaves.get(name)

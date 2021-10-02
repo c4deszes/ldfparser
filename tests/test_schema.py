@@ -17,5 +17,5 @@ json_schema = json.load(open('schemas/ldf.json',))
     ldf_files
 )
 def test_json_schema(ldf_path):
-    data = ldfparser.parseLDFtoDict(ldf_path)
+    data = ldfparser.parse_ldf_to_dict(ldf_path)
     validate(data, schema=json_schema)

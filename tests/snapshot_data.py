@@ -13,7 +13,7 @@ if __name__ == "__main__":
         os.mkdir(snapshot_directory)
 
     for ldf in ldf_files:
-        data = ldfparser.parseLDFtoDict(ldf)
+        data = ldfparser.parse_ldf_to_dict(ldf)
         output_path = os.path.join(snapshot_directory, os.path.basename(ldf)) + '.json'
         with open(output_path, 'w+') as output:
             json.dump(data, output)

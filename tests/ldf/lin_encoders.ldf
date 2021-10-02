@@ -45,11 +45,11 @@ Node_attributes {
 
 Schedule_tables {
  MRF_schedule {
-		MasterReq delay 10 ms;
-	}
-	SRF_schedule {
-		SlaveResp delay 10 ms;
-	}
+        MasterReq delay 10 ms;
+    }
+    SRF_schedule {
+        SlaveResp delay 10 ms;
+    }
     Normal_Schedule {
     dummy_frame delay 15 ms ;
   }

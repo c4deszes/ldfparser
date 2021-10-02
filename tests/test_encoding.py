@@ -1,6 +1,6 @@
 from ldfparser import LinSignal
 import pytest
-from ldfparser.encoding import ASCIIValue, BCDValue, LinSignalType, PhysicalValue, LogicalValue
+from ldfparser.encoding import ASCIIValue, BCDValue, LinSignalEncodingType, PhysicalValue, LogicalValue
 
 @pytest.mark.unit
 def test_encode_physical_unitless_numeric():
@@ -160,7 +160,7 @@ def test_encode_signal_scalar():
     motorSpeed = PhysicalValue(1, 99, 1, 0, 'rpm')
     overdrive = PhysicalValue(100, 255, 0, 100)
 
-    signalType = LinSignalType('MotorType', [motorSpeed, overdrive, offValue])
+    signalType = LinSignalEncodingType('MotorType', [motorSpeed, overdrive, offValue])
     assert signalType.encode('off', motorSignal) == 0
     assert signalType.encode(99, motorSignal) == 99
     assert signalType.encode(101, motorSignal) == 100
@@ -171,7 +171,7 @@ def test_encode_signal_bcd():
     counterSignal = LinSignal('Counter', 24, [0, 1, 2])
     counterValue = BCDValue()
 
-    signalType = LinSignalType('CounterType', [counterValue])
+    signalType = LinSignalEncodingType('CounterType', [counterValue])
     assert signalType.encode(1, counterSignal) == [0, 0, 1]
     assert signalType.encode(12, counterSignal) == [0, 1, 2]
     assert signalType.encode(123, counterSignal) == [1, 2, 3]
@@ -181,5 +181,5 @@ def test_encode_signal_ascii():
     textSignal = LinSignal('Text', 24, list("ABC"))
     textValue = ASCIIValue()
 
-    signalType = LinSignalType('TextType', [textValue])
+    signalType = LinSignalEncodingType('TextType', [textValue])
     assert signalType.encode("ABC", textSignal) == [65, 66, 67]

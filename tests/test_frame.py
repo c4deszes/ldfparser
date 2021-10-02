@@ -1,7 +1,8 @@
 import pytest
 
-from ldfparser import LinFrame, LinSignal
-from ldfparser.encoding import LinSignalType, LogicalValue, PhysicalValue
+from ldfparser.frame import LinUnconditionalFrame
+from ldfparser.signal import LinSignal
+from ldfparser.encoding import LinSignalEncodingType, LogicalValue, PhysicalValue
 
 @pytest.mark.unit
 def test_frame_raw_encoding():
@@ -9,7 +10,7 @@ def test_frame_raw_encoding():
     signal2 = LinSignal('Signal_2', 4, 0)
     signal3 = LinSignal('Signal_3', 1, 0)
 
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
     content = frame.raw({
         'Signal_1': 100,
         'Signal_2': 10,
@@ -24,7 +25,7 @@ def test_frame_raw_encoding_zero():
     signal2 = LinSignal('Signal_2', 4, 15)
     signal3 = LinSignal('Signal_3', 1, 1)
 
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
     content = frame.raw({
         'Signal_1': 0,
         'Signal_2': 10,
@@ -39,7 +40,7 @@ def test_frame_raw_encoding_no_signal():
     signal2 = LinSignal('Signal_2', 4, 255)
     signal3 = LinSignal('Signal_3', 1, 255)
 
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
     content = frame.raw({
         'Signal_2': 10,
         'Signal_3': 1
@@ -50,7 +51,7 @@ def test_frame_raw_encoding_no_signal():
 @pytest.mark.unit
 def test_frame_raw_encoding_array():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1})
     content = frame.raw({
         'Signal_1': [1, 2]
     })
@@ -60,7 +61,7 @@ def test_frame_raw_encoding_array():
 def test_frame_raw_encoding_array2():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
     signal2 = LinSignal('Signal_2', 8, 0)
-    frame = LinFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
     content = frame.raw({
         'Signal_1': [1, 2],
         'Signal_2': 3
@@ -70,14 +71,14 @@ def test_frame_raw_encoding_array2():
 @pytest.mark.unit
 def test_frame_raw_decoding_array():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1})
     assert frame.parse_raw(bytearray([1, 2])) == {"Signal_1": [1, 2]}
 
 @pytest.mark.unit
 def test_frame_raw_decoding_array2():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
     signal2 = LinSignal('Signal_2', 8, 0)
-    frame = LinFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
     assert frame.parse_raw(bytearray([1, 2, 3])) == {"Signal_1": [1, 2], "Signal_2": 3}
 
 @pytest.mark.unit
@@ -86,7 +87,7 @@ def test_frame_raw_encoding_out_of_range():
     signal2 = LinSignal('Signal_2', 4, 0)
     signal3 = LinSignal('Signal_3', 1, 0)
 
-    frame = LinFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3})
     with pytest.raises(Exception):
         frame.raw({
             'Signal_1': 100,
@@ -101,7 +102,7 @@ def test_frame_signals_overlapping():
     signal3 = LinSignal('Signal_3', 1, 0)
 
     with pytest.raises(ValueError):
-        LinFrame(1, 'Frame_1', 2, {0: signal1, 7: signal2, 15: signal3})
+        LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 7: signal2, 15: signal3})
 
 @pytest.mark.unit
 def test_frame_signal_out_of_frame():
@@ -109,7 +110,7 @@ def test_frame_signal_out_of_frame():
     signal2 = LinSignal('Signal_2', 4, 0)
 
     with pytest.raises(ValueError):
-        LinFrame(1, 'Frame_1', 2, {0: signal1, 14: signal2})
+        LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 14: signal2})
 
 @pytest.mark.unit
 def test_frame_encode_data():
@@ -130,12 +131,12 @@ def test_frame_encode_data():
         LogicalValue(1, 'ERROR')]
 
     converters = {
-        'MotorSpeed': LinSignalType('MotorSpeedType', motorValues),
-        'Temperature': LinSignalType('TemperatureType', temperatureValues),
-        'Error': LinSignalType('ErrorType', errorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues),
+        'Temperature': LinSignalEncodingType('TemperatureType', temperatureValues),
+        'Error': LinSignalEncodingType('ErrorType', errorValues)
     }
 
-    frame = LinFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
+    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
     frame.data(
         {
             'Temperature': -30,
@@ -151,9 +152,9 @@ def test_frame_encode_data_missing_encoder():
     motorValues = [PhysicalValue(0, 255, 0, 100)]
 
     converters = {
-        'MotorSpeed': LinSignalType('MotorSpeedType', motorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues)
     }
-    frame = LinFrame(1, 'Status', 1, {0: motorSpeed})
+    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motorSpeed})
 
     with pytest.raises(ValueError):
         frame.data({'MissingSignal': 0}, converters)
@@ -177,12 +178,12 @@ def test_frame_decode_data():
         LogicalValue(1, 'ERROR')]
 
     converters = {
-        'MotorSpeed': LinSignalType('MotorSpeedType', motorValues),
-        'Temperature': LinSignalType('TemperatureType', temperatureValues),
-        'Error': LinSignalType('ErrorType', errorValues)
+        'MotorSpeed': LinSignalEncodingType('MotorSpeedType', motorValues),
+        'Temperature': LinSignalEncodingType('TemperatureType', temperatureValues),
+        'Error': LinSignalEncodingType('ErrorType', errorValues)
     }
 
-    frame = LinFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
+    frame = LinUnconditionalFrame(1, 'Status', 2, {0: motorSpeed, 7: errorState, 8: temperature})
     frame.parse(
         [0x88, 0x88],
         converters
@@ -193,7 +194,7 @@ def test_frame_decode_data_missing_decoder():
     motorSpeed = LinSignal('MotorSpeed', 8, 0)
 
     converters = {}
-    frame = LinFrame(1, 'Status', 1, {0: motorSpeed})
+    frame = LinUnconditionalFrame(1, 'Status', 1, {0: motorSpeed})
 
     with pytest.raises(ValueError):
         frame.parse([0x88], converters)

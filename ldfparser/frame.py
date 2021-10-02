@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, Union
 import bitstruct
 
 from .signal import LinSignal
-from .encoding import LinSignalType
+from .encoding import LinSignalEncodingType
 
 class LinFrame():
 
@@ -16,7 +16,7 @@ class LinFrame():
 
 class LinUnconditionalFrame(LinFrame):
     """
-    LinFrame represents an unconditional frame consisting of signals
+    LinUnconditionalFrame represents an unconditional frame consisting of signals
     """
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
@@ -69,11 +69,11 @@ class LinUnconditionalFrame(LinFrame):
                     message += signal.init_value
                 else:
                     message.append(signal.init_value)
-        return LinFrame._flip_bytearray(self._packer.pack(*message))
+        return LinUnconditionalFrame._flip_bytearray(self._packer.pack(*message))
 
     def data(self,
              data: Dict[str, Union[str, int, float]],
-             converters: Dict[str, LinSignalType]) -> bytearray:
+             converters: Dict[str, LinSignalEncodingType]) -> bytearray:
         """
         Returns a bytearray (frame content) by using the human readable signal values
         """
@@ -89,7 +89,7 @@ class LinUnconditionalFrame(LinFrame):
         Returns a mapping between Signal names and their raw physical values in the given message
         """
         message = {}
-        unpacked = self._packer.unpack(LinFrame._flip_bytearray(data))
+        unpacked = self._packer.unpack(LinUnconditionalFrame._flip_bytearray(data))
         signal_index = 0
         i = 0
         while i < len(unpacked):
@@ -105,7 +105,7 @@ class LinUnconditionalFrame(LinFrame):
 
     def parse(self,
               data: bytearray,
-              converters: Dict[str, LinSignalType]) -> Dict[str, Union[str, int, float]]:
+              converters: Dict[str, LinSignalEncodingType]) -> Dict[str, Union[str, int, float]]:
         """
         Returns a mapping between Signal names and their human readable value
         """
@@ -124,9 +124,9 @@ class LinUnconditionalFrame(LinFrame):
             flipped.append(int('{:08b}'.format(i)[::-1], 2))
         return flipped
 
-class LinEventTriggeredFrame():
+class LinEventTriggeredFrame(LinFrame):
     # TODO: add schedule table reference
 
-    def __init__(self, name: str, frame_id: int, frames: List[LinFrame]) -> None:
-        self.name = name
-        self.frame_id = frame_id
+    def __init__(self, frame_id: int, name: str, frames: List[LinFrame]) -> None:
+        super().__init__(frame_id, name)
+        self.frames = frames

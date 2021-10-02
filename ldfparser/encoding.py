@@ -128,9 +128,9 @@ class ASCIIValue(ValueConverter):
     def decode(self, value: List[int], signal: 'LinSignal') -> str:
         return bytes(value).decode()
 
-class LinSignalType():
+class LinSignalEncodingType():
     """
-    LinSignalType is used to encode and decode LIN signals
+    LinSignalEncodingType is used to encode and decode LIN signals
 
     An encoding type contains multiple value converters.
 
@@ -142,7 +142,7 @@ class LinSignalType():
     :Example:
 
     ```
-    LinSignalType(name="MotorSpeed",
+    LinSignalEncodingType(name="MotorSpeed",
                   [
                     LogicalValue(phy_value=0, info='off')
                     PhysicalValue(phy_min=1, phy_max=254, scale=10, offset=100, unit='rpm')

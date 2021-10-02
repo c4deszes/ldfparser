@@ -29,6 +29,15 @@ class LinSignal:
         self.publisher: 'LinNode' = None
         self.subscribers: List['LinNode'] = []
 
+    def __eq__(self, o: object) -> bool:
+        return self.name == o.name
+
+    def __ne__(self, o: object) -> bool:
+        return not (self == o)
+
+    def __hash__(self) -> int:
+        return hash((self.name))
+
     def is_array(self):
         """
         Returns whether the Signal is array type

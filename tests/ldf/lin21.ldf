@@ -140,5 +140,5 @@ Signal_representation {
 	Dig2Bit: InternalLightsRequest;
 	ErrorEncoding: RSMerror, LSMerror;
 	FaultStateEncoding: IntError;
-	LightEncoding: RightIntLightsSwitch, LefttIntLightsSwitch;
+	LightEncoding: RightIntLightsSwitch, LeftIntLightsSwitch;
 }

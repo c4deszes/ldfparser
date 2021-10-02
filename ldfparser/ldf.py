@@ -5,9 +5,9 @@ from typing import Union, Dict, List
 import warnings
 
 from .lin import LinVersion
-from .frame import LinFrame
+from .frame import LinFrame, LinUnconditionalFrame, LinEventTriggeredFrame
 from .signal import LinSignal
-from .encoding import LinSignalType
+from .encoding import LinSignalEncodingType
 from .node import LinMaster, LinSlave
 
 class LDF():
@@ -25,8 +25,10 @@ class LDF():
         self._master: LinMaster = None
         self._slaves: Dict[str, LinSlave] = {}
         self._signals: Dict[str, LinSignal] = {}
-        self._frames: Dict[str, LinFrame] = {}
-        self._converters: Dict[str, LinSignalType] = {}
+        self._unconditional_frames: Dict[str, LinUnconditionalFrame] = {}
+        self._event_triggered_frames: Dict[str, LinEventTriggeredFrame] = {}
+        self._signal_encoding_types: Dict[str, LinSignalEncodingType] = {}
+        self._signal_representations: Dict[LinSignal, LinSignalEncodingType] = {}
         self._comments: List[str] = []
 
     def get_protocol_version(self) -> LinVersion:
@@ -79,6 +81,12 @@ class LDF():
         return self._slaves.values()
 
     def get_frame(self, frame_id: Union[int, str]) -> LinFrame:
+        try:
+            return self.get_unconditional_frame(frame_id)
+        except LookupError:
+            return self.get_event_triggered_frame(frame_id)
+
+    def get_unconditional_frame(self, frame_id: Union[int, str]) -> LinUnconditionalFrame:
         """
         Returns the unconditional frame with the given name or id
 
@@ -97,7 +105,7 @@ class LDF():
         }
         ```
 
-        `ldf.get_frame(1)` and `ldf.get_frame("VL1_CEM_Frm1")` will return the same value
+        `ldf.get_unconditional_frame(1)` and `ldf.get_unconditional_frame("VL1_CEM_Frm1")` will return the same value
 
         :param frame_id:
         :type frame_id: int or str
@@ -106,25 +114,46 @@ class LDF():
         :raises: LookupError if the given frame is not found
         """
         if isinstance(frame_id, str):
-            frame = self._frames.get(frame_id)
+            frame = self._unconditional_frames.get(frame_id)
             if frame is None:
                 raise LookupError(f"No frame named '{frame_id}' found!")
             return frame
         if isinstance(frame_id, int):
-            frame = next((x for x in self.frames if x.frame_id == frame_id), None)
+            frame = next((x for x in self.get_unconditional_frames() if x.frame_id == frame_id), None)
             if frame is None:
                 raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
             return frame
         raise TypeError("'frame_id' must be int or str")
 
-    def get_frames(self) -> List[LinFrame]:
+    def get_unconditional_frames(self) -> List[LinUnconditionalFrame]:
         """
         Returns all unconditional frames
 
         :returns: List of LIN frames
-        :rtype: List[LinFrame]
+        :rtype: List[LinUnconditionalFrame]
         """
-        return self._frames.values()
+        return self._unconditional_frames.values()
+
+    def get_event_triggered_frame(self, frame_id: Union[int, str]) -> LinEventTriggeredFrame:
+        """
+        
+        """
+        if isinstance(frame_id, str):
+            frame = self._event_triggered_frames.get(frame_id)
+            if frame is None:
+                raise LookupError(f"No frame named '{frame_id}' found!")
+            return frame
+        if isinstance(frame_id, int):
+            frame = next((x for x in self.get_event_triggered_frames() if x.frame_id == frame_id), None)
+            if frame is None:
+                raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
+            return frame
+        raise TypeError("'frame_id' must be int or str")
+
+    def get_event_triggered_frames(self) -> List[LinEventTriggeredFrame]:
+        """
+        """
+        return self._event_triggered_frames.values()
 
     def get_signal(self, name: str) -> LinSignal:
         """
@@ -189,13 +218,13 @@ class LDF():
         return self.get_signals()
 
     @property
-    def frames(self) -> List[LinFrame]:
+    def frames(self) -> List[LinUnconditionalFrame]:
         # pylint: disable=missing-function-docstring
-        return self.get_frames()
+        return self.get_unconditional_frames()
 
     @property
-    def converters(self) -> Dict[str, LinSignalType]:
-        return self._converters
+    def converters(self) -> Dict[str, LinSignalEncodingType]:
+        return {sig.name: enc for (sig, enc) in self._signal_representations.items()}
 
     # These functions are maintained in order to keep compatibility
     # with pre-0.10.0 versions
@@ -215,8 +244,11 @@ class LDF():
 
         Deprecated, use `get_signal` instead, this method will be removed in 1.0.0
         """
-        warnings.warn("'frame(x)' is deprecated, use 'get_frame(x)' instead", DeprecationWarning)
-        return self.get_frame(frame_id)
+        warnings.warn("'frame(x)' is deprecated, use 'get_unconditional_frame(x)' instead", DeprecationWarning)
+        try:
+            return self.get_unconditional_frame(frame_id)
+        except LookupError:
+            return None
 
     def slave(self, name: str) -> LinSlave:
         """

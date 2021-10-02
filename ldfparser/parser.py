@@ -3,9 +3,9 @@ import warnings
 from typing import Any, Dict, List
 from lark import Lark, Transformer
 
-from .frame import LinFrame
+from .frame import LinEventTriggeredFrame, LinUnconditionalFrame
 from .signal import LinSignal
-from .encoding import ASCIIValue, BCDValue, LinSignalType, LogicalValue, PhysicalValue, ValueConverter
+from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
 from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion
 from .node import LinMaster, LinProductId, LinSlave
 from .comment import parse_comments
@@ -55,6 +55,7 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     _populate_ldf_header(json, ldf)
     _populate_ldf_signals(json, ldf)
     _populate_ldf_frames(json, ldf)
+    _populate_ldf_event_triggered_frames(json, ldf)
     _populate_ldf_nodes(json, ldf)
     _populate_ldf_encoding_types(json, ldf)
 
@@ -105,7 +106,16 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
             elif 48 <= frame['frame_id'] <= 63:
                 length = 8
 
-        ldf._frames[frame['name']] = LinFrame(frame['frame_id'], frame['name'], length, signals)
+        ldf._unconditional_frames[frame['name']] = LinUnconditionalFrame(frame['frame_id'], frame['name'], length, signals)
+
+def _populate_ldf_event_triggered_frames(json: dict, ldf: LDF):
+    if "event_triggered_frames" not in json:
+        return
+    for frame in json['event_triggered_frames']:
+        frames = []
+        for a in frame['frames']:
+            frames.append(ldf.get_unconditional_frame(a))
+        ldf._event_triggered_frames[frame['name']] = LinEventTriggeredFrame(frame['frame_id'], frame['name'], frames)
 
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
@@ -204,15 +214,14 @@ def _link_ldf_frames(json: dict, ldf: LDF):
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
     if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
         return
-    signal_types = {}
     for encoding_type in json['signal_encoding_types']:
         converters = []
         for encoding_value in encoding_type['values']:
             converters.append(_convert_encoding_value(encoding_value))
-        signal_types[encoding_type['name']] = LinSignalType(encoding_type['name'], converters)
+        ldf._signal_encoding_types[encoding_type['name']] = LinSignalEncodingType(encoding_type['name'], converters)
     for representations in json['signal_representations']:
         for signal in representations['signals']:
-            ldf._converters[signal] = signal_types[representations['encoding']]
+            ldf._signal_representations[ldf.get_signal(signal)] = ldf._signal_encoding_types[representations['encoding']]
 
 def _convert_encoding_value(json: dict) -> ValueConverter:
     if json['type'] == 'logical':

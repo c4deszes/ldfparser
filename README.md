@@ -50,11 +50,11 @@ import ldfparser
 import binascii
 
 # Load LDF
-ldf = ldfparser.parseLDF(path = "network.ldf")
-frame = ldf.frame('Frame_1')
+ldf = ldfparser.parse_ldf(path = "network.ldf")
+frame = ldf.get_unconditional_frame('Frame_1')
 
 # Get baudrate from LDF
-print(ldf.baudrate)
+print(ldf.get_baudrate())
 
 # Encode signal values into frame
 message = frame.raw({"Signal_1": 123, "Signal_2": 0})

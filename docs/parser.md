@@ -27,7 +27,7 @@ by exporting an LDF into JSON format. The field names and structure try
 to be very similar to the ones in the LDF specification.
 
 ```python
-ldf = parseLDFtoDict('network.ldf')
+ldf = parse_ldf_to_dict('network.ldf')
 
 print(ldf['speed'])
 >>> 19200
@@ -47,10 +47,10 @@ into Python objects that can be used for easier data access as well as traversal
 through the links between objects.
 
 ```python
-ldf = parseLDF('network.ldf')
-print(ldf.speed)
+ldf = parse_ldf('network.ldf')
+print(ldf.get_baudrate())
 >>> 19200
-for node in ldf.slaves:
+for node in ldf.get_slaves():
   print(node.name)
 >>> 'LSM'
 >>> 'RSM'

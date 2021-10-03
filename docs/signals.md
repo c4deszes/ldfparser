@@ -13,7 +13,7 @@ will be accessible.
 ```python
 ldf = parseLDF('network.ldf')
 
-light_switch_signal = ldf.signal('LeftIntLightsSwitch')
+light_switch_signal = ldf.get_signal('LeftIntLightsSwitch')
 print(light_switch_signal.name)
 >>> 'LeftIntLightsSwitch'
 print(light_switch_signal.width)

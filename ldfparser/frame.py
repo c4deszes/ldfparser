@@ -23,24 +23,30 @@ class LinUnconditionalFrame(LinFrame):
         super().__init__(frame_id, name)
         self.publisher = None
         self.length = length
+
         ordered_signals = sorted(signals.items(), key=lambda x: x[0])
         self.signal_map = ordered_signals
-        self.signals = [i[1] for i in ordered_signals]
-        pattern = self._frame_pattern(length * 8, ordered_signals)
+        #self.signals = [i[1] for i in ordered_signals]
+
+        pattern = LinUnconditionalFrame._frame_pattern(self.length * 8, self.signal_map)
         self._packer = bitstruct.compile(pattern)
 
+    @staticmethod
     def _frame_pattern(self, frame_bits: int, signals: List[Tuple[int, LinSignal]]) -> str:
+        """
+        Converts 
+        """
         pattern = "<"
         offset = 0
         for signal in signals:
             if signal[0] < offset:
-                raise ValueError(str(self) + ":" + str(signal[1]) + " overlapping")
+                raise ValueError(f"{signal[1]} is overlapping the previo")
             if signal[0] != offset:
                 padding = signal[0] - offset
                 pattern += f"p{padding}"
                 offset += padding
             if offset + signal[1].width > frame_bits:
-                raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside {self}")
+                raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside frame!")
             if signal[1].is_array():
                 pattern += "u8" * int(signal[1].width / 8)
             else:
@@ -52,6 +58,41 @@ class LinUnconditionalFrame(LinFrame):
 
     def _get_signal(self, name: str):
         return next((x for x in self.signals if x.name == name), None)
+
+    def encode(self,
+               data: Dict[str, Union[str, int, float]],
+               converters: Dict[str, LinSignalEncodingType] = None) -> bytearray:
+        """
+        
+        """
+        return bytearray()
+
+    def encode_raw(self, data: Dict[str, Union[str, int, float]]) -> bytearray:
+        """
+        """
+        message = []
+        for signal in self.signals:
+            if signal.name in data.keys():
+                if signal.is_array():
+                    message += data.get(signal.name)
+                else:
+                    message.append(data.get(signal.name))
+            else:
+                if signal.is_array():
+                    message += signal.init_value
+                else:
+                    message.append(signal.init_value)
+        return LinUnconditionalFrame._flip_bytearray(self._packer.pack(*message))
+
+    def decode(self,
+               data: bytearray,
+               converters: Dict[str, LinSignalEncodingType] = None) -> Dict[str, Union[str, int, float]]:
+        return {}
+
+    def decode_raw(self,
+                   data: bytearray,
+                   converters: Dict[str, LinSignalEncodingType] = None) -> Dict[str, int]:
+        return {}
 
     def raw(self, data: Dict[str, int]) -> bytearray:
         """
@@ -127,6 +168,6 @@ class LinUnconditionalFrame(LinFrame):
 class LinEventTriggeredFrame(LinFrame):
     # TODO: add schedule table reference
 
-    def __init__(self, frame_id: int, name: str, frames: List[LinFrame]) -> None:
+    def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame] = []) -> None:
         super().__init__(frame_id, name)
         self.frames = frames

@@ -7,7 +7,9 @@ Please provide brief information, what this pull request provides or fixes.
 ### Checklist
 
 - [ ] Check test result and code coverage
+- [ ] Update documentation
 - [ ] Update changelog
+- [ ] Update version number
 
 ## Fixes
 

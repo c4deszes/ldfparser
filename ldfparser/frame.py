@@ -1,6 +1,7 @@
 """
 LIN Frame utilities
 """
+import warnings
 from typing import Dict, List, Tuple, Union
 
 import bitstruct
@@ -9,6 +10,18 @@ from .signal import LinSignal
 from .encoding import LinSignalEncodingType
 
 class LinFrame():
+    """
+    LinFrame is a transport layer level object that represents transactions
+    between the LinMaster and LinSlaves
+
+    Every frame has a unique identifier `frame_id` or often referred to as protected identifier or
+    PID for short.
+
+    :param frame_id: Frame identifier
+    :type frame_id: int
+    :param name: Name of the frame
+    :type name: str
+    """
 
     def __init__(self, frame_id: int, name: str) -> None:
         self.frame_id = frame_id
@@ -23,55 +36,113 @@ class LinUnconditionalFrame(LinFrame):
         super().__init__(frame_id, name)
         self.publisher = None
         self.length = length
-
-        ordered_signals = sorted(signals.items(), key=lambda x: x[0])
-        self.signal_map = ordered_signals
-        #self.signals = [i[1] for i in ordered_signals]
-
-        pattern = LinUnconditionalFrame._frame_pattern(self.length * 8, self.signal_map)
-        self._packer = bitstruct.compile(pattern)
+        self.signal_map = sorted(signals.items(), key=lambda x: x[0])
+        self._packer = LinUnconditionalFrame._frame_pattern(self.length, self.signal_map)
 
     @staticmethod
-    def _frame_pattern(self, frame_bits: int, signals: List[Tuple[int, LinSignal]]) -> str:
+    def _frame_pattern(
+            frame_size: int,
+            signals: List[Tuple[int, LinSignal]]) -> bitstruct.CompiledFormat:
         """
-        Converts 
+        Converts a frame layout into a bitstructure formatting string
+
+        Example:
+            {
+                offset = 0, LinSignal(width=6),
+                offset = 8, LinSignal(width=8),
+                offset = 16, LinSignal(width=1),
+                offset = 17, LinSignal(width=1)
+            }
+
+            would yield 'u6p2u8u1u1p6' as the frame pattern given a frame size of 3 bytes
+
+        :param frame_size: The size of the frame in bytes
+        :type frame_size: int
+        :param signals: List of signals and offsets that represent the frame layout
+        :type signals: List[Tuple[int, LinSignal]] where the tuple's first element is the offset
+                        and the second element is the signal object
+
+        :raises: ValueError if the signals inside the frame would overlap or span outside the frame
+        :returns: Bitstruct packer object
+        :rtype: bitstruct.CompiledFormat
         """
         pattern = "<"
-        offset = 0
-        for signal in signals:
-            if signal[0] < offset:
-                raise ValueError(f"{signal[1]} is overlapping the previo")
-            if signal[0] != offset:
-                padding = signal[0] - offset
+        frame_bits = frame_size * 8
+        frame_offset = 0
+        for (offset, signal) in signals:
+            if offset < frame_offset:
+                raise ValueError(f"{signal} is overlapping ")
+            if offset != frame_offset:
+                padding = offset - frame_offset
                 pattern += f"p{padding}"
-                offset += padding
-            if offset + signal[1].width > frame_bits:
-                raise ValueError(f"{signal[1]} with offset {signal[0]} spans outside frame!")
-            if signal[1].is_array():
-                pattern += "u8" * int(signal[1].width / 8)
+                frame_offset += padding
+            if frame_offset + signal.width > frame_bits:
+                raise ValueError(f"{signal} with offset {offset} spans outside frame!")
+            if signal.is_array():
+                pattern += "u8" * int(signal.width / 8)
             else:
-                pattern += f"u{signal[1].width}"
-            offset += signal[1].width
-        if offset < frame_bits:
-            pattern += f"p{frame_bits - offset}"
-        return pattern
+                pattern += f"u{signal.width}"
+            frame_offset += signal.width
+        if frame_offset < frame_bits:
+            pattern += f"p{frame_bits - frame_offset}"
+        return bitstruct.compile(pattern)
 
     def _get_signal(self, name: str):
-        return next((x for x in self.signals if x.name == name), None)
+        return next((signal for _, signal in self.signal_map if signal.name == name), None)
 
     def encode(self,
                data: Dict[str, Union[str, int, float]],
-               converters: Dict[str, LinSignalEncodingType] = None) -> bytearray:
+               encoding_types: Dict[str, LinSignalEncodingType] = {}) -> bytearray:
         """
-        
+        Encodes signal values into the LIN frame content
+
+        Example:
+            {
+                "MotorSpeed": 1000.0,
+                "MotorDirection": "CCW"
+            }
+
+        :param data: Mapping of signal names to values, signals that are not supplied will default
+                    to their initial values
+        :type data: Dict[str, Union[str, int, float]] where each key is a signal name and each
+                    value is string for logical value and integer or float for physical values
+        :param encoding_types: Mapping of 
+        :type encoding_types: Dict[str, LinSignalEncodingType]
+
+        :raises: ValueError if there's no encoding type and the supplied value cannot be encoded
+                 as is (float and string values)
         """
+        converted = {}
+        for (signal_name, value) in data.items():
+            signal = self._get_signal(signal_name)
+            if signal_name in encoding_types:
+                converted[signal_name] = encoding_types[signal_name].encode(value, signal)
+            elif signal.encoding_type is not None:
+                converted[signal_name] = signal.encoding_types[signal_name].encode(value, signal)
+            elif isinstance(value, int):
+                converted[signal_name] = value
+            else:
+                raise ValueError(f'No encoding type found for {signal_name} ({value})')
         return bytearray()
 
-    def encode_raw(self, data: Dict[str, Union[str, int, float]]) -> bytearray:
+    def encode_raw(self, data: Dict[str, int]) -> bytearray:
         """
+        Encodes signal values into the LIN frame content
+
+        Example:
+            {
+                "MotorSpeed": 1000,
+                "MotorDirection": 2
+            }
+
+        :param data: Mapping of signal names to values, signals that are not supplied will default
+                    to their initial values
+        :type data: Dict[str, int] where each key is a signal name and each value is an integer
+        :param encoding_types: Mapping of 
+        :type encoding_types: Dict[str, LinSignalEncodingType]
         """
         message = []
-        for signal in self.signals:
+        for (_, signal) in self.signal_map:
             if signal.name in data.keys():
                 if signal.is_array():
                     message += data.get(signal.name)
@@ -86,31 +157,22 @@ class LinUnconditionalFrame(LinFrame):
 
     def decode(self,
                data: bytearray,
-               converters: Dict[str, LinSignalEncodingType] = None) -> Dict[str, Union[str, int, float]]:
+               encoding_types: Dict[str, LinSignalEncodingType] = {}) -> Dict[str, Union[str, int, float]]:
         return {}
 
     def decode_raw(self,
-                   data: bytearray,
-                   converters: Dict[str, LinSignalEncodingType] = None) -> Dict[str, int]:
+                   data: bytearray) -> Dict[str, int]:
         return {}
+
+    # These methods are kept for compatibility with versions before 0.11.0
+    #
 
     def raw(self, data: Dict[str, int]) -> bytearray:
         """
         Returns a bytearray (frame content) by using the raw signal values provided
         """
-        message = []
-        for signal in self.signals:
-            if signal.name in data.keys():
-                if signal.is_array():
-                    message += data.get(signal.name)
-                else:
-                    message.append(data.get(signal.name))
-            else:
-                if signal.is_array():
-                    message += signal.init_value
-                else:
-                    message.append(signal.init_value)
-        return LinUnconditionalFrame._flip_bytearray(self._packer.pack(*message))
+        warnings.warn("raw is deprecated, use 'encode_raw' instead", DeprecationWarning)
+        return self.encode_raw(data)
 
     def data(self,
              data: Dict[str, Union[str, int, float]],
@@ -118,12 +180,13 @@ class LinUnconditionalFrame(LinFrame):
         """
         Returns a bytearray (frame content) by using the human readable signal values
         """
+        warnings.warn("data is deprecated, use 'encode' instead", DeprecationWarning)
         converted = {}
         for value in data.items():
             if value[0] not in converters.keys():
                 raise ValueError('No encoder found for ' + value[0])
             converted[value[0]] = converters[value[0]].encode(value[1], self._get_signal(value[0]))
-        return self.raw(converted)
+        return self.encode_raw(converted)
 
     def parse_raw(self, data: bytearray) -> Dict[str, int]:
         """
@@ -134,12 +197,12 @@ class LinUnconditionalFrame(LinFrame):
         signal_index = 0
         i = 0
         while i < len(unpacked):
-            if self.signals[signal_index].is_array():
-                signal_size = int(self.signals[signal_index].width / 8)
-                message[self.signals[signal_index].name] = list(unpacked[i:i + signal_size])
+            if self.signal_map[signal_index][1].is_array():
+                signal_size = int(self.signal_map[signal_index][1].width / 8)
+                message[self.signal_map[signal_index][1].name] = list(unpacked[i:i + signal_size])
                 i += signal_size - 1
             else:
-                message[self.signals[signal_index].name] = unpacked[i]
+                message[self.signal_map[signal_index][1].name] = unpacked[i]
             signal_index += 1
             i += 1
         return message

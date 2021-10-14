@@ -148,6 +148,8 @@ class LinUnconditionalFrame(LinFrame):
         :type data: Dict[str, int] where each key is a signal name and each value is an integer
         :param encoding_types: Mapping of signal names to encoding types
         :type encoding_types: Dict[str, LinSignalEncodingType]
+        :returns: LinFrame content
+        :rtype: bytearray
         """
         message = []
         for (_, signal) in self.signal_map:
@@ -166,6 +168,14 @@ class LinUnconditionalFrame(LinFrame):
     def decode(self,
                data: bytearray,
                encoding_types: Dict[str, LinSignalEncodingType] = None) -> Dict[str, Union[str, int, float]]:
+        """
+        Decodes a LIN frame into the signals that it contains
+
+        Example:
+            data = 0xFC 0x38
+            frame_layout = u6p2u8u1u1p6
+
+        """
         parsed = self.parse_raw(data)
         converted = {}
         for (signal_name, value) in parsed.items():
@@ -182,15 +192,34 @@ class LinUnconditionalFrame(LinFrame):
 
     def decode_raw(self,
                    data: bytearray) -> Dict[str, int]:
+        """
+        Decodes a LIN frame into the signals that it contains
+
+        Example:
+            data = 0xFC 0x30 0xFF,
+            frame_layout = u6p2u1u1p6u8
+
+            would yield the following dictionary {
+                'Signal1': 63,
+                'Signal2': 1,
+                'Signal3': 1,
+                'Signal4': 255
+            }
+
+        :param data: LinFrame content as a bytearray
+        :type data: bytearray
+        :returns: mapping of signal names to signal values
+        :rtype: Dict[str, int]
+        """
         unpacked = self._packer.unpack(LinUnconditionalFrame._flip_bytearray(data))
         message = {}
         signal_index = 0
         index = 0
         while index < len(unpacked):
             if self.signal_map[signal_index][1].is_array():
-                signal_size = int(self.signal_map[signal_index][1].width / 8)
-                message[self.signal_map[signal_index][1].name] = list(unpacked[index:index + signal_size])
-                index += signal_size - 1
+                array_size = int(self.signal_map[signal_index][1].width / 8)
+                message[self.signal_map[signal_index][1].name] = list(unpacked[index:index + array_size])
+                index += array_size - 1
             else:
                 message[self.signal_map[signal_index][1].name] = unpacked[index]
             signal_index += 1
@@ -202,8 +231,13 @@ class LinUnconditionalFrame(LinFrame):
     def raw(self, data: Dict[str, int]) -> bytearray:
         """
         Returns a bytearray (frame content) by using the raw signal values provided
+
+        Deprecated, use 'encode_raw' instead
         """
-        warnings.warn("raw is deprecated, use 'encode_raw' instead", DeprecationWarning)
+        warnings.warn(
+            "raw is deprecated, use 'encode_raw' instead, will be removed in 1.0.0",
+            DeprecationWarning)
+
         return self.encode_raw(data)
 
     def data(self,
@@ -211,20 +245,30 @@ class LinUnconditionalFrame(LinFrame):
              converters: Dict[str, LinSignalEncodingType]) -> bytearray:
         """
         Returns a bytearray (frame content) by using the human readable signal values
+
+        Deprecated, use 'encode' instead
         """
-        warnings.warn("data is deprecated, use 'encode' instead", DeprecationWarning)
+        warnings.warn(
+            "data is deprecated, use 'encode' instead, will be removed in 1.0.0",
+            DeprecationWarning)
+
         converted = {}
-        for value in data.items():
-            if value[0] not in converters.keys():
-                raise ValueError('No encoder found for ' + value[0])
-            converted[value[0]] = converters[value[0]].encode(value[1], self._get_signal(value[0]))
+        for (signal_name, value) in data.items():
+            if signal_name not in converters.keys():
+                raise ValueError(f'No encoder found for {signal_name}')
+            converted[signal_name] = converters[signal_name].encode(value, self._get_signal(signal_name))
         return self.encode_raw(converted)
 
     def parse_raw(self, data: bytearray) -> Dict[str, int]:
         """
         Returns a mapping between Signal names and their raw physical values in the given message
+
+        Deprecated, use 'decode_raw' instead
         """
-        warnings.warn("parse_raw is deprecated, use 'decode_raw' instead", DeprecationWarning)
+        warnings.warn(
+            "parse_raw is deprecated, use 'decode_raw' instead, will be removed in 1.0.0",
+            DeprecationWarning)
+
         return self.decode_raw(data)
 
     def parse(self,
@@ -232,17 +276,27 @@ class LinUnconditionalFrame(LinFrame):
               converters: Dict[str, LinSignalEncodingType]) -> Dict[str, Union[str, int, float]]:
         """
         Returns a mapping between Signal names and their human readable value
+
+        Deprecated, use 'decode' instead
         """
-        warnings.warn("data is deprecated, use 'encode' instead", DeprecationWarning)
-        tmp = self.decode_raw(data)
+        warnings.warn(
+            "data is deprecated, use 'encode' instead, will be removed in 1.0.0",
+            DeprecationWarning)
+
+        parsed = self.decode_raw(data)
         output = {}
-        for value in tmp.items():
-            if value[0] not in converters.keys():
-                raise ValueError('No decoder found for ' + value[0])
-            output[value[0]] = converters[value[0]].decode(value[1], self._get_signal(value[0]))
+        for (signal_name, value) in parsed.items():
+            if signal_name not in converters.keys():
+                raise ValueError(f'No decoder found for {signal_name}')
+            output[signal_name] = converters[signal_name].decode(value, self._get_signal(signal_name))
         return output
 
 class LinEventTriggeredFrame(LinFrame):
+    # pylint: disable=too-few-public-methods
+    """
+    LinEventTriggeredFrame is LinFrame in the schedule table that can contain different
+    unconditional frames from different nodes
+    """
     # TODO: add schedule table reference
 
     def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame] = []) -> None:

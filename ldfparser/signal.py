@@ -29,7 +29,7 @@ class LinSignal:
         self.init_value: Union[int, List[int]] = init_value
         self.publisher: 'LinNode' = None
         self.subscribers: List['LinNode'] = []
-        self.encoding_type : 'LinSignalEncodingType' = None
+        self.encoding_type: 'LinSignalEncodingType' = None
 
     def __eq__(self, o: object) -> bool:
         return self.name == o.name

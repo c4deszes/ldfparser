@@ -10,6 +10,7 @@ from .signal import LinSignal
 from .encoding import LinSignalEncodingType
 
 class LinFrame():
+    # pylint: disable=too-few-public-methods
     """
     LinFrame is a transport layer level object that represents transactions
     between the LinMaster and LinSlaves
@@ -90,9 +91,16 @@ class LinUnconditionalFrame(LinFrame):
     def _get_signal(self, name: str):
         return next((signal for _, signal in self.signal_map if signal.name == name), None)
 
+    @staticmethod
+    def _flip_bytearray(data: bytearray) -> bytearray:
+        flipped = bytearray()
+        for i in data:
+            flipped.append(int('{:08b}'.format(i)[::-1], 2))
+        return flipped
+
     def encode(self,
                data: Dict[str, Union[str, int, float]],
-               encoding_types: Dict[str, LinSignalEncodingType] = {}) -> bytearray:
+               encoding_types: Dict[str, LinSignalEncodingType] = None) -> bytearray:
         """
         Encodes signal values into the LIN frame content
 
@@ -106,7 +114,7 @@ class LinUnconditionalFrame(LinFrame):
                     to their initial values
         :type data: Dict[str, Union[str, int, float]] where each key is a signal name and each
                     value is string for logical value and integer or float for physical values
-        :param encoding_types: Mapping of 
+        :param encoding_types: Mapping of signal names to encoding types
         :type encoding_types: Dict[str, LinSignalEncodingType]
 
         :raises: ValueError if there's no encoding type and the supplied value cannot be encoded
@@ -115,7 +123,7 @@ class LinUnconditionalFrame(LinFrame):
         converted = {}
         for (signal_name, value) in data.items():
             signal = self._get_signal(signal_name)
-            if signal_name in encoding_types:
+            if encoding_types is not None and signal_name in encoding_types:
                 converted[signal_name] = encoding_types[signal_name].encode(value, signal)
             elif signal.encoding_type is not None:
                 converted[signal_name] = signal.encoding_types[signal_name].encode(value, signal)
@@ -138,7 +146,7 @@ class LinUnconditionalFrame(LinFrame):
         :param data: Mapping of signal names to values, signals that are not supplied will default
                     to their initial values
         :type data: Dict[str, int] where each key is a signal name and each value is an integer
-        :param encoding_types: Mapping of 
+        :param encoding_types: Mapping of signal names to encoding types
         :type encoding_types: Dict[str, LinSignalEncodingType]
         """
         message = []
@@ -157,15 +165,39 @@ class LinUnconditionalFrame(LinFrame):
 
     def decode(self,
                data: bytearray,
-               encoding_types: Dict[str, LinSignalEncodingType] = {}) -> Dict[str, Union[str, int, float]]:
-        return {}
+               encoding_types: Dict[str, LinSignalEncodingType] = None) -> Dict[str, Union[str, int, float]]:
+        parsed = self.parse_raw(data)
+        converted = {}
+        for (signal_name, value) in parsed.items():
+            signal = self._get_signal(signal_name)
+            if encoding_types is not None and signal_name in encoding_types:
+                converted[signal_name] = encoding_types[signal_name].decode(value, signal)
+            elif signal.encoding_type is not None:
+                converted[signal_name] = signal.encoding_types[signal_name].decode(value, signal)
+            elif isinstance(value, int):
+                converted[signal_name] = value
+            else:
+                raise ValueError(f'No encoding type found for {signal_name} ({value})')
+        return converted
 
     def decode_raw(self,
                    data: bytearray) -> Dict[str, int]:
-        return {}
+        unpacked = self._packer.unpack(LinUnconditionalFrame._flip_bytearray(data))
+        message = {}
+        signal_index = 0
+        index = 0
+        while index < len(unpacked):
+            if self.signal_map[signal_index][1].is_array():
+                signal_size = int(self.signal_map[signal_index][1].width / 8)
+                message[self.signal_map[signal_index][1].name] = list(unpacked[index:index + signal_size])
+                index += signal_size - 1
+            else:
+                message[self.signal_map[signal_index][1].name] = unpacked[index]
+            signal_index += 1
+            index += 1
+        return message
 
     # These methods are kept for compatibility with versions before 0.11.0
-    #
 
     def raw(self, data: Dict[str, int]) -> bytearray:
         """
@@ -192,20 +224,8 @@ class LinUnconditionalFrame(LinFrame):
         """
         Returns a mapping between Signal names and their raw physical values in the given message
         """
-        message = {}
-        unpacked = self._packer.unpack(LinUnconditionalFrame._flip_bytearray(data))
-        signal_index = 0
-        i = 0
-        while i < len(unpacked):
-            if self.signal_map[signal_index][1].is_array():
-                signal_size = int(self.signal_map[signal_index][1].width / 8)
-                message[self.signal_map[signal_index][1].name] = list(unpacked[i:i + signal_size])
-                i += signal_size - 1
-            else:
-                message[self.signal_map[signal_index][1].name] = unpacked[i]
-            signal_index += 1
-            i += 1
-        return message
+        warnings.warn("parse_raw is deprecated, use 'decode_raw' instead", DeprecationWarning)
+        return self.decode_raw(data)
 
     def parse(self,
               data: bytearray,
@@ -213,20 +233,14 @@ class LinUnconditionalFrame(LinFrame):
         """
         Returns a mapping between Signal names and their human readable value
         """
-        tmp = self.parse_raw(data)
+        warnings.warn("data is deprecated, use 'encode' instead", DeprecationWarning)
+        tmp = self.decode_raw(data)
         output = {}
         for value in tmp.items():
             if value[0] not in converters.keys():
                 raise ValueError('No decoder found for ' + value[0])
             output[value[0]] = converters[value[0]].decode(value[1], self._get_signal(value[0]))
         return output
-
-    @staticmethod
-    def _flip_bytearray(data: bytearray) -> bytearray:
-        flipped = bytearray()
-        for i in data:
-            flipped.append(int('{:08b}'.format(i)[::-1], 2))
-        return flipped
 
 class LinEventTriggeredFrame(LinFrame):
     # TODO: add schedule table reference

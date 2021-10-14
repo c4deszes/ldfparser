@@ -47,7 +47,6 @@ class PhysicalValue(ValueConverter):
         self.unit = unit
 
     def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
-        num = 0.0
         if isinstance(value, str) and self.unit is not None and value.endswith(self.unit):
             num = float(value[:-len(self.unit)])
         else:

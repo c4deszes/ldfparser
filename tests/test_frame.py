@@ -198,3 +198,112 @@ def test_frame_decode_data_missing_decoder():
 
     with pytest.raises(ValueError):
         frame.parse([0x88], converters)
+
+#
+#
+#
+
+@pytest.fixture(scope="function")
+def frame():
+    motor_signal = LinSignal('MotorSpeed', 8, 0xFF)
+    temp_signal = LinSignal('InternalTemperature', 6, 0x3F)
+    reserved1_signal = LinSignal('Reserved1', 4, 0)
+    int_error_signal = LinSignal('InternalError', 1, 0)
+    comm_error_signal = LinSignal('CommError', 1, 0)
+    return LinUnconditionalFrame(0x20, 'EcuStatus', 3, {
+        0: motor_signal,
+        8: temp_signal,
+        14: reserved1_signal,
+        18: int_error_signal,
+        19: comm_error_signal
+    })
+
+@pytest.fixture(scope="function")
+def range_type():
+    return LinSignalEncodingType('MotorSpeedType', [PhysicalValue(0, 255, 50, 0, 'rpm')])
+
+@pytest.mark.unit
+class TestLinUnconditionalFrameEncodingRaw:
+
+    def test_encode_raw_partial(self, frame):
+        data = frame.encode_raw({
+            'MotorSpeed': 100,
+            'CommError': 1
+        })
+        assert data == b'\x64\x3F\x08'
+
+    @pytest.mark.parametrize(
+        ['data', 'expected'],
+        [
+            ({
+                'MotorSpeed': 0x64,
+                'InternalTemperature': 0x32,
+                'Reserved1': 0,
+                'InternalError': 0,
+                'CommError': 1
+            }, b'\x64\x32\x08')
+        ]
+    )
+    def test_encode_raw(self, frame, data, expected):
+        assert frame.encode_raw(data) == expected
+
+@pytest.mark.unit
+class TestLinUnconditionalFrameEncoding:
+
+    def test_encode_builtin(self, frame, range_type):
+        frame._get_signal('MotorSpeed').encoding_type = range_type
+        frame.encode({'MotorSpeed': '1000rpm'})
+
+    def test_encode_custom(self, frame, range_type):
+        frame.encode({'MotorSpeed': '1000rpm'}, {'MotorSpeed': range_type})
+
+    def test_encode_int(self, frame):
+        frame.encode({'MotorSpeed': 40})
+
+    @pytest.mark.parametrize(
+        'value', ['1000rpm', '1000', 1000.0]
+    )
+    def test_encode_error_type(self, frame, value):
+        with pytest.raises(ValueError):
+            frame.encode({'MotorSpeed': value})
+
+@pytest.mark.unit
+class TestLinUnconditionalFrameDecodingRaw:
+
+    @pytest.mark.parametrize(
+        ['data', 'expected'],
+        [
+            (b'\x64\x32\x08', {
+                'MotorSpeed': 0x64,
+                'InternalTemperature': 0x32,
+                'Reserved1': 0,
+                'InternalError': 0,
+                'CommError': 1
+            }),
+            (b'\x20\x3F\x08', {
+                'MotorSpeed': 0x20,
+                'InternalTemperature': 0x3F,
+                'Reserved1': 0,
+                'InternalError': 0,
+                'CommError': 1
+            })
+        ]
+    )
+    def test_decode_raw(self, frame, data, expected):
+        assert frame.decode_raw(data) == expected
+
+@pytest.mark.unit
+class TestLinUnconditionalFrameDecoding:
+
+    def test_decode_builtin(self, frame, range_type):
+        frame._get_signal('MotorSpeed').encoding_type = range_type
+        decoded = frame.decode(b'\x20\x3F\x08')
+        assert decoded['MotorSpeed'] == 1600.0
+
+    def test_decode_custom(self, frame, range_type):
+        decoded = frame.decode(b'\x20\x3F\x08', {'MotorSpeed': range_type})
+        assert decoded['MotorSpeed'] == 1600.0
+
+    def test_decode_int(self, frame):
+        decoded = frame.decode(b'\x20\x3F\x08')
+        assert decoded['MotorSpeed'] == 0x20

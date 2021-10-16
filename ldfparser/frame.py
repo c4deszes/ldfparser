@@ -31,6 +31,15 @@ class LinFrame():
 class LinUnconditionalFrame(LinFrame):
     """
     LinUnconditionalFrame represents an unconditional frame consisting of signals
+    
+    :param frame_id: Frame identifier
+    :type frame_id: int
+    :param name: Name of the frame
+    :type name: str
+    :param length: Length of the frame in bytes
+    :type length: int
+    :param signals: Signals of the frame
+    :type signals: Dict[int, LinSignal]
     """
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
@@ -126,7 +135,7 @@ class LinUnconditionalFrame(LinFrame):
             if encoding_types is not None and signal_name in encoding_types:
                 converted[signal_name] = encoding_types[signal_name].encode(value, signal)
             elif signal.encoding_type is not None:
-                converted[signal_name] = signal.encoding_types[signal_name].encode(value, signal)
+                converted[signal_name] = signal.encoding_type.encode(value, signal)
             elif isinstance(value, int):
                 converted[signal_name] = value
             else:
@@ -183,11 +192,9 @@ class LinUnconditionalFrame(LinFrame):
             if encoding_types is not None and signal_name in encoding_types:
                 converted[signal_name] = encoding_types[signal_name].decode(value, signal)
             elif signal.encoding_type is not None:
-                converted[signal_name] = signal.encoding_types[signal_name].decode(value, signal)
-            elif isinstance(value, int):
-                converted[signal_name] = value
+                converted[signal_name] = signal.encoding_type.decode(value, signal)
             else:
-                raise ValueError(f'No encoding type found for {signal_name} ({value})')
+                converted[signal_name] = value
         return converted
 
     def decode_raw(self,

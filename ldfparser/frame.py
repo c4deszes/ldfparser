@@ -31,7 +31,7 @@ class LinFrame():
 class LinUnconditionalFrame(LinFrame):
     """
     LinUnconditionalFrame represents an unconditional frame consisting of signals
-    
+
     :param frame_id: Frame identifier
     :type frame_id: int
     :param name: Name of the frame

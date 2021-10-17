@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2021-10-17
+
+### Added
+
+- Units of Physical values can now be preserved when decoding frames
+- `LinSignal` now has a reference to it's signal representation
+- New encoding and decoding functions have been added, these allow conversions without passing
+`ldf.converters`, instead it will try to use the default encoders but still allow users to override
+the encoding type locally.
+
+### Fixed
+
+- The new encoding allows frames to be encoded/decoded even when encoding types are missing (issue #72 )
+
+### Deprecated
+
+- `LinUnconditionalFrame`'s `parse`, `parse_raw`, `data` and `raw` functions were deprecated in
+favor of the new encoding functions
+
 ## [0.10.0] - 2021-10-02
 
 ### Added

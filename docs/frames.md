@@ -39,21 +39,21 @@ through the signal encoders before packing.
 ldf = parse_ldf('network.ldf')
 
 lsm_frame1 = ldf.get_unconditional_frame('LSM_Frm1')
-encoded_frame = lsm_frame1.raw(
+encoded_frame = lsm_frame1.encode_raw(
     {'LeftIntLightsSwitch': 100}
 )
 ```
 
-When encoding through signal encoders you have to pass a list of value converters,
-you can either provide a custom map or pass the one provided by the LDF object.
+When encoding through signal encoders you have the option to pass a list of
+value converters, otherwise it will use the default encoders assigned through
+signal representations.
 
 ```python
 ldf = parse_ldf('network.ldf')
 
 lsm_frame1 = ldf.get_unconditional_frame('LSM_Frm1')
-encoded_frame = lsm_frame1.data(
-    {'LeftIntLightsSwitch': 'Off'},
-    ldf.converters
+encoded_frame = lsm_frame1.encode(
+    {'LeftIntLightsSwitch': 'Off'}
 )
 ```
 
@@ -70,15 +70,16 @@ them through the signal encoders.
 ldf = parse_ldf('network.ldf')
 
 lsm_frame1 = ldf.get_unconditional_frame('LSM_Frm1')
-decoded_frame = lsm_frame1.parse_raw(bytearray([0x00]))
+decoded_frame = lsm_frame1.decode_raw(b'\x00')
 ```
 
-When decoding through signal encoders you have to pass a list of value converters,
-you can either provide a custom map or pass the one provided by the LDF object.
+Just like encoding you can also pass custom value converters and there's also
+the option to preserve the unit of physical values, in these cases instead of
+a floating point value a string will be returned.
 
 ```python
 ldf = parse_ldf('network.ldf')
 
 lsm_frame1 = ldf.get_unconditional_frame('LSM_Frm1')
-decoded_frame = lsm_frame1.parse(bytearray([0x00]), ldf.converters)
+decoded_frame = lsm_frame1.decode(b'\x00', keep_unit=True)
 ```

@@ -13,6 +13,6 @@ if __name__ == "__main__":
     ldf = ldfparser.parse_ldf(path)
     lin_master = LinMaster()
     requestFrame = ldf.get_unconditional_frame('CEM_Frm1')
-    requestData = requestFrame.data({"InternalLightsRequest": 'on'}, ldf.converters)
+    requestData = requestFrame.encode({"InternalLightsRequest": 'on'}, ldf.converters)
 
     lin_master.send_frame(ldf.baudrate, requestFrame.frame_id, requestData)

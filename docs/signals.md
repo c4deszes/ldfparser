@@ -11,7 +11,7 @@ After parsing the LDF into objects the properties of signals defined in the LDF
 will be accessible.
 
 ```python
-ldf = parseLDF('network.ldf')
+ldf = ldfparser.parse_ldf('network.ldf')
 
 light_switch_signal = ldf.get_signal('LeftIntLightsSwitch')
 print(light_switch_signal.name)

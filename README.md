@@ -57,17 +57,17 @@ frame = ldf.get_unconditional_frame('Frame_1')
 print(ldf.get_baudrate())
 
 # Encode signal values into frame
-message = frame.raw({"Signal_1": 123, "Signal_2": 0})
+message = frame.encode_raw({"Signal_1": 123, "Signal_2": 0})
 print(binascii.hexlify(message))
 >>> 0x7B00
 
 # Decode message into dictionary of signal names and values
 received = bytearray([0x7B, 0x00])
-print(frame.parse(received, ldf.converters))
+print(frame.decode(received, ldf.converters))
 >>> {"Signal_1": 123, "Signal_2": 0}
 
 # Encode signal values through converters
-message = frame.data({"MotorRPM": 100, "FanState": "ON"}, ldf.converters)
+message = frame.encode({"MotorRPM": 100, "FanState": "ON"}, ldf.converters)
 print(binascii.hexlify(message))
 >>> 0xFE01
 ```

@@ -307,6 +307,6 @@ class LinEventTriggeredFrame(LinFrame):
     """
     # TODO: add schedule table reference
 
-    def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame] = []) -> None:
+    def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame]) -> None:
         super().__init__(frame_id, name)
         self.frames = frames

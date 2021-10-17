@@ -87,7 +87,7 @@ jobs:
 
       - name: Lint using Pylint
         run: |
-          pylint ldfparser --fail-under=9.0
+          pylint ldfparser --fail-under=8.5
 
   pylint-tests:
     runs-on: ubuntu-latest

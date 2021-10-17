@@ -252,13 +252,16 @@ class TestLinUnconditionalFrameEncoding:
 
     def test_encode_builtin(self, frame, range_type):
         frame._get_signal('MotorSpeed').encoding_type = range_type
-        frame.encode({'MotorSpeed': '1000rpm'})
+        encoded = frame.encode({'MotorSpeed': '1000rpm'})
+        assert encoded == b'\x14\x3F\x00'
 
     def test_encode_custom(self, frame, range_type):
-        frame.encode({'MotorSpeed': '1000rpm'}, {'MotorSpeed': range_type})
+        encoded = frame.encode({'MotorSpeed': '1000rpm'}, {'MotorSpeed': range_type})
+        assert encoded == b'\x14\x3F\x00'
 
     def test_encode_int(self, frame):
-        frame.encode({'MotorSpeed': 40})
+        encoded = frame.encode({'MotorSpeed': 40})
+        assert encoded == b'\x28\x3F\x00'
 
     @pytest.mark.parametrize(
         'value', ['1000rpm', '1000', 1000.0]
@@ -307,3 +310,7 @@ class TestLinUnconditionalFrameDecoding:
     def test_decode_int(self, frame):
         decoded = frame.decode(b'\x20\x3F\x08')
         assert decoded['MotorSpeed'] == 0x20
+
+    def test_decode_with_unit(self, frame, range_type):
+        decoded = frame.decode(b'\x20\x3F\x08', {'MotorSpeed': range_type}, keep_unit=True)
+        assert decoded['MotorSpeed'] == '1600.000 rpm'

@@ -140,7 +140,7 @@ class LinUnconditionalFrame(LinFrame):
                 converted[signal_name] = value
             else:
                 raise ValueError(f'No encoding type found for {signal_name} ({value})')
-        return bytearray()
+        return self.encode_raw(converted)
 
     def encode_raw(self, data: Dict[str, int]) -> bytearray:
         """
@@ -176,7 +176,8 @@ class LinUnconditionalFrame(LinFrame):
 
     def decode(self,
                data: bytearray,
-               encoding_types: Dict[str, LinSignalEncodingType] = None) -> Dict[str, Union[str, int, float]]:
+               encoding_types: Dict[str, LinSignalEncodingType] = None,
+               keep_unit: bool = False) -> Dict[str, Union[str, int, float]]:
         """
         Decodes a LIN frame into the signals that it contains
 
@@ -190,9 +191,9 @@ class LinUnconditionalFrame(LinFrame):
         for (signal_name, value) in parsed.items():
             signal = self._get_signal(signal_name)
             if encoding_types is not None and signal_name in encoding_types:
-                converted[signal_name] = encoding_types[signal_name].decode(value, signal)
+                converted[signal_name] = encoding_types[signal_name].decode(value, signal, keep_unit)
             elif signal.encoding_type is not None:
-                converted[signal_name] = signal.encoding_type.decode(value, signal)
+                converted[signal_name] = signal.encoding_type.decode(value, signal, keep_unit)
             else:
                 converted[signal_name] = value
         return converted

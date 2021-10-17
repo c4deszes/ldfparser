@@ -37,6 +37,7 @@ def test_encode_physical_string_with_unit():
     physical_value = PhysicalValue(0, 254, 0.3937, 0, 'rpm')
     assert physical_value.encode('0rpm', motor_signal) == 0
     assert physical_value.encode('100rpm', motor_signal) == 254
+    assert physical_value.encode('100 rpm', motor_signal) == 254
 
     with pytest.raises(ValueError):
         physical_value.encode('-1rpm', motor_signal)

@@ -32,7 +32,8 @@ signal_default_value_single: ldf_integer
 signal_default_value_array: "{" ldf_integer ("," ldf_integer)* "}"
 
 // LIN 2.1 Specification, section 9.2.3.2
-diagnostic_signals: "Diagnostic_signals" "{" (ANY_SEMICOLON_TERMINATED_LINE)* "}"
+diagnostic_signals: "Diagnostic_signals" "{" (diagnostic_signal_definition+) "}"
+diagnostic_signal_definition: ldf_identifier ":" ldf_integer "," signal_default_value ";"
 
 // LIN 2.1 Specification, section 9.2.4
 frames: "Frames" "{" [frame_definition]+ "}"
@@ -51,7 +52,8 @@ event_triggered_frame_definition_frames: ("," ldf_identifier)+
 
 // LIN 2.1 Specification, section 9.2.4.4
 diagnostic_frames: "Diagnostic_frames" "{" (diagnostic_frame_definition)+ "}"
-diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" (ANY_SEMICOLON_TERMINATED_LINE)* "}"
+diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" diagnostic_frame_signals "}"
+diagnostic_frame_signals: (frame_signal+)
 
 // LIN 2.1 Specification, section 9.2.2.2
 node_attributes: "Node_attributes" "{" (node_definition*) "}"

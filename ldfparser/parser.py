@@ -326,7 +326,10 @@ class LDFTransformer(Transformer):
         return tree[0:]
 
     def diagnostic_signals(self, tree):
-        return ("diagnostic_signals", [])
+        return ("diagnostic_signals", tree)
+
+    def diagnostic_signal_definition(self, tree):
+        return {"name": tree[0], "width": int(tree[1]), "init_value": tree[2]}
 
     def frames(self, tree):
         return ("frames", tree)
@@ -356,7 +359,13 @@ class LDFTransformer(Transformer):
         return tree[0:]
 
     def diagnostic_frames(self, tree):
-        return ("diagnostic_frames", [])
+        return ("diagnostic_frames", tree)
+
+    def diagnostic_frame_definition(self, tree):
+        return {"name": tree[0], "frame_id": int(tree[1]), "signals": tree[2]}
+
+    def diagnostic_frame_signals(self, tree):
+        return tree[0:]
 
     def node_attributes(self, tree):
         return ("node_attributes", tree[0:])

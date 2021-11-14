@@ -156,3 +156,8 @@ def test_load_valid_lin_encoders():
     assert converter.name == 'AsciiEncoding'
     assert len(converter._converters) == 1
     assert isinstance(converter._converters[0], ASCIIValue)
+
+@pytest.mark.unit
+def test_load_valid_diagnostics():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "lin_diagnostics.ldf")
+    ldf = parse_ldf(path)

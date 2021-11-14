@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Comment capturing has been reworked to use the Lexer callback feature of the Lark parser
+
+## [0.11.1] - 2021-11-02
+
+### Added
+
+- Scientific notation is now allowed when providing floating point values
+
 ## [0.11.0] - 2021-10-17
 
 ### Added

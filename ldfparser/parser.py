@@ -8,7 +8,6 @@ from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
 from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion
 from .node import LinMaster, LinProductId, LinSlave
-from .comment import parse_comments
 from .ldf import LDF
 
 def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str = None) -> Dict:
@@ -20,13 +19,18 @@ def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str =
     :param encoding: File encoding, for example 'UTF-8'
     :type encoding: str
     """
+    comments = []
     lark = os.path.join(os.path.dirname(__file__), 'lark', 'ldf.lark')
-    parser = Lark(grammar=open(lark), parser='lalr')
+    parser = Lark(grammar=open(lark), parser='lalr', lexer_callbacks={
+        'C_COMMENT': comments.append,
+        'CPP_COMMENT': comments.append
+    })
     ldf_file = open(path, "r", encoding=encoding).read()
     tree = parser.parse(ldf_file)
     json = LDFTransformer().transform(tree)
+
     if capture_comments:
-        json['comments'] = parse_comments(ldf_file)
+        json['comments'] = [comment.value for comment in comments]
     return json
 
 def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = None) -> Dict:
@@ -63,7 +67,7 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     _link_ldf_frames(json, ldf)
 
     if capture_comments:
-        ldf.comments = json['comments']
+        ldf._comments = json['comments']
 
     return ldf
 

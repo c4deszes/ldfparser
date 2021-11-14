@@ -238,6 +238,10 @@ class LDF():
     def converters(self) -> Dict[str, LinSignalEncodingType]:
         return {sig.name: enc for (sig, enc) in self._signal_representations.items()}
 
+    @property
+    def comments(self) -> List[str]:
+        return self._comments
+
     # These functions are maintained in order to keep compatibility
     # with pre-0.10.0 versions
 

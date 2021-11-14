@@ -1,5 +1,4 @@
-from typing import List
-import serial
+from typing import List, Dict
 
 from ldfparser.frame import LinUnconditionalFrame
 from ldfparser.signal import LinSignal
@@ -36,25 +35,18 @@ def pci_byte(length: int):
 def rsid(sid: int):
     return sid + 0x40
 
-class LinDiagnosticRequest(LinUnconditionalFrame):
+class LinDiagnosticFrame(LinUnconditionalFrame):
+    pass
 
-    def __init__(self, frame_id: int, name: str):
-        super().__init__(frame_id, name, 8, {
-            0:  LinSignal('NAD', 8, 0),
-            8:  LinSignal('PCI', 8, 0),
-            16: LinSignal('SID', 8, 0),
-            24: LinSignal('D1', 8, 0xFF),
-            32: LinSignal('D2', 8, 0xFF),
-            40: LinSignal('D3', 8, 0xFF),
-            48: LinSignal('D4', 8, 0xFF),
-            56: LinSignal('D5', 8, 0xFF)
-        })
+class LinDiagnosticRequest(LinDiagnosticFrame):
+
+    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
+        super().__init__(frame_id, name, length, signals)
+        # TODO: somehow the arbitrary signals in the LDF (MasterReqB0) shall be mapped
+        # to the signals defined in the specification (NAD, D1..D5, etc.)
 
     def encode_assign_nad(self, initial_nad: int, supplier_id: int, function_id: int,
                           new_nad: int) -> bytearray:
-        """
-        
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x06, 'SID': LIN_SID_ASSIGN_NAD,
                                 'D1': (supplier_id >> 8) & 0xFF, 'D2': supplier_id & 0xFF,
                                 'D3': (function_id >> 8) & 0xFF, 'D4': function_id & 0xFF,
@@ -62,33 +54,21 @@ class LinDiagnosticRequest(LinUnconditionalFrame):
 
     def encode_conditional_change_nad(self, initial_nad: int, identifier: int, byte: int,
                                         mask: int, invert: int, new_nad: int) -> bytearray:
-        """
-        
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x06,
                                 'SID': LIN_SID_CONDITIONAL_CHANGE_NAD,
                                 'D1': identifier, 'D2': byte, 'D3': mask, 'D4': invert,
                                 'D5': new_nad})
 
     def encode_data_dump(self, initial_nad: int, data: bytearray) -> bytearray:
-        """
-        
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x06, 'SID': LIN_SID_DATA_DUMP,
                                 'D1': data[0], 'D2': data[1], 'D3': data[2], 'D4': data[3],
                                 'D5': data[4]})
 
     def encode_save_configuration(self, initial_nad: int) -> bytearray:
-        """
-        
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x01, 'SID': LIN_SID_SAVE_CONFIGURATION})
 
     def encode_assign_frame_id_range(self, initial_nad: int, start_index: int,
                                      pids: List[int]) -> bytearray:
-        """
-        
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x06,
                                 'SID': LIN_SID_ASSIGN_FRAME_ID_RANGE,
                                 'D1': start_index,
@@ -96,25 +76,12 @@ class LinDiagnosticRequest(LinUnconditionalFrame):
 
     def encode_read_by_id(self, initial_nad: int, identifier: int, supplier_id: int,
                           function_id: int) -> bytearray:
-        """
-
-
-        """
         return self.encode_raw({'NAD': initial_nad, 'PCI': 0x06, 'SID': LIN_SID_READ_BY_ID,
                                 'D1': identifier,
                                 'D2': (supplier_id >> 8) & 0xFF, 'D3': supplier_id & 0xFF,
                                 'D4': (function_id >> 8) & 0xFF, 'D5': function_id & 0xFF})
 
-class LinDiagnosticResponse(LinUnconditionalFrame):
+class LinDiagnosticResponse(LinDiagnosticFrame):
 
-    def __init__(self, frame_id: int, name: str):
-        super().__init__(frame_id, name, 8, {
-            0:  LinSignal('NAD', 8, 0),
-            8:  LinSignal('PCI', 8, 0),
-            16: LinSignal('RSID', 8, 0),
-            24: LinSignal('D1', 8, 0xFF),
-            32: LinSignal('D2', 8, 0xFF),
-            40: LinSignal('D3', 8, 0xFF),
-            48: LinSignal('D4', 8, 0xFF),
-            56: LinSignal('D5', 8, 0xFF)
-        })
+    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
+        super().__init__(frame_id, name, length, signals)

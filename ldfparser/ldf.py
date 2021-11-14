@@ -5,6 +5,7 @@ from typing import Union, Dict, List
 
 from .lin import LinVersion
 from .frame import LinFrame, LinUnconditionalFrame, LinEventTriggeredFrame
+from .diagnostics import LinDiagnosticRequest, LinDiagnosticResponse
 from .signal import LinSignal
 from .encoding import LinSignalEncodingType
 from .node import LinMaster, LinSlave
@@ -28,6 +29,8 @@ class LDF():
         self._event_triggered_frames: Dict[str, LinEventTriggeredFrame] = {}
         self._signal_encoding_types: Dict[str, LinSignalEncodingType] = {}
         self._signal_representations: Dict[LinSignal, LinSignalEncodingType] = {}
+        self._master_request_frame: LinDiagnosticRequest = None
+        self._slave_response_frame: LinDiagnosticResponse = None
         self._comments: List[str] = []
 
     def get_protocol_version(self) -> LinVersion:

@@ -142,7 +142,31 @@ class LinUnconditionalFrame(LinFrame):
                 raise ValueError(f'No encoding type found for {signal_name} ({value})')
         return self.encode_raw(converted)
 
-    def encode_raw(self, data: Dict[str, int]) -> bytearray:
+    def _signal_map_to_message(self, signals: Dict[str, int]) -> List[int]:
+        message = []
+        for (_, signal) in self.signal_map:
+            if signal.name in signals.keys():
+                if signal.is_array():
+                    message += signals.get(signal.name)
+                else:
+                    message.append(signals.get(signal.name))
+            else:
+                if signal.is_array():
+                    message += signal.init_value
+                else:
+                    message.append(signal.init_value)
+        return message
+
+    def _signal_list_to_message(self, signals: List[Union[int, List[int]]]) -> List[int]:
+        message = []
+        for signal in signals:
+            if isinstance(signal, int):
+                message.append(signal)
+            elif isinstance(signal, List[int]):
+                message += signal
+        return message
+
+    def encode_raw(self, data: Union[Dict[str, int], List[int]]) -> bytearray:
         """
         Encodes signal values into the LIN frame content
 
@@ -160,18 +184,12 @@ class LinUnconditionalFrame(LinFrame):
         :returns: LinFrame content
         :rtype: bytearray
         """
-        message = []
-        for (_, signal) in self.signal_map:
-            if signal.name in data.keys():
-                if signal.is_array():
-                    message += data.get(signal.name)
-                else:
-                    message.append(data.get(signal.name))
-            else:
-                if signal.is_array():
-                    message += signal.init_value
-                else:
-                    message.append(signal.init_value)
+        if isinstance(data, List):
+            message = self._signal_list_to_message(data)
+        elif isinstance(data, Dict):
+            message = self._signal_map_to_message(data)
+        else:
+            raise ValueError()
         return LinUnconditionalFrame._flip_bytearray(self._packer.pack(*message))
 
     def decode(self,

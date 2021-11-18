@@ -45,36 +45,36 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
     def encode_assign_nad(self, initial_nad: int, supplier_id: int, function_id: int,
                           new_nad: int) -> bytearray:
-        return self.encode_raw([initial_nad, 0x06, LIN_SID_ASSIGN_NAD,
+        return self.encode_raw([initial_nad, pci_byte(6), LIN_SID_ASSIGN_NAD,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                 function_id & 0xFF, (function_id >> 8) & 0xFF,
                                 new_nad])
 
     def encode_conditional_change_nad(self, nad: int, identifier: int, byte: int,
                                         mask: int, invert: int, new_nad: int) -> bytearray:
-        return self.encode_raw([nad, 0x06,
+        return self.encode_raw([nad, pci_byte(6),
                                 LIN_SID_CONDITIONAL_CHANGE_NAD,
                                 identifier, byte, mask, invert,
                                 new_nad])
 
     def encode_data_dump(self, nad: int, data: Iterable[int]) -> bytearray:
-        return self.encode_raw([nad, 0x06, LIN_SID_DATA_DUMP,
+        return self.encode_raw([nad, pci_byte(6), LIN_SID_DATA_DUMP,
                                 data[0], data[1], data[2], data[3], data[4]])
 
     def encode_save_configuration(self, nad: int) -> bytearray:
-        return self.encode_raw([nad, 0x01, LIN_SID_SAVE_CONFIGURATION,
+        return self.encode_raw([nad, pci_byte(1), LIN_SID_SAVE_CONFIGURATION,
                                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
 
     def encode_assign_frame_id_range(self, nad: int, start_index: int,
                                      pids: Iterable[int]) -> bytearray:
-        return self.encode_raw([nad, 0x06,
+        return self.encode_raw([nad, pci_byte(6),
                                 LIN_SID_ASSIGN_FRAME_ID_RANGE,
                                 start_index,
                                 pids[0], pids[1], pids[2], pids[3]])
 
     def encode_read_by_id(self, nad: int, identifier: int, supplier_id: int,
                           function_id: int) -> bytearray:
-        return self.encode_raw([nad, 0x06, LIN_SID_READ_BY_ID,
+        return self.encode_raw([nad, pci_byte(6), LIN_SID_READ_BY_ID,
                                 identifier,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                 function_id & 0xFF, (function_id >> 8) & 0xFF])

@@ -1,6 +1,6 @@
 import pytest
 
-from ldfparser.diagnostics import LinDiagnosticRequest
+from ldfparser.diagnostics import LinDiagnosticRequest, LinDiagnosticResponse
 from ldfparser.signal import LinSignal
 
 @pytest.fixture(scope="session")
@@ -45,3 +45,16 @@ def test_encode_assign_frame_id_range(diagnostic_request):
 def test_encode_read_by_id(diagnostic_request):
     data = diagnostic_request.encode_read_by_id(0x00, 0x05, 0x7FFF, 0xFFFF)
     assert data == b'\x00\x06\xB2\x05\xFF\x7F\xFF\xFF'
+
+@pytest.fixture(scope="session")
+def diagnostic_response():
+    return LinDiagnosticResponse(0x3D, 'SlaveResp', 8, {
+        0: LinSignal('SlaveRespB0', 8, 0),
+        8: LinSignal('SlaveRespB1', 8, 0),
+        16: LinSignal('SlaveRespB2', 8, 0),
+        24: LinSignal('SlaveRespB3', 8, 0),
+        32: LinSignal('SlaveRespB4', 8, 0),
+        40: LinSignal('SlaveRespB5', 8, 0),
+        48: LinSignal('SlaveRespB6', 8, 0),
+        56: LinSignal('SlaveRespB7', 8, 0),
+    })

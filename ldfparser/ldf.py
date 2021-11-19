@@ -191,6 +191,14 @@ class LDF():
         """
         return self._signals.values()
 
+    @property
+    def master_request_frame(self) -> LinDiagnosticRequest:
+        return self._master_request_frame
+
+    @property
+    def slave_response_frame(self) -> LinDiagnosticResponse:
+        return self._slave_response_frame
+
     # These properties are maintained in order to keep compatibility
     # with pre-0.10.0 versions
 

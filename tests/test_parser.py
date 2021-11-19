@@ -159,6 +159,8 @@ def test_load_valid_lin_encoders():
 
 @pytest.mark.unit
 def test_load_valid_diagnostics():
-    # path = os.path.join(os.path.dirname(__file__), "ldf", "lin_diagnostics.ldf")
-    # ldf = parse_ldf(path)
-    pass
+    path = os.path.join(os.path.dirname(__file__), "ldf", "lin_diagnostics.ldf")
+    ldf = parse_ldf(path)
+
+    assert ldf.master_request_frame.frame_id == 0x3C
+    assert ldf.slave_response_frame.frame_id == 0x3D

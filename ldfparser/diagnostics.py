@@ -45,6 +45,18 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
     def encode_assign_nad(self, initial_nad: int, supplier_id: int, function_id: int,
                           new_nad: int) -> bytearray:
+        """
+        Encodes an AssignNAD diagnostic request into a frame
+
+        :param initial_nad: Initial Node Address
+        :type initial_nad: int
+        :param supplier_id:
+        :type supplier_id:
+        :param function_id:
+        :type function_id:
+        :param new_nad:
+        :type new_nad:
+        """
         return self.encode_raw([initial_nad, pci_byte(6), LIN_SID_ASSIGN_NAD,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                 function_id & 0xFF, (function_id >> 8) & 0xFF,
@@ -52,21 +64,58 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
     def encode_conditional_change_nad(self, nad: int, identifier: int, byte: int,
                                       mask: int, invert: int, new_nad: int) -> bytearray:
+        """
+        Encodes an ConditionalChangeNAD diagnostic request into a frame
+
+        :param nad: Node Address
+        :type nad: int
+        """
         return self.encode_raw([nad, pci_byte(6),
                                 LIN_SID_CONDITIONAL_CHANGE_NAD,
                                 identifier, byte, mask, invert,
                                 new_nad])
 
     def encode_data_dump(self, nad: int, data: Iterable[int]) -> bytearray:
+        """
+        Encodes a DataDump diagnostic request into a frame
+
+        Example:
+            master_request_frame.encode_data_dump(nad=0x01, data=[0x01, 0x00, 0x00, 0xFF, 0xFF])
+
+        :param nad: Node Address
+        :type nad: int
+        :param data: User defined data of 5 bytes
+        :type data: Iterable[int]
+        """
         return self.encode_raw([nad, pci_byte(6), LIN_SID_DATA_DUMP,
                                 data[0], data[1], data[2], data[3], data[4]])
 
     def encode_save_configuration(self, nad: int) -> bytearray:
+        """
+        Encodes a SaveConfiguration diagnostic request into a frame
+
+        Example:
+            master_request_frame.encode_save_configuration(nad=0x01)
+
+        :param nad: Node Address
+        :type nad: int
+        """
         return self.encode_raw([nad, pci_byte(1), LIN_SID_SAVE_CONFIGURATION,
                                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
 
     def encode_assign_frame_id_range(self, nad: int, start_index: int,
                                      pids: Iterable[int]) -> bytearray:
+        """
+        Encodes a AssignFrameIdRange diagnostic request into a frame
+
+        Example:
+            master_request_frame.encode_assign_frame_id_range(nad=0x01,
+                                                              start_index=0,
+                                                              pids=[0x32, 0x33, 0x34, 0x35])
+
+        :param nad: Node Address
+        :type nad: int
+        """
         return self.encode_raw([nad, pci_byte(6),
                                 LIN_SID_ASSIGN_FRAME_ID_RANGE,
                                 start_index,
@@ -74,6 +123,18 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
     def encode_read_by_id(self, nad: int, identifier: int, supplier_id: int,
                           function_id: int) -> bytearray:
+        """
+        Encodes a ReadById diagnostic request into a frame
+
+        Example:
+            master_request_frame.encode_read_by_id(nad=0x01,
+                                                   identifier=0,
+                                                   supplier_id=0x7FFF,
+                                                   function_id=0xFFFF)
+
+        :param nad: Node Address
+        :type nad: int
+        """
         return self.encode_raw([nad, pci_byte(6), LIN_SID_READ_BY_ID,
                                 identifier,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
@@ -83,3 +144,6 @@ class LinDiagnosticResponse(LinDiagnosticFrame):
 
     def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
         super().__init__(frame_id, name, length, signals)
+
+    def decode_response(self, data: bytearray) -> Dict[str, int]:
+        pass

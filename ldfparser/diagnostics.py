@@ -1,9 +1,8 @@
 from typing import Iterable, Dict
 
 from ldfparser.frame import LinUnconditionalFrame
-from ldfparser.signal import LinSignal
 
-#
+# LIN Diagnostic Frame IDs
 LIN_MASTER_REQUEST_FRAME_ID = 0x3C
 LIN_SLAVE_RESPONSE_FRAME_ID = 0x3D
 
@@ -33,11 +32,30 @@ LIN_SID_READ_BY_ID_RESERVED_RANGE1 = range(2, 32)
 LIN_SID_READ_BY_ID_USER_DEFINED_RANGE = range(32, 64)
 LIN_SID_READ_BY_ID_RESERVED_RANGE2 = range(64, 256)
 
-def pci_byte(length: int):
-    return length & 0x0F
-
 def rsid(sid: int):
+    """
+    Returns the response service identifier for a given service id
+
+    :param sid: Service identifier
+    :type sid: int
+    """
     return sid + 0x40
+
+LIN_PCI_SINGLE_FRAME = 0b0000
+LIN_PCI_FIRST_FRAME = 0b0001
+LIN_PCI_CONSECUTIVE_FRAME = 0b0010
+
+def pci_byte(pci_type: int, length: int) -> int:
+    """
+    Returns protocol control information byte
+
+    Example:
+        pci_byte(LIN_PCI_SINGLE_FRAME, 6)
+
+    :returns: Calculated PCI byte
+    :rtype: int
+    """
+    return (length & 0x0F) | (pci_type << 4)
 
 class LinDiagnosticFrame(LinUnconditionalFrame):
     pass
@@ -54,14 +72,14 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
         :param initial_nad: Initial Node Address
         :type initial_nad: int
-        :param supplier_id:
-        :type supplier_id:
-        :param function_id:
-        :type function_id:
-        :param new_nad:
-        :type new_nad:
+        :param supplier_id: Supplier ID
+        :type supplier_id: int
+        :param function_id: Function ID
+        :type function_id: int
+        :param new_nad: New Node Address
+        :type new_nad: int
         """
-        return self.encode_raw([initial_nad, pci_byte(6), LIN_SID_ASSIGN_NAD,
+        return self.encode_raw([initial_nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_ASSIGN_NAD,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                 function_id & 0xFF, (function_id >> 8) & 0xFF,
                                 new_nad])
@@ -74,7 +92,7 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param nad: Node Address
         :type nad: int
         """
-        return self.encode_raw([nad, pci_byte(6),
+        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
                                 LIN_SID_CONDITIONAL_CHANGE_NAD,
                                 identifier, byte, mask, invert,
                                 new_nad])
@@ -91,7 +109,7 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param data: User defined data of 5 bytes
         :type data: Iterable[int]
         """
-        return self.encode_raw([nad, pci_byte(6), LIN_SID_DATA_DUMP,
+        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_DATA_DUMP,
                                 data[0], data[1], data[2], data[3], data[4]])
 
     def encode_save_configuration(self, nad: int) -> bytearray:
@@ -104,7 +122,7 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param nad: Node Address
         :type nad: int
         """
-        return self.encode_raw([nad, pci_byte(1), LIN_SID_SAVE_CONFIGURATION,
+        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 1), LIN_SID_SAVE_CONFIGURATION,
                                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
 
     def encode_assign_frame_id_range(self, nad: int, start_index: int,
@@ -119,8 +137,12 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
         :param nad: Node Address
         :type nad: int
+        :param start_index: First message index to assign
+        :type start_index: int
+        :params pids: Protected identifiers to assign
+        :type pids: Iterable[int]
         """
-        return self.encode_raw([nad, pci_byte(6),
+        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
                                 LIN_SID_ASSIGN_FRAME_ID_RANGE,
                                 start_index,
                                 pids[0], pids[1], pids[2], pids[3]])
@@ -138,8 +160,14 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
         :param nad: Node Address
         :type nad: int
+        :param identifier: Identifier to read
+        :type identifier: int
+        :param supplier_id: Supplier ID
+        :type supplier_id: int
+        :param function_id: Function ID
+        :type function_id: int
         """
-        return self.encode_raw([nad, pci_byte(6), LIN_SID_READ_BY_ID,
+        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_READ_BY_ID,
                                 identifier,
                                 supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                 function_id & 0xFF, (function_id >> 8) & 0xFF])

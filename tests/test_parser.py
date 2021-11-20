@@ -38,6 +38,12 @@ def test_load_valid_lin20():
     assert ldf.frame('VL1_CEM_Frm1') is not None
     assert ldf.slave('LSM') is not None
 
+    with pytest.raises(LookupError):
+        ldf.get_unconditional_frame('VL1_CEM_Frm1')
+
+    with pytest.raises(TypeError):
+        ldf.get_unconditional_frame(['VL1_CEM_Frm1'])
+
 
 @pytest.mark.unit
 def test_load_valid_lin21():
@@ -171,3 +177,6 @@ def test_load_valid_diagnostics():
 
     assert len(ldf.get_diagnostic_signals()) >= 0
     assert ldf.get_diagnostic_signal('MasterReqB0').width == 8
+
+    with pytest.raises(LookupError):
+        ldf.get_diagnostic_signal('MasterReqB9')

@@ -3,6 +3,8 @@ import warnings
 from typing import Any, Dict, List
 from lark import Lark, Transformer
 
+from ldfparser.diagnostics import LIN_MASTER_REQUEST_FRAME_ID, LIN_SLAVE_RESPONSE_FRAME_ID, LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
+
 from .frame import LinEventTriggeredFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
@@ -60,6 +62,8 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     _populate_ldf_signals(json, ldf)
     _populate_ldf_frames(json, ldf)
     _populate_ldf_event_triggered_frames(json, ldf)
+    _populate_diagnostic_signals(json, ldf)
+    _populate_diagnostic_frames(json, ldf)
     _populate_ldf_nodes(json, ldf)
     _populate_ldf_encoding_types(json, ldf)
 
@@ -160,6 +164,29 @@ def _create_ldf2x_node(node: dict, language_version: float):
     slave.n_cr_timeout = node.get('N_Cr_timeout', None)
 
     return slave
+
+def _populate_diagnostic_signals(json: dict, ldf: LDF):
+    if 'diagnostic_signals' in json:
+        for signal in json['diagnostic_signals']:
+            ldf._diagnostic_signals[signal['name']] = LinSignal.create(signal['name'], signal['width'], signal['init_value'])
+
+def _populate_diagnostic_frames(json: dict, ldf: LDF):
+    if 'diagnostic_frames' in json:
+        for frame in json['diagnostic_frames']:
+            signals = {}
+
+            for signal in frame['signals']:
+                s = ldf.get_diagnostic_signal(signal['signal'])
+                if s is None:
+                    raise ValueError(f"{frame['name']} references non existing signal {signal['signal']}")
+                signals[signal['offset']] = s
+
+            frame_obj = LinDiagnosticFrame(frame['frame_id'], frame['name'], 9, signals)
+            ldf._diagnostic_frames[frame['name']] = frame_obj
+            if frame['frame_id'] == LIN_MASTER_REQUEST_FRAME_ID:
+                ldf._master_request_frame = LinDiagnosticRequest(frame_obj)
+            if frame['frame_id'] == LIN_SLAVE_RESPONSE_FRAME_ID:
+                ldf._slave_response_frame = LinDiagnosticResponse(frame_obj)
 
 def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):

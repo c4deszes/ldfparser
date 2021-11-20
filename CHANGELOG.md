@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Diagnostic frames and signals are now parsed
+- Standard diagnostic commands can be encoded and decoded
+
 ### Changed
 
 - Comment capturing has been reworked to use the Lexer callback feature of the Lark parser

@@ -5,7 +5,7 @@ from typing import Union, Dict, List
 
 from .lin import LinVersion
 from .frame import LinFrame, LinUnconditionalFrame, LinEventTriggeredFrame
-from .diagnostics import LinDiagnosticRequest, LinDiagnosticResponse
+from .diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from .signal import LinSignal
 from .encoding import LinSignalEncodingType
 from .node import LinMaster, LinSlave
@@ -25,8 +25,10 @@ class LDF():
         self._master: LinMaster = None
         self._slaves: Dict[str, LinSlave] = {}
         self._signals: Dict[str, LinSignal] = {}
+        self._diagnostic_signals: Dict[str, LinSignal] = {}
         self._unconditional_frames: Dict[str, LinUnconditionalFrame] = {}
         self._event_triggered_frames: Dict[str, LinEventTriggeredFrame] = {}
+        self._diagnostic_frames: Dict[str, LinDiagnosticFrame] = {}
         self._signal_encoding_types: Dict[str, LinSignalEncodingType] = {}
         self._signal_representations: Dict[LinSignal, LinSignalEncodingType] = {}
         self._master_request_frame: LinDiagnosticRequest = None
@@ -88,6 +90,20 @@ class LDF():
         except LookupError:
             return self.get_event_triggered_frame(frame_id)
 
+    @staticmethod
+    def _find_frame(frame_id: Union[int, str], collection: Dict[str, LinFrame]) -> LinFrame:
+        if isinstance(frame_id, str):
+            frame = collection.get(frame_id)
+            if frame is None:
+                raise LookupError(f"No frame named '{frame_id}' found!")
+            return frame
+        if isinstance(frame_id, int):
+            frame = next((x for x in collection.values() if x.frame_id == frame_id), None)
+            if frame is None:
+                raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
+            return frame
+        raise TypeError("'frame_id' must be int or str")
+
     def get_unconditional_frame(self, frame_id: Union[int, str]) -> LinUnconditionalFrame:
         """
         Returns the unconditional frame with the given name or id
@@ -115,17 +131,7 @@ class LDF():
         :rtype: LinUnconditionalFrame
         :raises: LookupError if the given frame is not found
         """
-        if isinstance(frame_id, str):
-            frame = self._unconditional_frames.get(frame_id)
-            if frame is None:
-                raise LookupError(f"No frame named '{frame_id}' found!")
-            return frame
-        if isinstance(frame_id, int):
-            frame = next((x for x in self.get_unconditional_frames() if x.frame_id == frame_id), None)
-            if frame is None:
-                raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
-            return frame
-        raise TypeError("'frame_id' must be int or str")
+        return LDF._find_frame(frame_id, self._unconditional_frames)
 
     def get_unconditional_frames(self) -> List[LinUnconditionalFrame]:
         """
@@ -146,17 +152,7 @@ class LDF():
         :rtype: LinEventTriggeredFrame
         :raises: LookupError if the given frame is not found
         """
-        if isinstance(frame_id, str):
-            frame = self._event_triggered_frames.get(frame_id)
-            if frame is None:
-                raise LookupError(f"No frame named '{frame_id}' found!")
-            return frame
-        if isinstance(frame_id, int):
-            frame = next((x for x in self.get_event_triggered_frames() if x.frame_id == frame_id), None)
-            if frame is None:
-                raise LookupError(f"No frame with id '{frame_id}' (0x{frame_id:02x}) found!")
-            return frame
-        raise TypeError("'frame_id' must be int or str")
+        return LDF._find_frame(frame_id, self._event_triggered_frames)
 
     def get_event_triggered_frames(self) -> List[LinEventTriggeredFrame]:
         """
@@ -166,6 +162,27 @@ class LDF():
         :rtype: List[LinEventTriggeredFrame]
         """
         return self._event_triggered_frames.values()
+
+    def get_diagnostic_frame(self, frame_id: Union[int, str]) -> LinDiagnosticFrame:
+        """
+        Returns the diagnostic frame with the given name or id
+
+        :param frame_id:
+        :type frame_id: int or str
+        :returns: Diagnostic LIN frame
+        :rtype: LinDiagnosticFrame
+        :raises: LookupError if the given frame is not found
+        """
+        return LDF._find_frame(frame_id, self._diagnostic_frames)
+
+    def get_diagnostic_frames(self) -> List[LinDiagnosticFrame]:
+        """
+        Returns all diagnostic frames
+
+        :returns: List of diagnostic LIN frames
+        :rtype: List[LinDiagnosticFrame]
+        """
+        return self._diagnostic_frames.values()
 
     def get_signal(self, name: str) -> LinSignal:
         """
@@ -190,6 +207,30 @@ class LDF():
         :rtype: List[LinSignal]
         """
         return self._signals.values()
+
+    def get_diagnostic_signal(self, name: str) -> LinSignal:
+        """
+        Returns the diagnostic signal with the given name
+
+        :param name: Name of the diagnostic signal to find
+        :type name: str
+        :returns: Diagnostic signal
+        :rtype: LinSignal
+        :raises: LookupError if the given diagnostic signal is not found
+        """
+        signal = self._diagnostic_signals.get(name)
+        if signal is None:
+            raise LookupError(f"No diagnostic signal named '{name}' found!")
+        return signal
+
+    def get_diagnostic_signals(self) -> List[LinSignal]:
+        """
+        Returns all diagnostic signal
+
+        :returns: List of Diagnostic signals
+        :rtype: List[LinSignal]
+        """
+        return self._diagnostic_signals.values()
 
     @property
     def master_request_frame(self) -> LinDiagnosticRequest:

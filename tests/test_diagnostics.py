@@ -1,11 +1,11 @@
 import pytest
 
-from ldfparser.diagnostics import LinDiagnosticRequest, LinDiagnosticResponse
+from ldfparser.diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from ldfparser.signal import LinSignal
 
 @pytest.fixture(scope="session")
 def diagnostic_request():
-    return LinDiagnosticRequest(0x3C, 'MasterReq', 8, {
+    frame = LinDiagnosticFrame(0x3C, 'MasterReq', 8, {
         0: LinSignal('MasterReqB0', 8, 0),
         8: LinSignal('MasterReqB1', 8, 0),
         16: LinSignal('MasterReqB2', 8, 0),
@@ -15,6 +15,7 @@ def diagnostic_request():
         48: LinSignal('MasterReqB6', 8, 0),
         56: LinSignal('MasterReqB7', 8, 0),
     })
+    return LinDiagnosticRequest(frame)
 
 @pytest.mark.unit
 def test_encode_assign_nad(diagnostic_request):
@@ -48,7 +49,7 @@ def test_encode_read_by_id(diagnostic_request):
 
 @pytest.fixture(scope="session")
 def diagnostic_response():
-    return LinDiagnosticResponse(0x3D, 'SlaveResp', 8, {
+    frame = LinDiagnosticFrame(0x3D, 'SlaveResp', 8, {
         0: LinSignal('SlaveRespB0', 8, 0),
         8: LinSignal('SlaveRespB1', 8, 0),
         16: LinSignal('SlaveRespB2', 8, 0),
@@ -58,3 +59,4 @@ def diagnostic_response():
         48: LinSignal('SlaveRespB6', 8, 0),
         56: LinSignal('SlaveRespB7', 8, 0),
     })
+    return LinDiagnosticResponse(frame)

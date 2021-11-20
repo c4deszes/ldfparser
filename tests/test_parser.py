@@ -1,5 +1,6 @@
 import os
 import pytest
+from ldfparser.diagnostics import LIN_MASTER_REQUEST_FRAME_ID, LIN_SLAVE_RESPONSE_FRAME_ID
 
 from ldfparser.parser import parse_ldf
 from ldfparser.frame import LinFrame
@@ -162,5 +163,11 @@ def test_load_valid_diagnostics():
     path = os.path.join(os.path.dirname(__file__), "ldf", "lin_diagnostics.ldf")
     ldf = parse_ldf(path)
 
-    assert ldf.master_request_frame.frame_id == 0x3C
-    assert ldf.slave_response_frame.frame_id == 0x3D
+    assert len(ldf.get_diagnostic_frames()) >= 0
+    assert ldf.get_diagnostic_frame('MasterReq').frame_id == LIN_MASTER_REQUEST_FRAME_ID
+    assert ldf.get_diagnostic_frame(LIN_MASTER_REQUEST_FRAME_ID).frame_id == LIN_MASTER_REQUEST_FRAME_ID
+    assert ldf.master_request_frame.frame_id == LIN_MASTER_REQUEST_FRAME_ID
+    assert ldf.slave_response_frame.frame_id == LIN_SLAVE_RESPONSE_FRAME_ID
+
+    assert len(ldf.get_diagnostic_signals()) >= 0
+    assert ldf.get_diagnostic_signal('MasterReqB0').width == 8

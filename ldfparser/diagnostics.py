@@ -3,6 +3,10 @@ from typing import Iterable, Dict
 from ldfparser.frame import LinUnconditionalFrame
 from ldfparser.signal import LinSignal
 
+#
+LIN_MASTER_REQUEST_FRAME_ID = 0x3C
+LIN_SLAVE_RESPONSE_FRAME_ID = 0x3D
+
 # NAD values (Specified in 4.2.3.2)
 LIN_NAD_RESERVED = 0x00
 LIN_NAD_SLAVE_NODE_RANGE = range(0x01, 0x7E)
@@ -40,8 +44,8 @@ class LinDiagnosticFrame(LinUnconditionalFrame):
 
 class LinDiagnosticRequest(LinDiagnosticFrame):
 
-    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
-        super().__init__(frame_id, name, length, signals)
+    def __init__(self, frame: LinDiagnosticFrame):
+        super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
 
     def encode_assign_nad(self, initial_nad: int, supplier_id: int, function_id: int,
                           new_nad: int) -> bytearray:
@@ -142,8 +146,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
 
 class LinDiagnosticResponse(LinDiagnosticFrame):
 
-    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
-        super().__init__(frame_id, name, length, signals)
+    def __init__(self, frame: LinDiagnosticFrame):
+        super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
 
     def decode_response(self, data: bytearray) -> Dict[str, int]:
         pass

@@ -147,6 +147,71 @@
                 "frames"
             ]
         },
+        "diagnostic_signal": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                },
+                "init_value": {
+                    "oneOf":[
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type":"integer"
+                            },
+                            "minItems": 1,
+                            "maxItems": 8
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "width",
+                "init_value"
+            ]
+        },
+        "diagnostic_frame": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "frame_id": {
+                    "type": "integer"
+                },
+                "signals": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "signal": {
+                                "type": "string"
+                            },
+                            "offset": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "signal",
+                            "offset"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "frame_id",
+                "signals"
+            ]
+        },
         "node": {
             "type": "object",
             "properties": {
@@ -523,6 +588,18 @@
             "type": "array",
             "items": {
                 "$ref": "#/definitions/frame"
+            }
+        },
+        "diagnostic_signals": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/diagnostic_signal"
+            }
+        },
+        "diagnostic_frames": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/diagnostic_frame"
             }
         },
         "event_triggered_frames": {

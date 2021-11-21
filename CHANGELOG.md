@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2021-11-21
+
 ### Added
 
 - Diagnostic frames and signals are now parsed
@@ -14,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `LinUnconditionalFrame` can be encoded using a `List` of signal values
 - Comment capturing has been reworked to use the Lexer callback feature of the Lark parser
 
 ## [0.11.1] - 2021-11-02

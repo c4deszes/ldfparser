@@ -189,7 +189,7 @@ class LinUnconditionalFrame(LinFrame):
         elif isinstance(data, Dict):
             message = self._signal_map_to_message(data)
         else:
-            raise ValueError()
+            raise TypeError(f"Cannot encode {data} as a frame!")
         return LinUnconditionalFrame._flip_bytearray(self._packer.pack(*message))
 
     def decode(self,

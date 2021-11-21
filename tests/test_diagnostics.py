@@ -1,8 +1,8 @@
 import pytest
 
 from ldfparser.diagnostics import (
-    LIN_PCI_CONSECUTIVE_FRAME, LIN_PCI_FIRST_FRAME, LIN_PCI_SINGLE_FRAME,
-    LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse, pci_byte
+    LIN_PCI_CONSECUTIVE_FRAME, LIN_PCI_FIRST_FRAME, LIN_PCI_SINGLE_FRAME, LIN_SID_DATA_DUMP, LIN_SID_READ_BY_ID,
+    LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse, pci_byte, rsid
 )
 from ldfparser.signal import LinSignal
 
@@ -18,6 +18,17 @@ from ldfparser.signal import LinSignal
 @pytest.mark.unit
 def test_pci_calculation(pci_type, length, expected):
     assert pci_byte(pci_type, length) == expected
+
+@pytest.mark.parametrize(
+    ('sid', 'expected'),
+    [
+        (LIN_SID_READ_BY_ID, 0xF2),
+        (LIN_SID_DATA_DUMP, 0xF4)
+    ]
+)
+@pytest.mark.unit
+def test_rsid_calculation(sid, expected):
+    assert rsid(sid) == expected
 
 @pytest.fixture(scope="session")
 def diagnostic_request():

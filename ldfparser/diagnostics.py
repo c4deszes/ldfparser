@@ -72,6 +72,7 @@ def pci_byte(pci_type: int, length: int) -> int:
     return (length & 0x0F) | (pci_type << 4)
 
 class LinDiagnosticFrame(LinUnconditionalFrame):
+    """Base class for diagnostic communication"""
     pass
 
 class LinDiagnosticRequest(LinDiagnosticFrame):

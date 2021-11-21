@@ -32,12 +32,18 @@ LIN_SID_READ_BY_ID_RESERVED_RANGE1 = range(2, 32)
 LIN_SID_READ_BY_ID_USER_DEFINED_RANGE = range(32, 64)
 LIN_SID_READ_BY_ID_RESERVED_RANGE2 = range(64, 256)
 
-def rsid(sid: int):
+def rsid(sid: int) -> int:
     """
     Returns the response service identifier for a given service id
 
+    Example:
+    >>> rsid(LIN_SID_READ_BY_ID)
+    0xF2
+
     :param sid: Service identifier
     :type sid: int
+    :returns: Response Service Identifier (RSID)
+    :rtype: int
     """
     return sid + 0x40
 
@@ -50,8 +56,16 @@ def pci_byte(pci_type: int, length: int) -> int:
     Returns protocol control information byte
 
     Example:
-        pci_byte(LIN_PCI_SINGLE_FRAME, 6)
+    >>> pci_byte(LIN_PCI_SINGLE_FRAME, 6)
+    0x06
 
+    :param pci_type: PCI Type (Single Frame, First Frame, etc.)
+    :type pci_type: int
+    :param length: PCI length \
+        For Single Frame type this is the length of the frame \
+        For First Frame type this the length of the unit divided by 256 \
+        For Consecutive Frame type this is the remaining frame counter
+    :type length:
     :returns: Calculated PCI byte
     :rtype: int
     """
@@ -61,15 +75,21 @@ class LinDiagnosticFrame(LinUnconditionalFrame):
     pass
 
 class LinDiagnosticRequest(LinDiagnosticFrame):
+    """LinDiagnosticRequest is used to encode standard diagnostic messages"""
 
     _FIELDS = ['NAD', 'PCI', 'SID', 'D1', 'D2', 'D3', 'D4', 'D5']
 
     def __init__(self, frame: LinDiagnosticFrame):
         super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
 
-    def encode_request(self, nad: int, pci: int, sid: int, d1: int, d2: int, d3: int, d4: int, d5: int):
+    def encode_request(self, nad: int, pci: int, sid: int,
+                       d1: int, d2: int, d3: int, d4: int, d5: int):
         """
         Encodes a diagnostic request into a frame
+
+        Example:
+        >>> encode_request(0x01, 0x06, LIN_SID_READ_BY_ID,
+                           LIN_SID_READ_BY_ID_PRODUCT_ID, 0xFF, 0x7F, 0xFF, 0xFF)
 
         :param nad: Node Address
         :type nad: int
@@ -87,6 +107,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :type d4: int
         :param d5: Data byte 5
         :type d5: int
+        :returns: Encoded frame
+        :rtype: bytearray
         """
         return self.encode_raw([nad, pci, sid, d1, d2, d3, d4, d5])
 
@@ -94,6 +116,9 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
                           new_nad: int) -> bytearray:
         """
         Encodes an AssignNAD diagnostic request into a frame
+
+        Example:
+        >>> encode_assign_nad(0x00, 0x7FFF, 0xFFFF, 0x01)
 
         :param initial_nad: Initial Node Address
         :type initial_nad: int
@@ -103,8 +128,11 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :type function_id: int
         :param new_nad: New Node Address
         :type new_nad: int
+        :returns: Encoded frame
+        :rtype: bytearray
         """
-        return self.encode_request(initial_nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_ASSIGN_NAD,
+        return self.encode_request(initial_nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
+                                   LIN_SID_ASSIGN_NAD,
                                    supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
                                    function_id & 0xFF, (function_id >> 8) & 0xFF,
                                    new_nad)
@@ -114,8 +142,23 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         """
         Encodes an ConditionalChangeNAD diagnostic request into a frame
 
+        Example:
+        >>> encode_conditional_change_nad(0x7F, 0x01, 0x03, 0x01, 0xFF, 0x01)
+
         :param nad: Node Address
         :type nad: int
+        :param identifier: Identifier
+        :type identifier: int
+        :param byte: Byte number
+        :type byte: int
+        :param mask: Byte mask
+        :type mask: int
+        :param invert: Invert mask
+        :type invert: int
+        :param new_nad: New Node Address
+        :type new_nad: int
+        :returns: Encoded frame
+        :rtype: bytearray
         """
         return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
                                    LIN_SID_CONDITIONAL_CHANGE_NAD,
@@ -127,12 +170,14 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         Encodes a DataDump diagnostic request into a frame
 
         Example:
-            master_request_frame.encode_data_dump(nad=0x01, data=[0x01, 0x00, 0x00, 0xFF, 0xFF])
+        >>> encode_data_dump(nad=0x01, data=[0x01, 0x00, 0x00, 0xFF, 0xFF])
 
         :param nad: Node Address
         :type nad: int
         :param data: User defined data of 5 bytes
         :type data: Iterable[int]
+        :returns: Encoded frame
+        :rtype: bytearray
         """
         return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_DATA_DUMP,
                                    data[0], data[1], data[2], data[3], data[4])
@@ -142,12 +187,15 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         Encodes a SaveConfiguration diagnostic request into a frame
 
         Example:
-            master_request_frame.encode_save_configuration(nad=0x01)
+        >>> encode_save_configuration(nad=0x01)
 
         :param nad: Node Address
         :type nad: int
+        :returns: Encoded frame
+        :rtype: bytearray
         """
-        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 1), LIN_SID_SAVE_CONFIGURATION,
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 1),
+                                   LIN_SID_SAVE_CONFIGURATION,
                                    0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
 
     def encode_assign_frame_id_range(self, nad: int, start_index: int,
@@ -156,9 +204,9 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         Encodes a AssignFrameIdRange diagnostic request into a frame
 
         Example:
-            master_request_frame.encode_assign_frame_id_range(nad=0x01,
-                                                              start_index=0,
-                                                              pids=[0x32, 0x33, 0x34, 0x35])
+        >>> encode_assign_frame_id_range(nad=0x01,
+                                         start_index=0x00,
+                                         pids=[0x32, 0x33, 0x34, 0x35])
 
         :param nad: Node Address
         :type nad: int
@@ -166,6 +214,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :type start_index: int
         :params pids: Protected identifiers to assign
         :type pids: Iterable[int]
+        :returns: Encoded frame
+        :rtype: bytearray
         """
         return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
                                    LIN_SID_ASSIGN_FRAME_ID_RANGE,
@@ -178,10 +228,10 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         Encodes a ReadById diagnostic request into a frame
 
         Example:
-            master_request_frame.encode_read_by_id(nad=0x01,
-                                                   identifier=0,
-                                                   supplier_id=0x7FFF,
-                                                   function_id=0xFFFF)
+        >>> encode_read_by_id(nad=0x01,
+                              identifier=LIN_SID_READ_BY_ID_SERIAL_NUMBER,
+                              supplier_id=0x7FFF,
+                              function_id=0xFFFF)
 
         :param nad: Node Address
         :type nad: int
@@ -191,6 +241,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :type supplier_id: int
         :param function_id: Function ID
         :type function_id: int
+        :returns: Encoded frame
+        :rtype: bytearray
         """
         return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_READ_BY_ID,
                                    identifier,
@@ -198,20 +250,27 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
                                    function_id & 0xFF, (function_id >> 8) & 0xFF)
 
 class LinDiagnosticResponse(LinDiagnosticFrame):
+    """LinDiagnosticResponse is used to decode standard diagnostic responses"""
 
     _FIELDS = ['NAD', 'PCI', 'RSID', 'D1', 'D2', 'D3', 'D4', 'D5']
 
     def __init__(self, frame: LinDiagnosticFrame):
         super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
-        self._signal_remapper = dict(zip(map(lambda x: x[1].name, frame.signal_map), LinDiagnosticResponse._FIELDS))
+        self._signal_remapper = dict(zip(map(lambda x: x[1].name, frame.signal_map),
+                                         LinDiagnosticResponse._FIELDS))
 
     def decode_response(self, data: bytearray) -> Dict[str, int]:
         """
         Decodes a diagnostic response
 
+        Example:
+        >>> decode_response(bytearray([0x00,0x01,0xF0,0xFF,0xFF,0xFF,0xFF,0xFF]))
+        {'NAD': 0x00, 'PCI': 0x01, 'RSID': 0xF0, ... }
+
         :param data: Frame content
         :type data: bytearray
-        :returns: Map of signal 
+        :returns: Dictionary of field keys and values
+        :rtype: Dict[str, int]
         """
         message = self.decode_raw(data)
         return {self._signal_remapper[signal_name]: message[signal_name] for signal_name in message}

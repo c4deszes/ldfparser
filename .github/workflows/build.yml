@@ -36,17 +36,20 @@ jobs:
         run: pytest -m 'unit or integration' --cov=ldfparser --cov-report xml
 
       - name: Run Examples
+        if: always()
         run: |
           python ./examples/communication.py
           python ./examples/ldf2json.py
           python ./examples/read_comments.py
 
       - name: Package
+        if: always()
         run: |
           python setup.py sdist bdist_wheel
 
       - name: Upload coverage results
         uses: codecov/codecov-action@v1
+        if: always()
         with:
           directory: ./
           flags: unittests,${{ matrix.python-version }}

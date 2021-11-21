@@ -8,6 +8,9 @@ if TYPE_CHECKING:
     from .signal import LinSignal
     from .lin import LinVersion
 
+LIN_SUPPLIER_ID_WILDCARD = 0x7FFF
+LIN_FUNCTION_ID_WILDCARD = 0xFFFF
+
 class LinProductId:
     """
     LinProductId identifies a node's manufacturer and product

@@ -32,7 +32,9 @@ class LinSignal:
         self.encoding_type: 'LinSignalEncodingType' = None
 
     def __eq__(self, o: object) -> bool:
-        return self.name == o.name
+        if isinstance(o, LinSignal):
+            return self.name == o.name
+        return False
 
     def __ne__(self, o: object) -> bool:
         return not self == o

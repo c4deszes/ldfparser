@@ -62,8 +62,33 @@ class LinDiagnosticFrame(LinUnconditionalFrame):
 
 class LinDiagnosticRequest(LinDiagnosticFrame):
 
+    _FIELDS = ['NAD', 'PCI', 'SID', 'D1', 'D2', 'D3', 'D4', 'D5']
+
     def __init__(self, frame: LinDiagnosticFrame):
         super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
+
+    def encode_request(self, nad: int, pci: int, sid: int, d1: int, d2: int, d3: int, d4: int, d5: int):
+        """
+        Encodes a diagnostic request into a frame
+
+        :param nad: Node Address
+        :type nad: int
+        :param pci: Protocol Control Information
+        :type pci: int
+        :param sid: Service Identifier
+        :type sid: int
+        :param d1: Data byte 1
+        :type d1: int
+        :param d2: Data byte 2
+        :type d2: int
+        :param d3: Data byte 3
+        :type d3: int
+        :param d4: Data byte 4
+        :type d4: int
+        :param d5: Data byte 5
+        :type d5: int
+        """
+        return self.encode_raw([nad, pci, sid, d1, d2, d3, d4, d5])
 
     def encode_assign_nad(self, initial_nad: int, supplier_id: int, function_id: int,
                           new_nad: int) -> bytearray:
@@ -79,10 +104,10 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param new_nad: New Node Address
         :type new_nad: int
         """
-        return self.encode_raw([initial_nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_ASSIGN_NAD,
-                                supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
-                                function_id & 0xFF, (function_id >> 8) & 0xFF,
-                                new_nad])
+        return self.encode_request(initial_nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_ASSIGN_NAD,
+                                   supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
+                                   function_id & 0xFF, (function_id >> 8) & 0xFF,
+                                   new_nad)
 
     def encode_conditional_change_nad(self, nad: int, identifier: int, byte: int,
                                       mask: int, invert: int, new_nad: int) -> bytearray:
@@ -92,10 +117,10 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param nad: Node Address
         :type nad: int
         """
-        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
-                                LIN_SID_CONDITIONAL_CHANGE_NAD,
-                                identifier, byte, mask, invert,
-                                new_nad])
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
+                                   LIN_SID_CONDITIONAL_CHANGE_NAD,
+                                   identifier, byte, mask, invert,
+                                   new_nad)
 
     def encode_data_dump(self, nad: int, data: Iterable[int]) -> bytearray:
         """
@@ -109,8 +134,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param data: User defined data of 5 bytes
         :type data: Iterable[int]
         """
-        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_DATA_DUMP,
-                                data[0], data[1], data[2], data[3], data[4]])
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_DATA_DUMP,
+                                   data[0], data[1], data[2], data[3], data[4])
 
     def encode_save_configuration(self, nad: int) -> bytearray:
         """
@@ -122,8 +147,8 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param nad: Node Address
         :type nad: int
         """
-        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 1), LIN_SID_SAVE_CONFIGURATION,
-                                0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 1), LIN_SID_SAVE_CONFIGURATION,
+                                   0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
 
     def encode_assign_frame_id_range(self, nad: int, start_index: int,
                                      pids: Iterable[int]) -> bytearray:
@@ -142,10 +167,10 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :params pids: Protected identifiers to assign
         :type pids: Iterable[int]
         """
-        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
-                                LIN_SID_ASSIGN_FRAME_ID_RANGE,
-                                start_index,
-                                pids[0], pids[1], pids[2], pids[3]])
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6),
+                                   LIN_SID_ASSIGN_FRAME_ID_RANGE,
+                                   start_index,
+                                   pids[0], pids[1], pids[2], pids[3])
 
     def encode_read_by_id(self, nad: int, identifier: int, supplier_id: int,
                           function_id: int) -> bytearray:
@@ -167,15 +192,26 @@ class LinDiagnosticRequest(LinDiagnosticFrame):
         :param function_id: Function ID
         :type function_id: int
         """
-        return self.encode_raw([nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_READ_BY_ID,
-                                identifier,
-                                supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
-                                function_id & 0xFF, (function_id >> 8) & 0xFF])
+        return self.encode_request(nad, pci_byte(LIN_PCI_SINGLE_FRAME, 6), LIN_SID_READ_BY_ID,
+                                   identifier,
+                                   supplier_id & 0xFF, (supplier_id >> 8) & 0xFF,
+                                   function_id & 0xFF, (function_id >> 8) & 0xFF)
 
 class LinDiagnosticResponse(LinDiagnosticFrame):
 
+    _FIELDS = ['NAD', 'PCI', 'RSID', 'D1', 'D2', 'D3', 'D4', 'D5']
+
     def __init__(self, frame: LinDiagnosticFrame):
         super().__init__(frame.frame_id, frame.name, frame.length, dict(frame.signal_map))
+        self._signal_remapper = dict(zip(map(lambda x: x[1].name, frame.signal_map), LinDiagnosticResponse._FIELDS))
 
     def decode_response(self, data: bytearray) -> Dict[str, int]:
-        pass
+        """
+        Decodes a diagnostic response
+
+        :param data: Frame content
+        :type data: bytearray
+        :returns: Map of signal 
+        """
+        message = self.decode_raw(data)
+        return {self._signal_remapper[signal_name]: message[signal_name] for signal_name in message}

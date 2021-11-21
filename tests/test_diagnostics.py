@@ -76,3 +76,17 @@ def diagnostic_response():
         56: LinSignal('SlaveRespB7', 8, 0),
     })
     return LinDiagnosticResponse(frame)
+
+@pytest.mark.unit
+def test_decode_assign_frame_id_response(diagnostic_response):
+    data = diagnostic_response.decode_response(b'\x00\x01\xF0\xFF\xFF\xFF\xFF\xFF')
+    assert data == {
+        'NAD': 0x00,
+        'PCI': 0x01,
+        'RSID': 0xF0,
+        'D1': 0xFF,
+        'D2': 0xFF,
+        'D3': 0xFF,
+        'D4': 0xFF,
+        'D5': 0xFF
+    }

@@ -39,7 +39,7 @@ def test_load_valid_lin20():
     assert ldf.slave('LSM') is not None
 
     with pytest.raises(LookupError):
-        ldf.get_unconditional_frame('VL1_CEM_Frm1')
+        ldf.get_unconditional_frame('VL1_CEM_Frm1234')
 
     with pytest.raises(TypeError):
         ldf.get_unconditional_frame(['VL1_CEM_Frm1'])

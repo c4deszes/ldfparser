@@ -1,0 +1,103 @@
+LIN_description_file;
+LIN_protocol_version = "2.1";
+LIN_language_version = "2.1";
+LIN_speed = 19.2 kbps;
+
+Nodes {
+    Master: LightController, 5 ms, 1 ms ;
+    Slaves: LeftLight, RightLight;
+}
+
+Node_attributes {
+    LeftLight {
+        LIN_protocol = "2.1";
+        configured_NAD = 0x20;
+        initial_NAD = 0x01;
+        product_id = 0x4A4F, 0x4841;
+        configurable_frames {
+            LeftLightStatus; LeftLightSet; LeftLightError;
+        }
+    }
+    RightLight {
+        LIN_protocol = "2.1";
+        configured_NAD = 0x21;
+        initial_NAD = 0x02;
+        product_id = 0x4A4F, 0x4841;
+        configurable_frames {
+            RightLightStatus; RightLightSet; RightLightError;
+        }
+    }
+}
+
+Signals {
+    LeftLight_signal: 8, 0xFF, LeftLight, LightController;
+    SetLeftLight_signal: 8, 0xFF, LightController, LeftLight;
+    LeftLightError_signal: 1, 0, LeftLight, LightController;
+
+    RightLight_signal: 8, 0xFF, RightLight, LightController;
+    SetRightLight_signal: 8, 0xFF, LightController, RightLight;
+    RightLightError_signal: 1, 0, RightLight, LightController;
+}
+
+Frames {
+    LeftLightStatus: 0x40, LeftLight, 8 {
+        LeftLight_signal, 0;
+    }
+    RightLightStatus: 0x41, RightLight, 8 {
+        RightLight_signal, 0;
+    }
+    LeftLightSet: 0x42, LightController, 8 {
+        SetLeftLight_signal, 0;
+    }
+    RightLightSet: 0x43, LightController, 8 {
+        SetRightLight_signal, 0;
+    }
+    LeftLightError: 0x44, LeftLight, 8 {
+        LeftLightError_signal, 0;
+    }
+    RightLightError: 0x45, RightLight, 8 {
+        RightLightError_signal, 0;
+    }
+}
+
+Event_triggered_frames {
+    LightErrorEvent : Collision_resolver, 0x39, LeftLightError, RightLightError;
+}
+
+Schedule_tables {
+    AddressConfiguration_Schedule {
+        AssignNAD { LeftLight } delay 10 ms;
+        SaveConfiguration { LeftLight } delay 10 ms;
+        AssignNAD { RightLight } delay 10 ms;
+        SaveConfiguration { RightLight } delay 10 ms;
+
+        ConditionalChangeNAD { 0x7F, 0x01, 0x03, 0x01, 0xFF, 0x01 } delay 10 ms;
+    }
+    FrameConfiguration_Schedule {
+        AssignFrameIdRange { LeftLight, 0, 0x40, 0x42, 0xFF, 0xFF } delay 10 ms;
+        SaveConfiguration { LeftLight } delay 10 ms;
+        AssignFrameIdRange { RightLight, 0, 0x41, 0x43, 0xFF, 0xFF } delay 10 ms;
+        SaveConfiguration { RightLight } delay 10 ms;
+
+        AssignFrameId { LeftLight, LeftLightStatus } delay 10ms;
+        AssignFrameId { RightLight, RightLightStatus } delay 10ms;
+
+        UnassignFrameId { LeftLight, LeftLightStatus } delay 10ms;
+        UnassignFrameId { RightLight, RightLightStatus } delay 10ms;
+    }
+    InformationSchedule {
+        DataDump { LeftLight, 0x10, 0x80, 0x00, 0xFF, 0xFF } delay 10 ms;
+        DataDump { RightLight, 0x10, 0x80, 0x00, 0xFF, 0xFF } delay 10 ms;
+        FreeFormat { 0x3C, 0xB2, 0x00, 0x00, 0xFF, 0x7F, 0xFF, 0xFF} delay 10ms;
+    }
+    Diagnostic_Schedule {
+        MasterReq delay 10 ms;
+        SlaveResp delay 10 ms;
+    }
+    Normal_Schedule {
+        LeftLightSet delay 20 ms;
+        LeftLightStatus delay 20 ms;
+        RightLightSet delay 20 ms;
+        RightLightStatus delay 20 ms;
+    }
+}

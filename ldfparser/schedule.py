@@ -13,9 +13,9 @@ class ScheduleTable():
 class ScheduleTableEntry():
 
     def __init__(self) -> None:
-        self.delay = 0
+        self.delay: int = 0
 
-class UnconditionalFrameEntry(ScheduleTableEntry):
+class LinFrameEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
@@ -42,7 +42,8 @@ class AssignFrameIdRangeEntry(ScheduleTableEntry):
     def __init__(self) -> None:
         super().__init__()
         self.node: LinNode = None
-        self.pids = []
+        self.frame_index: int = 0
+        self.pids: List[int] = []
 
 class ConditionalChangeNadEntry(ScheduleTableEntry):
 
@@ -69,6 +70,13 @@ class SaveConfigurationEntry(ScheduleTableEntry):
         self.node: LinNode = None
 
 class AssignFrameIdEntry(ScheduleTableEntry):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.node: LinNode = None
+        self.frame: LinFrame = None
+
+class UnassignFrameIdEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()

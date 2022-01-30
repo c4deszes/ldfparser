@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Schedule tables are now parsed into Python objects
 
+### Fixed
+
+- Added missing `UnassignFrameId` command to JSON schema
+
 ## [0.12.0] - 2021-11-21
 
 ### Added

@@ -80,15 +80,15 @@ Schedule_tables {
         SaveConfiguration { RightLight } delay 10 ms;
 
         AssignFrameId { LeftLight, LeftLightStatus } delay 10ms;
-        AssignFrameId { RightLight, RightLightStatus } delay 10ms;
-
         UnassignFrameId { LeftLight, LeftLightStatus } delay 10ms;
+
+        AssignFrameId { RightLight, RightLightStatus } delay 10ms;
         UnassignFrameId { RightLight, RightLightStatus } delay 10ms;
     }
     InformationSchedule {
         DataDump { LeftLight, 0x10, 0x80, 0x00, 0xFF, 0xFF } delay 10 ms;
         DataDump { RightLight, 0x10, 0x80, 0x00, 0xFF, 0xFF } delay 10 ms;
-        FreeFormat { 0x3C, 0xB2, 0x00, 0x00, 0xFF, 0x7F, 0xFF, 0xFF} delay 10ms;
+        FreeFormat { 0x3C, 0xB2, 0x00, 0x00, 0xFF, 0x7F, 0xFF, 0xFF } delay 10ms;
     }
     Diagnostic_Schedule {
         MasterReq delay 10 ms;

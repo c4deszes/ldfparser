@@ -387,6 +387,21 @@
                 }
             }
         },
+        "unassign_frame_id_entry": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "unassign_frame_id"
+                },
+                "node": {
+                    "type": "string"
+                },
+                "frame": {
+                    "type": "string"
+                }
+            }
+        },
         "free_format_entry": {
             "type": "object",
             "properties": {
@@ -454,6 +469,9 @@
                         },
                         {
                             "$ref": "#/definitions/assign_frame_id_entry"
+                        },
+                        {
+                            "$ref": "#/definitions/unassign_frame_id_entry"
                         },
                         {
                             "$ref": "#/definitions/free_format_entry"

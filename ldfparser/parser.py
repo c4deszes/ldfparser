@@ -190,7 +190,7 @@ def _populate_diagnostic_frames(json: dict, ldf: LDF):
             if frame['frame_id'] == LIN_SLAVE_RESPONSE_FRAME_ID:
                 ldf._slave_response_frame = LinDiagnosticResponse(frame_obj)
 
-def _create_schedule_table_entry(json: dict, ldf: LDF):
+def _create_schedule_table_entry(json: dict, ldf: LDF):  # noqa: C901
     if json['command']['type'] == 'frame':
         entry = LinFrameEntry()
         entry.delay = json['delay']

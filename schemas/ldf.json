@@ -488,7 +488,7 @@
                     ]
                 },
                 "delay": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },

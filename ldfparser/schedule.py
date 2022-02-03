@@ -13,7 +13,7 @@ class ScheduleTable():
 class ScheduleTableEntry():
 
     def __init__(self) -> None:
-        self.delay: int = 0
+        self.delay: float = 0.0
 
 class LinFrameEntry(ScheduleTableEntry):
 

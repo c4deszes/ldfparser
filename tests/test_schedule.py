@@ -18,17 +18,17 @@ class TestSchedule:
 
         entry_1 = address_config_table.schedule[0]
         assert isinstance(entry_1, AssignNadEntry)
-        assert entry_1.delay == 10
+        assert entry_1.delay == 0.010
         assert entry_1.node.name == 'LeftLight'
 
         entry_2 = address_config_table.schedule[1]
         assert isinstance(entry_2, SaveConfigurationEntry)
-        assert entry_2.delay == 10
+        assert entry_2.delay == 0.010
         assert entry_2.node.name == 'LeftLight'
 
         entry_5 = address_config_table.schedule[4]
         assert isinstance(entry_5, ConditionalChangeNadEntry)
-        assert entry_5.delay == 10
+        assert entry_5.delay == 0.010
         assert entry_5.nad == 0x7F
         assert entry_5.id == 0x01
         assert entry_5.byte == 0x03

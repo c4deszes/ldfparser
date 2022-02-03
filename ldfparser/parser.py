@@ -534,7 +534,7 @@ class LDFTransformer(Transformer):
         return {"name": tree[0], "schedule": tree[1:]}
 
     def schedule_table_entry(self, tree):
-        return {"command": tree[0], "delay": tree[1]}
+        return {"command": tree[0], "delay": tree[1] * 0.001}
 
     def schedule_table_command(self, tree):
         return tree[0]

@@ -1,6 +1,6 @@
 from typing import Iterable, Dict
 
-from ldfparser.frame import LinUnconditionalFrame
+from .frame import LinUnconditionalFrame
 
 # LIN Diagnostic Frame IDs
 LIN_MASTER_REQUEST_FRAME_ID = 0x3C

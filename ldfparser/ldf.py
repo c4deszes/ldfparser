@@ -9,6 +9,7 @@ from .diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnostic
 from .signal import LinSignal
 from .encoding import LinSignalEncodingType
 from .node import LinMaster, LinSlave
+from .schedule import ScheduleTable
 
 class LDF():
     # pylint: disable=too-many-instance-attributes,too-many-public-methods
@@ -33,6 +34,7 @@ class LDF():
         self._signal_representations: Dict[LinSignal, LinSignalEncodingType] = {}
         self._master_request_frame: LinDiagnosticRequest = None
         self._slave_response_frame: LinDiagnosticResponse = None
+        self._schedule_tables: Dict[str, ScheduleTable] = {}
         self._comments: List[str] = []
 
     def get_protocol_version(self) -> LinVersion:
@@ -231,6 +233,30 @@ class LDF():
         :rtype: List[LinSignal]
         """
         return self._diagnostic_signals.values()
+
+    def get_schedule_table(self, name: str) -> ScheduleTable:
+        """
+        Returns the schedule table with the given name
+
+        :param name: Name of the schedule table to find
+        :type name: str
+        :returns: Schedule table
+        :rtype: ScheduleTable
+        :raises: LookupError if the given schedule table is not found
+        """
+        schedule = self._schedule_tables.get(name)
+        if schedule is None:
+            raise LookupError(f"No schedule table named '{name}' found!")
+        return schedule
+
+    def get_schedule_tables(self) -> List[ScheduleTable]:
+        """
+        Returns all schedule tables
+
+        :returns: List of Schedule tables
+        :rtype: List[ScheduleTable]
+        """
+        return self._schedule_tables.values()
 
     @property
     def master_request_frame(self) -> LinDiagnosticRequest:

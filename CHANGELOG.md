@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2022-02-05
+
+### Added
+
+- Schedule tables are now parsed into Python objects
+
+### Changed
+
+- The delay of schedule entries in the dictionary now have a floating point type and their unit
+has been normalized to seconds
+
+### Fixed
+
+- Added missing `UnassignFrameId` command to JSON schema
+
+### Migration guide for 0.13.0
+
+- Any reference to `ldf['schedule_tables'][id]['schedule'][entry]['delay']` that assumes that
+milliseconds are used as the unit has to be updated to either multiply the current value by `1000`
+or somehow change the assumption about the unit to seconds.
+All numeric values that have an associated unit have their SI prefix removed during parsing, for
+example `kbps` is converted into `bps`. The schedule entry delay was one case where it wasn't
+handled accordingly.
+
 ## [0.12.0] - 2021-11-21
 
 ### Added

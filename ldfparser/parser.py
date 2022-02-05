@@ -3,7 +3,8 @@ import warnings
 from typing import Any, Dict, List
 from lark import Lark, Transformer
 
-from ldfparser.diagnostics import LIN_MASTER_REQUEST_FRAME_ID, LIN_SLAVE_RESPONSE_FRAME_ID, LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
+from .diagnostics import LIN_MASTER_REQUEST_FRAME_ID, LIN_SLAVE_RESPONSE_FRAME_ID, LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
+from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntry, ConditionalChangeNadEntry, DataDumpEntry, FreeFormatEntry, MasterRequestEntry, SaveConfigurationEntry, ScheduleTable, SlaveResponseEntry, UnassignFrameIdEntry, LinFrameEntry
 
 from .frame import LinEventTriggeredFrame, LinUnconditionalFrame
 from .signal import LinSignal
@@ -66,9 +67,11 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     _populate_diagnostic_frames(json, ldf)
     _populate_ldf_nodes(json, ldf)
     _populate_ldf_encoding_types(json, ldf)
+    _populate_schedule_tables(json, ldf)
 
     _link_ldf_signals(json, ldf)
     _link_ldf_frames(json, ldf)
+    _link_ldf_schedule_table(json, ldf)
 
     if capture_comments:
         ldf._comments = json['comments']
@@ -188,6 +191,81 @@ def _populate_diagnostic_frames(json: dict, ldf: LDF):
             if frame['frame_id'] == LIN_SLAVE_RESPONSE_FRAME_ID:
                 ldf._slave_response_frame = LinDiagnosticResponse(frame_obj)
 
+def _create_schedule_table_entry(json: dict, ldf: LDF):  # noqa: C901
+    if json['command']['type'] == 'frame':
+        entry = LinFrameEntry()
+        entry.delay = json['delay']
+        entry.frame = ldf.get_frame(json['command']['frame'])
+        return entry
+    if json['command']['type'] == 'master_request':
+        entry = MasterRequestEntry()
+        entry.delay = json['delay']
+        return entry
+    if json['command']['type'] == 'slave_response':
+        entry = SlaveResponseEntry()
+        entry.delay = json['delay']
+        return entry
+    if json['command']['type'] == 'assign_nad':
+        entry = AssignNadEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        return entry
+    if json['command']['type'] == 'conditional_change_nad':
+        entry = ConditionalChangeNadEntry()
+        entry.delay = json['delay']
+        entry.nad = json['command']['nad']
+        entry.id = json['command']['id']
+        entry.byte = json['command']['byte']
+        entry.mask = json['command']['mask']
+        entry.inv = json['command']['inv']
+        entry.new_nad = json['command']['new_nad']
+        return entry
+    if json['command']['type'] == 'data_dump':
+        entry = DataDumpEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        entry.data = json['command']['data']
+        return entry
+    if json['command']['type'] == 'save_configuration':
+        entry = SaveConfigurationEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        return entry
+    if json['command']['type'] == 'assign_frame_id':
+        entry = AssignFrameIdEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        entry.frame = ldf.get_frame(json['command']['frame'])
+        return entry
+    if json['command']['type'] == 'unassign_frame_id':
+        entry = UnassignFrameIdEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        entry.frame = ldf.get_frame(json['command']['frame'])
+        return entry
+    if json['command']['type'] == 'assign_frame_id_range':
+        entry = AssignFrameIdRangeEntry()
+        entry.delay = json['delay']
+        entry.node = ldf.get_slave(json['command']['node'])
+        entry.frame_index = json['command']['frame_index']
+        entry.pids = json['command']['pids']
+        return entry
+    if json['command']['type'] == 'free_format':
+        entry = FreeFormatEntry()
+        entry.delay = json['delay']
+        entry.data = json['command']['data']
+        return entry
+    raise ValueError("Unknown schedule command type")
+
+def _populate_schedule_tables(json: dict, ldf: LDF):
+    if 'schedule_tables' in json:
+        for table in json['schedule_tables']:
+            schedule_table = ScheduleTable(table['name'])
+            for item in table['schedule']:
+                entry = _create_schedule_table_entry(item, ldf)
+                schedule_table.schedule.append(entry)
+            ldf._schedule_tables[schedule_table.name] = schedule_table
+
 def _link_ldf_signals(json: dict, ldf: LDF):  # noqa: C901
     for signal in _require_key(json, 'signals', 'LDF missing Signals section.'):
         signal_obj = ldf.get_signal(signal['name'])
@@ -241,6 +319,13 @@ def _link_ldf_frames(json: dict, ldf: LDF):
                 raise ValueError(f"Frame {frame_obj.name} references non existent node {frame['publisher']}")
             slave.publishes_frames.append(frame_obj)
             frame_obj.publisher = slave
+
+def _link_ldf_schedule_table(json: dict, ldf: LDF):
+    if "event_triggered_frames" not in json:
+        return
+    for frame in json['event_triggered_frames']:
+        frame_obj = ldf.get_event_triggered_frame(frame['name'])
+        frame_obj.collision_resolving_schedule_table = ldf.get_schedule_table(frame['collision_resolving_schedule_table'])
 
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
     if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:
@@ -457,7 +542,7 @@ class LDFTransformer(Transformer):
         return {"name": tree[0], "schedule": tree[1:]}
 
     def schedule_table_entry(self, tree):
-        return {"command": tree[0], "delay": tree[1]}
+        return {"command": tree[0], "delay": tree[1] * 0.001}
 
     def schedule_table_command(self, tree):
         return tree[0]

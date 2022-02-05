@@ -14,7 +14,14 @@
 
 ---
 
-## Disclaimer
+## Disclaimers
+
+The library is still in a pre-release state, therefore features may break between minor versions.
+For this reason it's recommended that productive environments pin to the exact version of the
+library and do an integration test or review when updating the version. Breaking changes and how to
+migrate to the new version will be documented in the
+[changelog](https://github.com/c4deszes/ldfparser/blob/master/CHANGELOG.md) and on the
+[Github releases page](https://github.com/c4deszes/ldfparser/releases).
 
 The tool has been written according the LIN standards 1.3, 2.0, 2.1 and 2.2A, but due to errors in
 the documentation there's no guarantee that the library will be able to parse your LDF. In such
@@ -22,7 +29,7 @@ cases if possible first verify the LDF with a commercial tool such as Vector LDF
 tool that was used to create the LDF.  If the LDF seems to be correct then open a new issue.
 I also recommend trying the LDF to JSON conversion mechanism, see if that succeeds.
 
-Also the LIN standard is now known as [ISO 17987](https://www.iso.org/standard/61222.html) which
+The LIN standard is now known as [ISO 17987](https://www.iso.org/standard/61222.html) which
 clears up some of the confusing parts in the 2.2A specification. Since this new standard is not
 freely available **this library won't support the modifications present in ISO 17987**. I don't
 think it's going to a huge problem because the LIN 2.2A released in 2010 has overall better adoption.
@@ -63,11 +70,11 @@ print(binascii.hexlify(message))
 
 # Decode message into dictionary of signal names and values
 received = bytearray([0x7B, 0x00])
-print(frame.decode(received, ldf.converters))
+print(frame.decode(received))
 >>> {"Signal_1": 123, "Signal_2": 0}
 
 # Encode signal values through converters
-message = frame.encode({"MotorRPM": 100, "FanState": "ON"}, ldf.converters)
+message = frame.encode({"MotorRPM": 100, "FanState": "ON"})
 print(binascii.hexlify(message))
 >>> 0xFE01
 ```
@@ -94,15 +101,23 @@ Documentation is published to [Github Pages](https://c4deszes.github.io/ldfparse
 
 + Retrieve Node attributes
 
++ Retrieve schedule table information
+
 + Command Line Interface
 
 + Capturing comments
 
-### Currently not supported
++ Encode and decode standard diagnostic frames
 
-+ Scheduling table
+### Known issues / missing features
 
-+ Diagnostics
++ Certain parsing related errors are unintuitive
+
++ Checksum calculation for frames
+
++ Saving LDF objects as an `.ldf` file
+
++ Token information is not preserved
 
 ---
 
@@ -110,7 +125,7 @@ Documentation is published to [Github Pages](https://c4deszes.github.io/ldfparse
 
 Install the requirements via `pip install -r requirements.txt`
 
-Install the library locally by running `python setup.py install`
+Install the library locally by running `pip install -e .`
 
 [Pytest](https://pytest.org/) is used for testing, to execute all tests run `pytest -m 'not snapshot'`
 

@@ -1,34 +1,40 @@
 ## Brief
 
-Please provide brief information, what this pull request provides or fixes.
-
-<!-- You can remove this section if the PR is purely enhancement -->
+- Please provide brief information, what this pull request provides or fixes, possibly in a list format
 
 ### Checklist
 
-- [ ] Check test result and code coverage
+<!-- Use the checklist below to ensure the changes are correct and consistent
+     with the rest of the codebase.
+ -->
+
+- [ ] Add relevant labels to the Pull Request
+- [ ] Review test results and code coverage
+  - [ ] Review snapshot test results for deviations
+- [ ] Review code changes
+  - [ ] Create relevant test scenarios
+  - [ ] Update examples
+  - [ ] Update JSON schema
 - [ ] Update documentation
+  - [ ] Update examples in README
 - [ ] Update changelog
 - [ ] Update version number
 
-## Fixes
+## Resolves
 
-+ Describe bug, link to issue
+<!--
+     Use the syntax: "Fixes #42" or "Resolves #42" to automatically link to issues.
+ -->
 
-<!-- You can remove this section if the PR is a bugfix -->
-
-## Solves
-
-+ Describe the feature this pull request provided, link to issue
-
-<!-- You can skip the evidence part if the PR doesn't modify existing code -->
++ Describe the bug or feature and link to relevant issues
 
 ## Evidence
 
-+ Provide evidence that the pull request doesn't break existing functionality
+<!-- This section is meant to provide proof that the PR is correct.
+     Here you should note if a change will possibly break existing usage of the library
+     or how new features are tested.
+ -->
 
-+ Specifically looking for tests that verify the functionality of both existing and new code
++ Analyze how the change might impact existing code
 
-+ When changing core functionality it's important to keep backward compatibility in mind
-
-+ If such a change would occur please provide an impact analysis of the change
++ Provide evidence that the feature is tested and covered properly

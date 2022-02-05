@@ -34,6 +34,10 @@ production use cases you pin the version to a minor release in your requirements
 
 [Using the command line interface](commandline.md)
 
+[Using diagnostic frames](diagnostics.md)
+
+[Accessing schedule tables](schedules.md)
+
 ## License
 
 Distributed under the terms of

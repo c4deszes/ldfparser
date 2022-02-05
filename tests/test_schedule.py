@@ -11,7 +11,7 @@ class TestSchedule:
         path = os.path.join(os.path.dirname(__file__), "ldf", "lin_schedules.ldf")
         ldf = parse_ldf(path)
 
-        assert len(ldf.get_schedule_tables()) == 5
+        assert len(ldf.get_schedule_tables()) == 6
 
         address_config_table = ldf.get_schedule_table('AddressConfiguration_Schedule')
         assert len(address_config_table.schedule) == 5
@@ -55,7 +55,7 @@ class TestSchedule:
         assert entry_6.node.name == 'LeftLight'
         assert entry_6.frame.name == 'LeftLightStatus'
 
-        information_schedule = ldf.get_schedule_table('InformationSchedule')
+        information_schedule = ldf.get_schedule_table('Information_Schedule')
         assert len(information_schedule.schedule) == 3
 
         entry_1 = information_schedule.schedule[0]
@@ -82,3 +82,6 @@ class TestSchedule:
         entry_1 = normal_schedule.schedule[0]
         assert isinstance(entry_1, LinFrameEntry)
         assert entry_1.frame.name == 'LeftLightSet'
+
+        event_frame = ldf.get_event_triggered_frame('LightErrorEvent')
+        assert event_frame.collision_resolving_schedule_table.name == 'Collision_Resolver_Schedule'

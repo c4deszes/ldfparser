@@ -1,8 +1,9 @@
 
-from typing import List
+from typing import List, TYPE_CHECKING
 
-from .frame import LinFrame
-from .node import LinNode
+if TYPE_CHECKING:
+    from .frame import LinFrame
+    from .node import LinNode
 
 class ScheduleTable():
 
@@ -19,7 +20,7 @@ class LinFrameEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.frame: LinFrame = None
+        self.frame: 'LinFrame' = None
 
 class MasterRequestEntry(ScheduleTableEntry):
 
@@ -35,13 +36,13 @@ class AssignNadEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
+        self.node: 'LinNode' = None
 
 class AssignFrameIdRangeEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
+        self.node: 'LinNode' = None
         self.frame_index: int = 0
         self.pids: List[int] = []
 
@@ -60,28 +61,28 @@ class DataDumpEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
+        self.node: 'LinNode' = None
         self.data: List[int] = []
 
 class SaveConfigurationEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
+        self.node: 'LinNode' = None
 
 class AssignFrameIdEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
-        self.frame: LinFrame = None
+        self.node: 'LinNode' = None
+        self.frame: 'LinFrame' = None
 
 class UnassignFrameIdEntry(ScheduleTableEntry):
 
     def __init__(self) -> None:
         super().__init__()
-        self.node: LinNode = None
-        self.frame: LinFrame = None
+        self.node: 'LinNode' = None
+        self.frame: 'LinFrame' = None
 
 class FreeFormatEntry(ScheduleTableEntry):
 

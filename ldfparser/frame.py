@@ -2,12 +2,14 @@
 LIN Frame utilities
 """
 import warnings
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, TYPE_CHECKING
 
 import bitstruct
 
-from .signal import LinSignal
-from .encoding import LinSignalEncodingType
+if TYPE_CHECKING:
+    from .signal import LinSignal
+    from .encoding import LinSignalEncodingType
+    from .schedule import ScheduleTable
 
 class LinFrame():
     # pylint: disable=too-few-public-methods
@@ -42,7 +44,7 @@ class LinUnconditionalFrame(LinFrame):
     :type signals: Dict[int, LinSignal]
     """
 
-    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, LinSignal]):
+    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, 'LinSignal']):
         super().__init__(frame_id, name)
         self.publisher = None
         self.length = length
@@ -52,7 +54,7 @@ class LinUnconditionalFrame(LinFrame):
     @staticmethod
     def _frame_pattern(
             frame_size: int,
-            signals: List[Tuple[int, LinSignal]]) -> bitstruct.CompiledFormat:
+            signals: List[Tuple[int, 'LinSignal']]) -> bitstruct.CompiledFormat:
         """
         Converts a frame layout into a bitstructure formatting string
 
@@ -109,7 +111,7 @@ class LinUnconditionalFrame(LinFrame):
 
     def encode(self,
                data: Dict[str, Union[str, int, float]],
-               encoding_types: Dict[str, LinSignalEncodingType] = None) -> bytearray:
+               encoding_types: Dict[str, 'LinSignalEncodingType'] = None) -> bytearray:
         """
         Encodes signal values into the LIN frame content
 
@@ -194,7 +196,7 @@ class LinUnconditionalFrame(LinFrame):
 
     def decode(self,
                data: bytearray,
-               encoding_types: Dict[str, LinSignalEncodingType] = None,
+               encoding_types: Dict[str, 'LinSignalEncodingType'] = None,
                keep_unit: bool = False) -> Dict[str, Union[str, int, float]]:
         """
         Decodes a LIN frame into the signals that it contains
@@ -268,7 +270,7 @@ class LinUnconditionalFrame(LinFrame):
 
     def data(self,
              data: Dict[str, Union[str, int, float]],
-             converters: Dict[str, LinSignalEncodingType]) -> bytearray:
+             converters: Dict[str, 'LinSignalEncodingType']) -> bytearray:
         """
         Returns a bytearray (frame content) by using the human readable signal values
 
@@ -299,7 +301,7 @@ class LinUnconditionalFrame(LinFrame):
 
     def parse(self,
               data: bytearray,
-              converters: Dict[str, LinSignalEncodingType]) -> Dict[str, Union[str, int, float]]:
+              converters: Dict[str, 'LinSignalEncodingType']) -> Dict[str, Union[str, int, float]]:
         """
         Returns a mapping between Signal names and their human readable value
 
@@ -323,8 +325,9 @@ class LinEventTriggeredFrame(LinFrame):
     LinEventTriggeredFrame is LinFrame in the schedule table that can contain different
     unconditional frames from different nodes
     """
-    # TODO: add schedule table reference
 
-    def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame]) -> None:
+    def __init__(self, frame_id: int, name: str, frames: List[LinUnconditionalFrame],
+                 collision_resolving_schedule_table: 'ScheduleTable' = None) -> None:
         super().__init__(frame_id, name)
         self.frames = frames
+        self.collision_resolving_schedule_table = collision_resolving_schedule_table

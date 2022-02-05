@@ -71,6 +71,7 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
 
     _link_ldf_signals(json, ldf)
     _link_ldf_frames(json, ldf)
+    _link_ldf_schedule_table(json, ldf)
 
     if capture_comments:
         ldf._comments = json['comments']
@@ -318,6 +319,13 @@ def _link_ldf_frames(json: dict, ldf: LDF):
                 raise ValueError(f"Frame {frame_obj.name} references non existent node {frame['publisher']}")
             slave.publishes_frames.append(frame_obj)
             frame_obj.publisher = slave
+
+def _link_ldf_schedule_table(json: dict, ldf: LDF):
+    if "event_triggered_frames" not in json:
+        return
+    for frame in json['event_triggered_frames']:
+        frame_obj = ldf.get_event_triggered_frame(frame['name'])
+        frame_obj.collision_resolving_schedule_table = ldf.get_schedule_table(frame['collision_resolving_schedule_table'])
 
 def _populate_ldf_encoding_types(json: dict, ldf: LDF):
     if json.get('signal_encoding_types') is None or json.get('signal_representations') is None:

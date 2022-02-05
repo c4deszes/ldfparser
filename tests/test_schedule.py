@@ -2,7 +2,10 @@ import os
 import pytest
 
 from ldfparser.parser import parse_ldf
-from ldfparser.schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntry, ConditionalChangeNadEntry, DataDumpEntry, FreeFormatEntry, LinFrameEntry, MasterRequestEntry, SaveConfigurationEntry, SlaveResponseEntry, UnassignFrameIdEntry
+from ldfparser.schedule import (AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntry,
+                                ConditionalChangeNadEntry, DataDumpEntry, FreeFormatEntry,
+                                LinFrameEntry, MasterRequestEntry,
+                                SaveConfigurationEntry, SlaveResponseEntry, UnassignFrameIdEntry)
 
 class TestSchedule:
 
@@ -85,3 +88,6 @@ class TestSchedule:
 
         event_frame = ldf.get_event_triggered_frame('LightErrorEvent')
         assert event_frame.collision_resolving_schedule_table.name == 'Collision_Resolver_Schedule'
+
+        with pytest.raises(LookupError):
+            ldf.get_schedule_table('NotExistingSchedule')

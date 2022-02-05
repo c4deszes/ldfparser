@@ -30,5 +30,9 @@ If applicable, add stacktrace or code segments to help explain your problem.
 + Python version: (e.g. 3.8.5)
 + ldfparser version: (e.g. 0.2.1)
 
+```text
+Optionally include the output of 'pipdeptree --warn silence -p ldfparser'
+```
+
 **Additional context**
 Add any other context about the problem here.

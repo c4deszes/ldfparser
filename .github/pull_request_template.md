@@ -1,6 +1,6 @@
 ## Brief
 
-Please provide brief information, what this pull request provides or fixes.
+- Please provide brief information, what this pull request provides or fixes, possibly in a list format
 
 ### Checklist
 

@@ -13,7 +13,7 @@ be accessible.
 ```python
 ldf = parse_ldf('network.ldf')
 
-configuration_schedule = ldf.get_schedule('Configuration_Schedule')
+configuration_schedule = ldf.get_schedule_table('Configuration_Schedule')
 print(configuration_schedule.name)
 >>> 'Configuration_Schedule'
 for entry in configuration_schedule.schedule:

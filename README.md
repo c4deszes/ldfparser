@@ -23,9 +23,10 @@ migrate to the new version will be documented in the
 [changelog](https://github.com/c4deszes/ldfparser/blob/master/CHANGELOG.md) and on the
 [Github releases page](https://github.com/c4deszes/ldfparser/releases).
 
-The tool has been written according the LIN standards 1.3, 2.0, 2.1 and 2.2A, but due to errors in
-the documentation there's no guarantee that the library will be able to parse your LDF. In such
-cases if possible first verify the LDF with a commercial tool such as Vector LDF Explorer or the
+The tool has been written according the LIN standards [1.3](docs/external/LIN_1.3.pdf),
+[2.0](docs/external/LIN_2.0.pdf), [2.1](docs/external/LIN_2.1.pdf) and [2.2A](docs/external/LIN_2.2A.pdf),
+but due to errors in the documentation there's no guarantee that the library will be able to parse your LDF.
+In such cases if possible first verify the LDF with a commercial tool such as Vector LDF Explorer or the
 tool that was used to create the LDF.  If the LDF seems to be correct then open a new issue.
 I also recommend trying the LDF to JSON conversion mechanism, see if that succeeds.
 

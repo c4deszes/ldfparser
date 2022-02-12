@@ -1,0 +1,83 @@
+/**
+ * This file was exported using ldfparser Python package
+ */
+LIN_description_file;
+LIN_protocol_version = "{{ ldf.get_protocol_version() }}";
+LIN_language_version = "{{ ldf.get_language_version() }}";
+LIN_speed = {{ (ldf.get_baudrate() / 1000.0) | float }} kbps;
+{%- if ldf.get_channel() %}
+Channel_name = "{{ ldf.get_channel() }}";
+{%- endif %}
+
+Nodes {
+    Master: {{ ldf.get_master().name }}, {{ ldf.get_master().timebase * 1000 | float}} ms, {{ ldf.get_master().jitter * 1000 }} ms;
+    Slaves: {%- for slave in ldf.get_slaves() %} {{ slave.name }}{%- if not loop.last %},{% endif -%}{%- endfor -%};
+}
+
+Node_attributes {
+    {%- for slave in ldf.get_slaves() %}
+    {{slave.name}} {
+        LIN_protocol = "{{slave.lin_protocol}}";
+        configured_NAD = {{slave.configured_nad}};
+        initial_NAD = {{slave.initial_nad}};
+        product_id = {{slave.product_id.supplier_id}}, {{slave.product_id.function_id -}}
+        {%- if slave.product_id.variant -%}
+        , {{slave.product_id.variant -}}
+        {%- endif %};
+        {%- if slave.response_error %}
+        response_error = {{slave.response_error.name}};
+        {%- endif %}
+        P2_min = {{slave.p2_min * 1000}} ms;
+        ST_min = {{slave.st_min * 1000}} ms;
+        N_As_timeout = {{slave.n_as_timeout * 1000}} ms;
+        N_Cr_timeout = {{slave.n_cr_timeout * 1000}} ms;
+        configurable_frames {
+            {%- for (id, frame) in slave.configurable_frames.items() %}
+            {{frame.name}}{% if slave.lin_protocol == "2.0" %} = {{id}}{% endif -%};
+            {%- endfor %}
+        }
+    }
+    {%- endfor %}
+}
+
+Signals {
+    {%- for signal in ldf.get_signals() %}
+    {{signal.name}}: {{signal.width}},
+    {%- if signal.is_array() %} LOL
+    {%- else %} {{signal.init_value}}
+    {%- endif -%}, {{ signal.publisher.name -}},
+    {%- for subscriber in signal.subscribers %} {{ subscriber.name }}{%- if not loop.last %},{% endif -%}
+    {%- endfor -%};
+    {%- endfor %}
+}
+
+Frames {
+    {%- for frame in ldf.get_unconditional_frames() %}
+    {{frame.name}}: {{frame.frame_id}}, {{frame.publisher.name}}, {{frame.length}} {
+    {%- for signal in frame.signal_map %}
+        {{signal[1].name}}, {{signal[0]}};
+    {%- endfor %}
+    }
+    {%- endfor %}
+}
+
+Event_triggered_frames {
+    {%- for frame in ldf.get_event_triggered_frames() %}
+    {{frame.name}}: {{frame.collision_resolving_schedule_table.name}}, {{frame.frame_id}}, 
+    {%- for unconditional in frame.frames -%}
+        {{unconditional.name}}{%- if not loop.last %}, {% endif -%}
+    {%- endfor -%};
+    {%- endfor %}
+}
+
+Schedule_tables {
+
+}
+
+Signal_encoding_types {
+
+}
+
+Signal_representation {
+
+}

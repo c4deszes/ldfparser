@@ -161,10 +161,10 @@ def _create_ldf2x_node(node: dict, language_version: float):
     elif language_version >= LIN_VERSION_2_1:
         raise ValueError(f"Node {name} has no product_id specified, required for LDF 2.1+")
 
-    slave.p2_min = node.get('P2_min', None)
-    slave.st_min = node.get('ST_min', None)
-    slave.n_as_timeout = node.get('N_As_timeout', None)
-    slave.n_cr_timeout = node.get('N_Cr_timeout', None)
+    slave.p2_min = node.get('P2_min', 0.05)
+    slave.st_min = node.get('ST_min', 0)
+    slave.n_as_timeout = node.get('N_As_timeout', 1)
+    slave.n_cr_timeout = node.get('N_Cr_timeout', 1)
 
     return slave
 

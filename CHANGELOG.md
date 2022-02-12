@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.1] - 2022-02-12
+
+### Fixed
+
+- `P2_min`, `ST_min` and `N_As` and `N_Cr` timeout default values are now set correctly
+
 ## [0.13.0] - 2022-02-05
 
 ### Added

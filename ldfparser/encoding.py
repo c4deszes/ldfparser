@@ -156,6 +156,7 @@ class LinSignalEncodingType():
     def __init__(self, name: str, converters: List[ValueConverter]):
         self.name: str = name
         self._converters: List[ValueConverter] = converters
+        self._signals: List['LinSignal'] = []
 
     def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
         """
@@ -178,3 +179,9 @@ class LinSignalEncodingType():
             except ValueError:
                 pass
         raise ValueError(f"cannot decode {value} as {self.name}")
+
+    def get_converters(self) -> List[ValueConverter]:
+        return self._converters
+
+    def get_signals(self) -> List['LinSignal']:
+        return self._signals

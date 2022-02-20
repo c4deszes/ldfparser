@@ -71,13 +71,72 @@ Event_triggered_frames {
 }
 
 Schedule_tables {
-
+    {%- for table in ldf.get_schedule_tables() %}
+    {{table.name}} {
+        {%- for entry in table.schedule %}
+        {%- if entry.__class__.__name__ == 'LinFrameEntry' %}
+        {{ entry.frame.name }} delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'MasterRequestEntry' %}
+        MasterReq delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'SlaveResponseEntry' %}
+        SlaveResp delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'AssignNadEntry' %}
+        AssignNAD { {{ entry.node.name }} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'AssignFrameIdRangeEntry' %}
+        AssignFrameIdRange { {{ entry.node.name }}, {{entry.frame_index}}
+        {%- if entry.pids | length > 0 -%}
+        , {{entry.pids[0]}}, {{entry.pids[1]}}, {{entry.pids[2]}}, {{entry.pids[3]}}
+        {%- endif -%}
+        } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'ConditionalChangeNadEntry' %}
+        ConditionalChangeNAD { {{entry.nad}}, {{entry.id}}, {{entry.byte}}, {{entry.mask}}, {{entry.inv}}, {{entry.new_nad}} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'DataDumpEntry' %}
+        DataDump { {{ entry.node.name }}, {{entry.data[0]}}, {{entry.data[1]}}, {{entry.data[2]}}, {{entry.data[3]}}, {{entry.data[4]}} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'SaveConfigurationEntry' %}
+        SaveConfiguration { {{ entry.node.name }} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'AssignFrameIdEntry' %}
+        AssignFrameId { {{ entry.node.name }}, {{entry.frame.name}} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'UnassignFrameIdEntry' %}
+        UnassignFrameId { {{ entry.node.name }}, {{entry.frame.name}} } delay {{entry.delay * 1000}} ms;
+        {%- elif entry.__class__.__name__ == 'FreeFormatEntry' %}
+        FreeFormat { {{entry.data[0]}}, {{entry.data[1]}}, {{entry.data[2]}}, {{entry.data[3]}}, {{entry.data[4]}}, {{entry.data[5]}}, {{entry.data[6]}}, {{entry.data[7]}} } delay {{entry.delay * 1000}} ms;
+        {%- endif %}
+        {%- endfor %}
+    }
+    {%- endfor %}
 }
 
 Signal_encoding_types {
-
+    {%- for encoder in ldf.get_signal_encoding_types() %}
+    {{encoder.name}} {
+        {%- for converter in encoder.get_converters() %}
+        {%- if converter.__class__.__name__ == 'LogicalValue' %}
+        logical_value, {{converter.phy_value}}
+        {%- if converter.info -%}
+        , "{{converter.info}}"
+        {%- endif -%}
+        ;
+        {%- elif converter.__class__.__name__ == 'PhysicalValue' %}
+        physical_value, {{converter.phy_min}}, {{converter.phy_max}}, {{converter.scale}}, {{converter.offset}}
+        {%- if converter.unit -%}
+        , "{{converter.unit}}"
+        {%- endif -%}
+        ;
+        {%- elif converter.__class__.__name__ == 'BCDValue' %}
+        bcd_value;
+        {%- elif converter.__class__.__name__ == 'ASCIIValue' %}
+        ascii_value;
+        {%- endif %}
+        {%- endfor %}
+    }
+    {%- endfor %}
 }
 
 Signal_representation {
-
+    {%- for encoder in ldf.get_signal_encoding_types() %}
+    {{encoder.name}}: {% for signal in encoder.get_signals() -%}
+    {{signal.name}}{%- if not loop.last %}, {% endif -%}
+    {%- endfor -%}
+    ;
+    {%- endfor %}
 }

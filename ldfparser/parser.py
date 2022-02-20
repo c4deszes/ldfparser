@@ -341,6 +341,7 @@ def _populate_ldf_encoding_types(json: dict, ldf: LDF):
             signal_obj = ldf.get_signal(signal)
             signal_obj.encoding_type = ldf._signal_encoding_types[representations['encoding']]
             ldf._signal_representations[signal_obj] = ldf._signal_encoding_types[representations['encoding']]
+            ldf._signal_encoding_types[representations['encoding']]._signals.append(signal_obj)
 
 def _convert_encoding_value(json: dict) -> ValueConverter:
     if json['type'] == 'logical':

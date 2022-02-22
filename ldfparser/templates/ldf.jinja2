@@ -14,16 +14,19 @@ Nodes {
     Slaves: {%- for slave in ldf.get_slaves() %} {{ slave.name }}{%- if not loop.last %},{% endif -%}{%- endfor -%};
 }
 
+{%- if ldf.get_language_version().major == 2 %}
 Node_attributes {
     {%- for slave in ldf.get_slaves() %}
     {{slave.name}} {
         LIN_protocol = "{{slave.lin_protocol}}";
         configured_NAD = {{slave.configured_nad}};
         initial_NAD = {{slave.initial_nad}};
+        {%- if slave.product_id %}
         product_id = {{slave.product_id.supplier_id}}, {{slave.product_id.function_id -}}
         {%- if slave.product_id.variant -%}
         , {{slave.product_id.variant -}}
         {%- endif %};
+        {%- endif %}
         {%- if slave.response_error %}
         response_error = {{slave.response_error.name}};
         {%- endif %}
@@ -31,22 +34,28 @@ Node_attributes {
         ST_min = {{slave.st_min * 1000}} ms;
         N_As_timeout = {{slave.n_as_timeout * 1000}} ms;
         N_Cr_timeout = {{slave.n_cr_timeout * 1000}} ms;
+        {%- if slave.configurable_frames.items() | length > 0 %}
         configurable_frames {
             {%- for (id, frame) in slave.configurable_frames.items() %}
             {{frame.name}}{% if slave.lin_protocol == "2.0" %} = {{id}}{% endif -%};
             {%- endfor %}
         }
+        {%- endif %}
     }
     {%- endfor %}
 }
+{%- endif %}
 
 Signals {
     {%- for signal in ldf.get_signals() %}
     {{signal.name}}: {{signal.width}},
-    {%- if signal.is_array() %} LOL
+    {%- if signal.is_array() %} {
+    {%- for value in signal.init_value -%}
+    {{value}} {%- if not loop.last %},{% endif -%}
+    {%- endfor %} }
     {%- else %} {{signal.init_value}}
-    {%- endif -%}, {{ signal.publisher.name -}},
-    {%- for subscriber in signal.subscribers %} {{ subscriber.name }}{%- if not loop.last %},{% endif -%}
+    {%- endif -%}, {{ signal.publisher.name -}}
+    {%- for subscriber in signal.subscribers %}, {{ subscriber.name }}
     {%- endfor -%};
     {%- endfor %}
 }
@@ -61,6 +70,7 @@ Frames {
     {%- endfor %}
 }
 
+{%- if ldf.get_event_triggered_frames() | length > 0 %}
 Event_triggered_frames {
     {%- for frame in ldf.get_event_triggered_frames() %}
     {{frame.name}}: {{frame.collision_resolving_schedule_table.name}}, {{frame.frame_id}}, 
@@ -69,6 +79,7 @@ Event_triggered_frames {
     {%- endfor -%};
     {%- endfor %}
 }
+{%- endif %}
 
 Schedule_tables {
     {%- for table in ldf.get_schedule_tables() %}
@@ -106,6 +117,7 @@ Schedule_tables {
     {%- endfor %}
 }
 
+{%- if ldf.get_signal_encoding_types() | length > 0 %}
 Signal_encoding_types {
     {%- for encoder in ldf.get_signal_encoding_types() %}
     {{encoder.name}} {
@@ -134,9 +146,12 @@ Signal_encoding_types {
 
 Signal_representation {
     {%- for encoder in ldf.get_signal_encoding_types() %}
+    {%- if encoder.get_signals() | length > 0 %}
     {{encoder.name}}: {% for signal in encoder.get_signals() -%}
     {{signal.name}}{%- if not loop.last %}, {% endif -%}
     {%- endfor -%}
     ;
+    {%- endif %}
     {%- endfor %}
 }
+{%- endif %}

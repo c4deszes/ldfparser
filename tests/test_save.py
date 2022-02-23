@@ -1,6 +1,5 @@
 import pytest
 import glob
-import json
 import os
 
 from ldfparser import parse_ldf, save_ldf
@@ -21,4 +20,4 @@ class TestSave:
         output_path = os.path.join(os.path.dirname(__file__), 'tmp', 'test_resave_' + os.path.basename(ldf_path))
         save_ldf(ldf, output_path)
 
-        new_ldf = parse_ldf(output_path)
+        parse_ldf(output_path)

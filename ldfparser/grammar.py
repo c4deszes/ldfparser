@@ -1,4 +1,4 @@
-from lark import Transformer, Tree
+from lark import Transformer
 
 class LdfTransformer(Transformer):
     # pylint: disable=missing-function-docstring,no-self-use,too-many-public-methods,unused-argument
@@ -259,16 +259,3 @@ class LdfTransformer(Transformer):
 
     def signal_representation_node(self, tree):
         return {"encoding": tree[0], "signals": tree[1:]}
-
-class LdfTokenTransformer(Transformer):
-    def _tree_to_json(self, tree):
-        return {
-            "line": tree.meta.line,
-            "column": tree.meta.column,
-            "end_line": tree.meta.end_line,
-            "end_column": tree.meta.end_column,
-        }
-
-    def start(self, tree):
-        print(self._tree_to_json(tree[0]))
-        return tree

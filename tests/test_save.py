@@ -1,4 +1,3 @@
-from parso import parse
 import pytest
 import glob
 import json

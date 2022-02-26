@@ -11,11 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `LDF` objects can now be saved as `.ldf` files (experimental)
 - Encoding types now have references to the Signals it represents
+- `LDF` object now has functions to lookup encoding types
 
 ### Changed
 
 - Bumped `lark-parser` dependency to first major version, see
 [Lark release notes](https://github.com/lark-parser/lark/releases/tag/1.0.0)
+- `LdfTransformer` has been moved to a separate module
 
 ### Migration guide for 0.14.0
 

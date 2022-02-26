@@ -110,7 +110,7 @@ Documentation is published to [Github Pages](https://c4deszes.github.io/ldfparse
 
 + Encode and decode standard diagnostic frames
 
-+ Saving LDF object as an `.ldf` file
++ Saving LDF object as an `.ldf` file (experimental)
 
 ### Known issues / missing features
 

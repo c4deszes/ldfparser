@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `LDF` objects can now be saved as `.ldf` files (experimental)
+- Encoding types now have references to the Signals it represents
+
+### Changed
+
+- Bumped `lark-parser` dependency to first major version, see
+[Lark release notes](https://github.com/lark-parser/lark/releases/tag/1.0.0)
+
+### Migration guide for 0.14.0
+
+- The breaking change in `lark` that impacts `ldfparser` is the change in the dependency's name.
+Since the module name is still `lark` it causes two dependencies to refer to the same package
+files. If you now install `lark` or `ldfparser==0.14.0` and then you uninstall `lark-parser`
+you will have to reinstall the `lark` dependency.
+
 ## [0.13.1] - 2022-02-12
 
 ### Fixed

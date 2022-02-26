@@ -258,6 +258,30 @@ class LDF():
         """
         return self._schedule_tables.values()
 
+    def get_signal_encoding_type(self, name: str) -> LinSignalEncodingType:
+        """
+        Returns the signal encoding type with the given name
+
+        :param name: Name of the signal encoding type to find
+        :type name: str
+        :returns: Signal encoding type
+        :rtype: LinSignalEncodingType
+        :raises: LookupError if the given signal encoding type is not found
+        """
+        encoding_type = self._signal_encoding_types.get(name)
+        if encoding_type is None:
+            raise LookupError(f"No signal encoding type named '{name}' found!")
+        return encoding_type
+
+    def get_signal_encoding_types(self) -> List[LinSignalEncodingType]:
+        """
+        Returns all signal encoding types
+
+        :returns: List of Signal encoding types
+        :rtype: List[LinSignalEncodingType]
+        """
+        return self._signal_encoding_types.values()
+
     @property
     def master_request_frame(self) -> LinDiagnosticRequest:
         return self._master_request_frame

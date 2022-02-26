@@ -6,6 +6,7 @@ from typing import List, Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from .node import LinNode
     from .encoding import LinSignalEncodingType
+    from .frame import LinUnconditionalFrame
 
 class LinSignal:
     """
@@ -30,6 +31,7 @@ class LinSignal:
         self.publisher: 'LinNode' = None
         self.subscribers: List['LinNode'] = []
         self.encoding_type: 'LinSignalEncodingType' = None
+        self.frame: 'LinUnconditionalFrame' = None
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, LinSignal):

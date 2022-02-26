@@ -118,7 +118,11 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
             elif 48 <= frame['frame_id'] <= 63:
                 length = 8
 
-        ldf._unconditional_frames[frame['name']] = LinUnconditionalFrame(frame['frame_id'], frame['name'], length, signals)
+        frame_obj = LinUnconditionalFrame(frame['frame_id'], frame['name'], length, signals)
+        ldf._unconditional_frames[frame['name']] = frame_obj
+
+        for (_, signal) in signals.items():
+            signal.frame = frame_obj
 
 def _populate_ldf_event_triggered_frames(json: dict, ldf: LDF):
     if "event_triggered_frames" not in json:

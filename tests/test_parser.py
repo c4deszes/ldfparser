@@ -121,6 +121,7 @@ def test_no_signal_subscribers():
 
     assert ldf.signal('DummySignal_0') is not None
     assert ldf.frame('DummyFrame') is not None
+    assert ldf.signal('DummySignal_0').frame.name == 'DummyFrame'
 
 
 @pytest.mark.unit

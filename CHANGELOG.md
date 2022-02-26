@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2022-02-26
+
 ### Added
 
 - `LDF` objects can now be saved as `.ldf` files (experimental)
 - Encoding types now have references to the Signals it represents
 - `LDF` object now has functions to lookup encoding types
+- `LinSignal` now reference the `LinUnconditionalFrame` they're in
 
 ### Changed
 

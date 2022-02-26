@@ -159,7 +159,7 @@ def test_load_valid_lin_encoders():
     assert len(converter._converters) == 1
     assert isinstance(converter._converters[0], BCDValue)
 
-    converter = ldf.get_signal_encoding_type('ascii_signal')
+    converter = ldf.get_signal_encoding_type('AsciiEncoding')
     assert converter.name == 'AsciiEncoding'
     assert len(converter._converters) == 1
     assert isinstance(converter._converters[0], ASCIIValue)

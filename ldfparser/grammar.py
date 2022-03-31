@@ -52,6 +52,10 @@ class LdfTransformer(Transformer):
         return ("channel_name", tree[0])
 
     def nodes(self, tree):
+        if len(tree) == 0:
+            return ("nodes", {})
+        if len(tree) == 1:
+            return ("nodes", {'master': tree[0]})
         return ("nodes", {'master': tree[0], 'slaves': tree[1]})
 
     def nodes_master(self, tree):

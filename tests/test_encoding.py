@@ -144,6 +144,13 @@ def test_decode_bcd():
     assert bcd_value.decode([1, 2, 3, 4, 5, 6], LinSignal('Counter', 48, [0, 0, 0, 0, 0, 0])) == 123456
 
 @pytest.mark.unit
+def test_decode_bcd_invalid_value():
+    bcd_value = BCDValue()
+
+    with pytest.raises(ValueError):
+        bcd_value.decode([0x67, 0x67, 0x67], LinSignal('Counter', 24, [0, 0, 0]))
+
+@pytest.mark.unit
 def test_encode_ascii():
     id_signal = LinSignal('Id', 48, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
     ascii_value = ASCIIValue()

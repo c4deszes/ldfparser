@@ -28,7 +28,8 @@ class LdfTransformer(Transformer):
         return self.parse_real_or_integer(tree[0])
 
     def ldf_channel_name(self, tree):
-        return tree[0][0:]
+        # This gets rid of quote marks
+        return tree[0][1:-1]
 
     def start(self, tree):
         return tree[0]

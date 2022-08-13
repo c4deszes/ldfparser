@@ -6,13 +6,14 @@ ldf_identifier: CNAME
 ldf_version: C_VERSION
 ldf_integer: C_INT
 ldf_float: C_FLOAT
+ldf_channel_name: _STRING_INNER
 
 // LIN 2.1 Specification, section 9.2.1
 header_lin_description_file: "LIN_description_file" ";"
 header_protocol_version: "LIN_protocol_version" "=" "\"" ldf_version "\"" ";"
 header_language_version: "LIN_language_version" "=" "\"" ldf_version "\"" ";"
 header_speed: "LIN_speed" "=" ldf_float "kbps" ";"
-header_channel: "Channel_name" "=" "\"" ldf_identifier "\"" ";"
+header_channel: "Channel_name" "=" "\"" ldf_channel_name "\"" ";"
 
 // LIN 2.1 Specification, section 9.2.2
 nodes: "Nodes" "{" nodes_master? nodes_slaves? "}"

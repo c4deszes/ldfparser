@@ -116,6 +116,8 @@ class BCDValue(ValueConverter):
         out = 0
         length = int(signal.width / 8)
         for i in range(length):
+            if value[i] > 9:
+                raise ValueError('bcd digit larger than 9')
             out += value[i] * 10**(length - i - 1)
         return out
 

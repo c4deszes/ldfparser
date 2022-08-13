@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- BCD values are now checked when decoding physical values
+
 ## [0.14.0] - 2022-02-26
 
 ### Added

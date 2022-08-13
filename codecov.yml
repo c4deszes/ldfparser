@@ -1,0 +1,8 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 20%
+        base: auto
+        if_not_found: failure

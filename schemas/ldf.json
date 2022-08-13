@@ -591,10 +591,7 @@
                     "$ref": "#/definitions/slaves"
                 }
             },
-            "required": [
-                "master",
-                "slaves"
-            ]
+            "required": []
         },
         "signals": {
             "type": "array",

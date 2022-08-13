@@ -10,8 +10,12 @@ Channel_name = "{{ ldf.get_channel() }}";
 {%- endif %}
 
 Nodes {
+    {%- if ldf.get_master() %}
     Master: {{ ldf.get_master().name }}, {{ ldf.get_master().timebase * 1000 | float}} ms, {{ ldf.get_master().jitter * 1000 }} ms;
+    {%- endif %}
+    {%- if ldf.get_slaves() %}
     Slaves: {%- for slave in ldf.get_slaves() %} {{ slave.name }}{%- if not loop.last %},{% endif -%}{%- endfor -%};
+    {%- endif %}
 }
 
 {%- if ldf.get_language_version().major == 2 %}

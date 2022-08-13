@@ -11,7 +11,6 @@ LIN_speed =  19.2 kbps;
 
 Nodes {
     Master: master, 5.0 ms, 0.1 ms;
-    Slaves: slave1;
 }
 
 Signals {
@@ -26,12 +25,6 @@ Frames {
 }
 
 Node_attributes {
-    // Empty
-    slave1 {
-        LIN_protocol = 2.0;
-        configured_NAD = 0x01;
-        product_id = 0x4A4F, 0x4841;
-    }
 }
 
 Schedule_tables {

@@ -135,19 +135,21 @@ def _populate_ldf_event_triggered_frames(json: dict, ldf: LDF):
 
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
-    master_node = nodes['master']
-    ldf._master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
+    if nodes.get('master'):
+        master_node = nodes['master']
+        ldf._master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
 
-    if ldf.get_language_version() >= LIN_VERSION_2_0:
-        for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LDF 2.0+'):
-            if node['name'] not in nodes['slaves']:
-                raise ValueError(f"Node {node['name']} is configured but not listed as a slave.")
-            ldf._slaves[node['name']] = _create_ldf2x_node(node, ldf.get_language_version())
-    else:
-        for slave in nodes['slaves']:
-            node = LinSlave(slave)
-            node.lin_protocol = ldf.protocol_version
-            ldf._slaves[node.name] = node
+    if nodes.get('slaves'):
+        if ldf.get_language_version() >= LIN_VERSION_2_0:
+            for node in _require_key(json, 'node_attributes', 'Missing Node_attributes section, required in LDF 2.0+'):
+                if node['name'] not in nodes['slaves']:
+                    raise ValueError(f"Node {node['name']} is configured but not listed as a slave.")
+                ldf._slaves[node['name']] = _create_ldf2x_node(node, ldf.get_language_version())
+        else:
+            for slave in nodes['slaves']:
+                node = LinSlave(slave)
+                node.lin_protocol = ldf.protocol_version
+                ldf._slaves[node.name] = node
 
 def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']

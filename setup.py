@@ -15,6 +15,22 @@ setup(
     license='MIT',
     keywords=['LIN', 'LDF'],
     install_requires=['lark>=1,<2', 'bitstruct', 'jinja2'],
+    extras_require={
+        'dev': [
+            # Packaging
+            "setuptools",
+            "wheel",
+            "twine",
+            # Testing
+            "pytest",
+            "pytest-cov",
+            "pytest-benchmark",
+            "jsonschema",
+            # Linting
+            "pylint",
+            "flake8"
+        ]
+    },
     python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4',
     py_modules=['lin', 'parser'],
     entry_points={

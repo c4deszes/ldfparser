@@ -124,9 +124,7 @@ Documentation is published to [Github Pages](https://c4deszes.github.io/ldfparse
 
 ## Development
 
-Install the requirements via `pip install -r requirements.txt`
-
-Install the library locally by running `pip install -e .`
+Install the library locally by running `pip install -e .[dev]`
 
 [Pytest](https://pytest.org/) is used for testing, to execute all tests run `pytest -m 'not snapshot'`
 

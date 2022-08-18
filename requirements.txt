@@ -1,9 +1,0 @@
-# Development
-setuptools
-wheel
-pytest
-pytest-cov
-pytest-benchmark
-pylint
-flake8
-jsonschema

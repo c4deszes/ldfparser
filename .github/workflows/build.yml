@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
   pull_request:
     paths-ignore:
       - '*.md'
@@ -21,16 +23,10 @@ jobs:
       image: python:${{ matrix.python-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install requirements
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install package
-        run: |
-          pip install -e .
+      - name: Install
+        run: pip install -e .[dev]
 
       - name: Test & Coverage
         run: pytest -m 'unit or integration' --cov=ldfparser --cov-report xml
@@ -44,11 +40,10 @@ jobs:
 
       - name: Package
         if: always()
-        run: |
-          python setup.py sdist bdist_wheel
+        run: python setup.py sdist bdist_wheel
 
       - name: Upload coverage results
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: always()
         with:
           directory: ./
@@ -62,20 +57,16 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup flake8 annotations
         uses: rbialon/flake8-annotations@v1
 
-      - name: Setup
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+      - name: Install
+        run: pip install -e .[dev]
 
       - name: Lint using Flake8
-        run: |
-          flake8 --count --show-source --statistics
+        run: flake8 --count --show-source --statistics
 
   pylint:
     runs-on: ubuntu-latest
@@ -83,17 +74,13 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+      - name: Install
+        run: pip install -e .[dev]
 
       - name: Lint using Pylint
-        run: |
-          pylint ldfparser --fail-under=8.5
+        run: pylint ldfparser --fail-under=8.5
 
   pylint-tests:
     runs-on: ubuntu-latest
@@ -101,17 +88,13 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+      - name: Install
+        run: pip install -e .[dev]
 
       - name: Lint using Pylint
-        run: |
-          pylint tests --disable="C0114,C0116,R0201" --fail-under=8.0
+        run: pylint tests --disable="C0114,C0116,R0201" --fail-under=8.0
 
   snapshot-test:
     if: github.event_name == 'pull_request'
@@ -120,42 +103,35 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout (current)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: current
 
       - name: Checkout (base)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: base
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Setup
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
+        run: pip install pytest
 
       - name: Install base
         working-directory: base
-        run: |
-          pip install -r requirements.txt
-          pip install -e .
+        run: pip install -e .[dev]
 
       - name: Generate snapshot data
         working-directory: base
-        run: |
-          python tests/snapshot_data.py
+        run: python tests/snapshot_data.py
       
       - name: Move snapshot data
         run: |
           mkdir current/tests/snapshot/
           mv base/tests/snapshot/* current/tests/snapshot/
 
-      - name: Install current
+      - name: Install
         working-directory: current
-        run: |
-          pip install -r requirements.txt
-          pip install -e .
+        run: pip install -e .[dev]
 
       - name: Snapshot test
         working-directory: current
@@ -168,16 +144,49 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install requirements
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Install
+        run: pip install -e .[dev]
 
-      - name: Install package
-        run: |
-          python setup.py install
-
-      - name: Test performance
+      - name: Run performance tests
         run: pytest -m 'performance' --benchmark-json output.json
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install
+        run: pip install -e .[dev]
+
+      - name: Package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Publish to PyPi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: twine upload dist/*
+
+      - name: Get version from tag
+        id: tag_name
+        run: echo "::set-output name=current_version::${GITHUB_REF/refs\/tags\/v/}"
+
+      - name: Read Changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          validation_level: warn
+          version: ${{ steps.tag_name.outputs.current_version }}
+          path: CHANGELOG.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.changelog.outputs.version }}
+          body: ${{ steps.changelog.outputs.changes }}

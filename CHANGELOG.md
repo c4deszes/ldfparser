@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2022-08-20
+
 ### Added
 
 - BCD values are now checked when decoding physical values
@@ -14,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 
 - Master and slaves declarations are now optional
+- Channel name can now be any string, including an empty string instead of requiring a valid C
+  identifier.
 
 ## [0.14.0] - 2022-02-26
 

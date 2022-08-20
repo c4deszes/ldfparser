@@ -8,6 +8,7 @@ LIN_description_file;
 LIN_protocol_version = "2.2";
 LIN_language_version = "2.2";
 LIN_speed =  19.2 kbps;
+Channel_name = "";
 
 Nodes {
     Master: master, 5.0 ms, 0.1 ms;

@@ -25,13 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get version from tag
-        id: tag_name
-        run: echo "::set-output name=current_version::${GITHUB_REF#refs}"
-
-      - name: Print name
-        run: echo ${{ steps.tag_name.outputs.current_version }}
-
       - name: Install
         run: pip install -e .[dev]
 

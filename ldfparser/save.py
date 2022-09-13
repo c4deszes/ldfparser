@@ -25,7 +25,7 @@ def save_ldf(ldf: LDF,
     :type template_path: PathLike
     """
     if template_path is None:
-        template_path = os.path.join(os.path.dirname(__file__), 'templates', 'ldf.jinja2')
+        template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates', 'ldf.jinja2'))
 
     with open(template_path, 'r') as file:
         template = jinja2.Template(file.read())

@@ -24,7 +24,7 @@ def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str =
     :type encoding: str
     """
     comments = []
-    lark = os.path.join(os.path.dirname(__file__), 'grammars', 'ldf.lark')
+    lark = os.path.abspath(os.path.join(os.path.dirname(__file__), 'grammars', 'ldf.lark'))
     parser = Lark(grammar=open(lark), parser='lalr', lexer_callbacks={
         'C_COMMENT': comments.append,
         'CPP_COMMENT': comments.append

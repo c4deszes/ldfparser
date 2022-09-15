@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Path to the grammar and LDF template are now resolved absolute to allow using them in `pyinstaller`
+
 ## [0.15.0] - 2022-08-20
 
 ### Added

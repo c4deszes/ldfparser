@@ -147,6 +147,20 @@
                 "frames"
             ]
         },
+        "sporadic_frame": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "frames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "diagnostic_signal": {
             "type": "object",
             "properties": {
@@ -621,6 +635,12 @@
             "type": "array",
             "items": {
                 "$ref": "#/definitions/event_triggered_frame"
+            }
+        },
+        "sporadic_frames": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/sporadic_frame"
             }
         },
         "node_attributes": {

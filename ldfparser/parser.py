@@ -6,7 +6,7 @@ from lark import Lark
 from .diagnostics import LIN_MASTER_REQUEST_FRAME_ID, LIN_SLAVE_RESPONSE_FRAME_ID, LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntry, ConditionalChangeNadEntry, DataDumpEntry, FreeFormatEntry, MasterRequestEntry, SaveConfigurationEntry, ScheduleTable, SlaveResponseEntry, UnassignFrameIdEntry, LinFrameEntry
 
-from .frame import LinEventTriggeredFrame, LinUnconditionalFrame
+from .frame import LinEventTriggeredFrame, LinSporadicFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
 from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion
@@ -64,6 +64,7 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     _populate_ldf_signals(json, ldf)
     _populate_ldf_frames(json, ldf)
     _populate_ldf_event_triggered_frames(json, ldf)
+    _populate_ldf_sporadic_frames(json, ldf)
     _populate_diagnostic_signals(json, ldf)
     _populate_diagnostic_frames(json, ldf)
     _populate_ldf_nodes(json, ldf)
@@ -132,6 +133,15 @@ def _populate_ldf_event_triggered_frames(json: dict, ldf: LDF):
         for a in frame['frames']:
             frames.append(ldf.get_unconditional_frame(a))
         ldf._event_triggered_frames[frame['name']] = LinEventTriggeredFrame(frame['frame_id'], frame['name'], frames)
+
+def _populate_ldf_sporadic_frames(json: dict, ldf: LDF):
+    if "sporadic_frames" not in json:
+        return
+    for frame in json['sporadic_frames']:
+        frames = []
+        for a in frame['frames']:
+            frames.append(ldf.get_unconditional_frame(a))
+        ldf._sporadic_frames[frame['name']] = LinSporadicFrame(frame['name'], frames)
 
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')

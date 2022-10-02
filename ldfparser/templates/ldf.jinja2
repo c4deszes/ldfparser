@@ -85,6 +85,17 @@ Event_triggered_frames {
 }
 {%- endif %}
 
+{%- if ldf.get_sporadic_frames() | length > 0 %}
+Sporadic_frames {
+    {%- for frame in ldf.get_sporadic_frames() %}
+    {{frame.name}}: 
+    {%- for unconditional in frame.frames -%}
+        {{unconditional.name}}{%- if not loop.last %}, {% endif -%}
+    {%- endfor -%};
+    {%- endfor %}
+}
+{%- endif %}
+
 Schedule_tables {
     {%- for table in ldf.get_schedule_tables() %}
     {{table.name}} {

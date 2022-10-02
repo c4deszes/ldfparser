@@ -331,3 +331,10 @@ class LinEventTriggeredFrame(LinFrame):
         super().__init__(frame_id, name)
         self.frames = frames
         self.collision_resolving_schedule_table = collision_resolving_schedule_table
+
+class LinSporadicFrame():
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, name: str, frames: List[LinUnconditionalFrame]) -> None:
+        self.name = name
+        self.frames = frames

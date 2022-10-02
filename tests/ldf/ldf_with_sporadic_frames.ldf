@@ -1,0 +1,64 @@
+LIN_description_file;
+LIN_protocol_version = "2.2";
+LIN_language_version = "2.2";
+LIN_speed = 19.2 kbps;
+
+Nodes {
+  Master: MASTER, 10 ms, 0 ms ;
+  Slaves: SLAVE ;
+}
+
+Signals {
+  REQ_POST_RUN_RPM: 16, 0, MASTER, SLAVE ;
+  REQ_POST_RUN_DURATION: 12, 0, MASTER, SLAVE ;
+  CYC_READ_STATUS_LIN_RESPONSE: 1, 0, SLAVE, MASTER;
+}
+
+
+Frames {
+  REQ_POST_RUN: 30, MASTER, 4 {
+    REQ_POST_RUN_RPM, 0 ;
+    REQ_POST_RUN_DURATION, 16 ;
+  }
+}
+
+Sporadic_frames {
+  SF_REQ_POST_RUN: REQ_POST_RUN ;
+}
+
+Node_attributes {
+  SLAVE{
+    LIN_protocol = "2.2" ;
+    configured_NAD = 0xD ;
+    initial_NAD = 0xD ;
+    product_id = 0x2, 0x0, 255 ;
+    response_error = CYC_READ_STATUS_LIN_RESPONSE ;
+    P2_min = 50 ms ;
+    ST_min = 0 ms ;
+    N_As_timeout = 1000 ms ;
+    N_Cr_timeout = 1000 ms ;
+    configurable_frames {
+      REQ_POST_RUN ;
+    }
+  }
+}
+
+Schedule_tables {
+ POST_RUN {
+    SF_REQ_POST_RUN delay 10 ms ;
+  }
+}
+
+
+Signal_encoding_types {
+  POST_RUN_DURATION_Encoding {
+    physical_value, 0, 4092, 1, 0, "s" ;
+    logical_value, 4093, "not avaible" ;
+    logical_value, 4094, "error" ;
+    logical_value, 4095, "signal invalid" ;
+  }
+}
+
+Signal_representation {
+  POST_RUN_DURATION_Encoding: REQ_POST_RUN_DURATION ;
+}

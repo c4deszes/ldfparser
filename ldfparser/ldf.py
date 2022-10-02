@@ -4,7 +4,7 @@ Lin Description File handler objects
 from typing import Union, Dict, List
 
 from .lin import LinVersion
-from .frame import LinFrame, LinUnconditionalFrame, LinEventTriggeredFrame
+from .frame import LinFrame, LinSporadicFrame, LinUnconditionalFrame, LinEventTriggeredFrame
 from .diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from .signal import LinSignal
 from .encoding import LinSignalEncodingType
@@ -29,6 +29,7 @@ class LDF():
         self._diagnostic_signals: Dict[str, LinSignal] = {}
         self._unconditional_frames: Dict[str, LinUnconditionalFrame] = {}
         self._event_triggered_frames: Dict[str, LinEventTriggeredFrame] = {}
+        self._sporadic_frames: Dict[str, LinSporadicFrame] = {}
         self._diagnostic_frames: Dict[str, LinDiagnosticFrame] = {}
         self._signal_encoding_types: Dict[str, LinSignalEncodingType] = {}
         self._signal_representations: Dict[LinSignal, LinSignalEncodingType] = {}
@@ -86,11 +87,19 @@ class LDF():
         """
         return self._slaves.values()
 
-    def get_frame(self, frame_id: Union[int, str]) -> LinFrame:
+    def get_frame(self, frame_id: Union[int, str]) -> Union[LinUnconditionalFrame, LinEventTriggeredFrame, LinSporadicFrame]:
         try:
             return self.get_unconditional_frame(frame_id)
         except LookupError:
+            pass
+        try:
             return self.get_event_triggered_frame(frame_id)
+        except LookupError:
+            pass
+        try:
+            return self.get_sporadic_frame(frame_id)
+        except LookupError as exc:
+            raise exc
 
     @staticmethod
     def _find_frame(frame_id: Union[int, str], collection: Dict[str, LinFrame]) -> LinFrame:
@@ -164,6 +173,30 @@ class LDF():
         :rtype: List[LinEventTriggeredFrame]
         """
         return self._event_triggered_frames.values()
+
+    def get_sporadic_frame(self, frame_id: str) -> LinSporadicFrame:
+        """
+        Returns the sporadic frame with the given name
+
+        :param frame_id:
+        :type frame_id: str
+        :returns: Sporadic LIN frame
+        :rtype: LinSporadicFrame
+        :raises: LookupError if the given frame is not found
+        """
+        frame = self._sporadic_frames.get(frame_id)
+        if frame is None:
+            raise LookupError(f"No frame named '{frame_id}' found!")
+        return frame
+
+    def get_sporadic_frames(self) -> List[LinSporadicFrame]:
+        """
+        Returns all sporadic frames
+
+        :returns: List of sporadic LIN frames
+        :rtype: List[LinSporadicFrame]
+        """
+        return self._sporadic_frames.values()
 
     def get_diagnostic_frame(self, frame_id: Union[int, str]) -> LinDiagnosticFrame:
         """

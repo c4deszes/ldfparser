@@ -184,3 +184,14 @@ def test_load_valid_diagnostics():
 
     with pytest.raises(LookupError):
         ldf.get_diagnostic_signal('MasterReqB9')
+
+@pytest.mark.unit
+def test_load_sporadic_frames():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "ldf_with_sporadic_frames.ldf")
+    ldf = parse_ldf(path)
+
+    assert len(ldf.get_sporadic_frames()) >= 0
+    
+    sporadic_frame = ldf.get_sporadic_frame('SF_REQ_POST_RUN')
+    assert sporadic_frame.name == 'SF_REQ_POST_RUN'
+    assert ldf.get_unconditional_frame('REQ_POST_RUN') in sporadic_frame.frames

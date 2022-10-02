@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2022-10-02
+
 ### Added
 
 - Sporadic frames are parsed into Python objects
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Path to the grammar and LDF template are now resolved absolute to allow using them in `pyinstaller`
 - `LDF::get_frame` can also return sporadic frames
+
+### Fixed
+
+- The loaded diagnostic frames' lengths are now correctly set
 
 ## [0.15.0] - 2022-08-20
 

@@ -201,7 +201,7 @@ def _populate_diagnostic_frames(json: dict, ldf: LDF):
                     raise ValueError(f"{frame['name']} references non existing signal {signal['signal']}")
                 signals[signal['offset']] = s
 
-            frame_obj = LinDiagnosticFrame(frame['frame_id'], frame['name'], 9, signals)
+            frame_obj = LinDiagnosticFrame(frame['frame_id'], frame['name'], 8, signals)
             ldf._diagnostic_frames[frame['name']] = frame_obj
             if frame['frame_id'] == LIN_MASTER_REQUEST_FRAME_ID:
                 ldf._master_request_frame = LinDiagnosticRequest(frame_obj)

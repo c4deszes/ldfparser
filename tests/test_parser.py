@@ -191,7 +191,10 @@ def test_load_sporadic_frames():
     ldf = parse_ldf(path)
 
     assert len(ldf.get_sporadic_frames()) >= 0
-    
-    sporadic_frame = ldf.get_sporadic_frame('SF_REQ_POST_RUN')
+
+    sporadic_frame = ldf.get_frame('SF_REQ_POST_RUN')
     assert sporadic_frame.name == 'SF_REQ_POST_RUN'
     assert ldf.get_unconditional_frame('REQ_POST_RUN') in sporadic_frame.frames
+
+    with pytest.raises(LookupError):
+        ldf.get_sporadic_frame('SF_123')

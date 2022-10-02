@@ -197,4 +197,4 @@ def test_load_sporadic_frames():
     assert ldf.get_unconditional_frame('REQ_POST_RUN') in sporadic_frame.frames
 
     with pytest.raises(LookupError):
-        ldf.get_sporadic_frame('SF_123')
+        ldf.get_frame('SF_123')

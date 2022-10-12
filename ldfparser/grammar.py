@@ -134,6 +134,12 @@ class LdfTransformer(Transformer):
     def diagnostic_frame_signals(self, tree):
         return tree[0:]
 
+    def diagnostic_addresses(self, tree):
+        return ("diagnostic_addresses", dict(tree))
+
+    def diagnostic_address(self, tree):
+        return (tree[0], tree[1])
+
     def node_attributes(self, tree):
         return ("node_attributes", tree[0:])
 

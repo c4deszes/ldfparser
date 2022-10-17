@@ -11,6 +11,11 @@ Nodes {
     Slaves : LSM,CPM;
 }
 
+Diagnostic_addresses {
+    LSM: 1;
+    CPM: 0x02;
+}
+
 Signals {
     RearFogLampInd:1,0,CEM,LSM;
     PositionLampInd:1,0,CEM,LSM;

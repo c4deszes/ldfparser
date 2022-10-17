@@ -1,6 +1,6 @@
 start: ldf
 
-ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | nodes | node_compositions | signals | diagnostic_signals | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
+ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | nodes | node_compositions | signals | diagnostic_signals | diagnostic_addresses | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
 
 ldf_identifier: CNAME
 ldf_version: C_VERSION
@@ -55,6 +55,10 @@ event_triggered_frame_definition_frames: ("," ldf_identifier)+
 diagnostic_frames: "Diagnostic_frames" "{" (diagnostic_frame_definition)+ "}"
 diagnostic_frame_definition: ldf_identifier ":" ldf_integer "{" diagnostic_frame_signals "}"
 diagnostic_frame_signals: (frame_signal+)
+
+// LIN 1.3 Specification, section 7.5
+diagnostic_addresses: "Diagnostic_addresses" "{" (diagnostic_address)* "}"
+diagnostic_address: ldf_identifier ":" ldf_integer ";"
 
 // LIN 2.1 Specification, section 9.2.2.2
 node_attributes: "Node_attributes" "{" (node_definition*) "}"

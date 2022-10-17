@@ -160,6 +160,9 @@ def _populate_ldf_nodes(json: dict, ldf: LDF):
                 node = LinSlave(slave)
                 node.lin_protocol = ldf.protocol_version
                 ldf._slaves[node.name] = node
+                if json.get('diagnostic_addresses') is not None and json['diagnostic_addresses'].get(node.name) is not None:
+                    node.initial_nad = json['diagnostic_addresses'][node.name]
+                    node.configured_nad = json['diagnostic_addresses'][node.name]
 
 def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']

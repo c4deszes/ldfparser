@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2022-10-17
+
+### Added
+
+- Diagnostic addresses section in LIN 1.3 description files are now parsed correctly,
+  the `initial_nad` and `configured_nad` attributes will be set according to the address
+
 ## [0.16.0] - 2022-10-02
 
 ### Added

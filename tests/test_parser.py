@@ -24,6 +24,8 @@ def test_load_valid_lin13():
     assert ldf.frame('VL1_CEM_Frm1') is not None
     assert ldf.slave('LSM') is not None
 
+    assert ldf.get_slave('CPM').initial_nad == 0x02
+
 
 @pytest.mark.unit
 def test_load_valid_lin20():

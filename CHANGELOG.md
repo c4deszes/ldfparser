@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.0] - 2022-12-13
+
+### Changed
+
+- Remove `tests` folder from python package
+- Close all files which are opened by the ldfparser
+
 ## [0.17.0] - 2022-10-17
 
 ### Added

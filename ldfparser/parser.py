@@ -24,12 +24,15 @@ def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str =
     :type encoding: str
     """
     comments = []
-    lark = os.path.abspath(os.path.join(os.path.dirname(__file__), 'grammars', 'ldf.lark'))
-    parser = Lark(grammar=open(lark), parser='lalr', lexer_callbacks={
+    lark_file = os.path.abspath(os.path.join(os.path.dirname(__file__), 'grammars', 'ldf.lark'))
+    with open(lark_file, "r", encoding=encoding) as lark_file:
+        grammar = lark_file.read()
+    parser = Lark(grammar=grammar, parser='lalr', lexer_callbacks={
         'C_COMMENT': comments.append,
         'CPP_COMMENT': comments.append
     }, propagate_positions=True)
-    ldf_file = open(path, "r", encoding=encoding).read()
+    with open(path, "r", encoding=encoding) as input_file:
+        ldf_file = input_file.read()
     tree = parser.parse(ldf_file)
     json = LdfTransformer().transform(tree)
 

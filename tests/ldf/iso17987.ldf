@@ -1,0 +1,205 @@
+/*************************************************************************************/
+//                                                                                     
+// Description: LIN Description file created using Vector's DaVinci Network Designer   
+// Created:     04 Feb 2009 15:10:34
+// Version:     0.2                                                                    
+//                                                                                     
+/*************************************************************************************/
+
+LIN_description_file;
+LIN_protocol_version = "ISO17987:2015";
+LIN_language_version = "ISO17987:2015";
+LIN_speed = 19.2 kbps;
+LDF_file_revision = "14.23.01";
+LIN_sig_byte_order_big_endian;
+
+Nodes {
+  Master: VectorMasterNode, 1 ms, 0.1 ms ;
+  Slaves: VectorSlave_ISO, VectorSlave2_0 ;
+}
+
+
+Signals {
+  MotorLinError: 1, 0, VectorSlave_ISO, VectorMasterNode ;
+  MotorLinError_2: 1, 0, VectorSlave2_0, VectorMasterNode ;
+  MotorTemp: 8, 0, VectorSlave_ISO, VectorMasterNode ;
+  MotorTemp_2: 8, 0, VectorSlave2_0, VectorMasterNode ;
+  sig_MotorQuery1: 40, {5, 4, 3, 2, 1}, VectorMasterNode, VectorSlave_ISO ;
+  sig_MotorQuery1_2: 8, 5, VectorMasterNode, VectorSlave2_0 ;
+  sigMotorState1: 8, 0, VectorSlave_ISO, VectorMasterNode ;
+  sigMotorState1_2: 8, 0, VectorSlave2_0, VectorMasterNode ;
+  signal1: 16, 16, VectorMasterNode, VectorSlave_ISO ;
+  signal1_2: 16, 16, VectorMasterNode, VectorSlave2_0 ;
+}
+
+Diagnostic_signals {
+  MasterReqB0: 8, 0 ;
+  MasterReqB1: 8, 0 ;
+  MasterReqB2: 8, 0 ;
+  MasterReqB3: 8, 0 ;
+  MasterReqB4: 8, 0 ;
+  MasterReqB5: 8, 0 ;
+  MasterReqB6: 8, 0 ;
+  MasterReqB7: 8, 0 ;
+  SlaveRespB0: 8, 0 ;
+  SlaveRespB1: 8, 0 ;
+  SlaveRespB2: 8, 0 ;
+  SlaveRespB3: 8, 0 ;
+  SlaveRespB4: 8, 0 ;
+  SlaveRespB5: 8, 0 ;
+  SlaveRespB6: 8, 0 ;
+  SlaveRespB7: 8, 0 ;
+}
+
+
+
+Frames {
+  MotorControl: 4, VectorMasterNode, 2 {
+    signal1, 0 ;
+  }
+  MotorControl_2: 6, VectorMasterNode, 2 {
+    signal1_2, 0 ;
+  }
+  MotorQuery: 5, VectorMasterNode, 5 {
+    sig_MotorQuery1, 0 ;
+  }
+  MotorQuery_2: 7, VectorMasterNode, 1 {
+    sig_MotorQuery1_2, 0 ;
+  }
+  MotorState_Cycl: 0, VectorSlave_ISO, 6 {
+    MotorTemp, 8 ;
+    MotorLinError, 40 ;
+  }
+  MotorState_Cycl_2: 1, VectorSlave2_0, 6 {
+    MotorTemp_2, 8 ;
+    MotorLinError_2, 40 ;
+  }
+  MotorState_Event: 2, VectorSlave_ISO, 3 {
+    sigMotorState1, 8 ;
+  }
+  MotorState_Event_2: 3, VectorSlave2_0, 3 {
+    sigMotorState1_2, 8 ;
+  }
+}
+
+
+Event_triggered_frames {
+  ETF_MotorState_Cycl: CollisionResolver1, 55, MotorState_Cycl, MotorState_Cycl_2 ;
+  ETF_MotorState_Event: CollisionResolver2, 56, MotorState_Event, MotorState_Event_2 ;
+}
+
+Diagnostic_frames {
+  MasterReq: 0x3c {
+    MasterReqB0, 0 ;
+    MasterReqB1, 8 ;
+    MasterReqB2, 16 ;
+    MasterReqB3, 24 ;
+    MasterReqB4, 32 ;
+    MasterReqB5, 40 ;
+    MasterReqB6, 48 ;
+    MasterReqB7, 56 ;
+  }
+  SlaveResp: 0x3d {
+    SlaveRespB0, 0 ;
+    SlaveRespB1, 8 ;
+    SlaveRespB2, 16 ;
+    SlaveRespB3, 24 ;
+    SlaveRespB4, 32 ;
+    SlaveRespB5, 40 ;
+    SlaveRespB6, 48 ;
+    SlaveRespB7, 56 ;
+  }
+}
+
+Node_attributes {
+  VectorSlave_ISO{
+    LIN_protocol = "ISO17987:2015" ;
+    configured_NAD = 0x5 ;
+    initial_NAD = 0x5 ;
+    product_id = 0x1e, 0x2, 1 ;
+    response_error = MotorLinError ;
+    P2_min = 50 ms ;
+    ST_min = 0 ms ;
+    configurable_frames {
+      MotorControl;
+      MotorQuery;
+      MotorState_Cycl;
+      MotorState_Event;
+      ETF_MotorState_Cycl;
+      ETF_MotorState_Event;
+    }
+  }
+  VectorSlave2_0{
+    LIN_protocol = "2.0" ;
+    configured_NAD = 0x1 ;
+    product_id = 0x1e, 0x1, 0 ;
+    response_error = MotorLinError_2 ;
+    P2_min = 50 ms ;
+    ST_min = 0 ms ;
+    configurable_frames {
+      MotorControl_2 = 0x1234 ;
+      MotorQuery_2 = 0x1999 ;
+      MotorState_Cycl_2 = 0x2222 ;
+      MotorState_Event_2 = 0x2333 ;
+      ETF_MotorState_Event = 0x4444 ;
+      ETF_MotorState_Cycl = 0x4567 ;
+    }
+  }
+}
+
+Schedule_tables {
+ InitTable {
+    MotorQuery delay 7 ms ;
+    MotorQuery_2 delay 7 ms ;
+    MotorControl_2 delay 10 ms ;
+    MotorControl delay 10 ms ;
+    MotorState_Cycl delay 10 ms ;
+    MotorState_Cycl_2 delay 10 ms ;
+    MotorState_Event delay 6 ms ;
+    MotorState_Event_2 delay 6 ms ;
+  }
+ ETF_Table {
+    ETF_MotorState_Cycl delay 20 ms ;
+    ETF_MotorState_Event delay 20 ms ;
+  }
+ CollisionResolver1 {
+    MotorState_Cycl delay 10 ms ;
+    MotorState_Cycl_2 delay 10 ms ;
+  }
+ CollisionResolver2 {
+    MotorState_Event delay 10 ms ;
+    MotorState_Event_2 delay 10 ms ;
+  }
+ Table4 {
+    AssignNAD { VectorSlave_ISO } delay 10 ms ;
+    SlaveResp delay 10 ms ;
+  }
+}
+
+Signal_encoding_types {
+  encError {
+    logical_value, 0, "No Error" ;
+    logical_value, 1, "Response Error" ;
+  }
+  encoding1 {
+    physical_value, 0, 200, 1.000, 0.000, "temperature" ;
+    logical_value, 255, "invalid" ;
+  }
+  encState {
+    physical_value, 0, 200, 0.500, -20.000, "" ;
+  }
+  encTemperature {
+    physical_value, 0, 200, 0.500, -20.000, "Degree" ;
+  }
+}
+
+Signal_representation {
+  encError: MotorLinError ;
+  encoding1: signal1 ;
+  encState: sigMotorState1 ;
+  encTemperature: MotorTemp ;
+}
+
+
+
+

@@ -55,6 +55,15 @@ class LdfTransformer(Transformer):
     def header_channel(self, tree):
         return ("channel_name", tree[0])
 
+    def header_file_revision(self, tree):
+        return ("file_revision", tree[0])
+
+    def header_sig_byte_order_big_endian(self, tree):
+        return ("endianness", "big")
+
+    def header_sig_byte_order_little_endian(self, tree):
+        return ("endianness", "little")
+
     def nodes(self, tree):
         if len(tree) == 0:
             return ("nodes", {})

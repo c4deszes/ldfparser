@@ -171,7 +171,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']
     lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
     slave = LinSlave(name)
-    slave.lin_protocol = lin_protocol
+    slave.lin_protocol = parse_lin_version(lin_protocol)
     slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
     slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
 

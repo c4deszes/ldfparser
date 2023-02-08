@@ -1,12 +1,12 @@
 """
 LIN Node utilities
 """
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .frame import LinFrame
     from .signal import LinSignal
-    from .lin import LinVersion
+    from .lin import LinVersion, Iso17987Version
 
 LIN_SUPPLIER_ID_WILDCARD = 0x7FFF
 LIN_FUNCTION_ID_WILDCARD = 0xFFFF
@@ -113,7 +113,7 @@ class LinSlave(LinNode):
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        self.lin_protocol: 'LinVersion' = None
+        self.lin_protocol: Union[LinVersion, Iso17987Version] = None
         self.configured_nad: int = None
         self.initial_nad: int = None
         self.product_id: LinProductId = None

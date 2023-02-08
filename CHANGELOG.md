@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `LDF_file_revision`
   - Endianness
 
+### Fixes
+
+- `LinSlave` protocol version property is now the correct type
+
 ## [0.18.0] - 2022-12-13
 
 ### Changed

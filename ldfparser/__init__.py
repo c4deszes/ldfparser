@@ -19,7 +19,7 @@ from .encoding import (PhysicalValue, LogicalValue, ASCIIValue, BCDValue,
 from .frame import LinEventTriggeredFrame, LinFrame, LinUnconditionalFrame
 from .ldf import LDF
 from .lin import (LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1,
-                  LIN_VERSION_2_2, LinVersion)
+                  LIN_VERSION_2_2, LinVersion, ISO17987_2015, Iso17987Version)
 from .node import (LinMaster, LinProductId, LinSlave,
                    LinNodeCompositionConfiguration, LinNodeComposition)
 from .parser import parse_ldf, parse_ldf_to_dict, parseLDF, parseLDFtoDict

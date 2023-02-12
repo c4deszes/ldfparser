@@ -9,7 +9,7 @@ from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntr
 from .frame import LinEventTriggeredFrame, LinSporadicFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
-from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion, Iso17987Version, parse_lin_version
+from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, parse_lin_version
 from .node import LinMaster, LinProductId, LinSlave
 from .ldf import LDF
 from .grammar import LdfTransformer

@@ -75,10 +75,10 @@ LIN_VERSION_2_1 = LinVersion(2, 1)
 LIN_VERSION_2_2 = LinVersion(2, 2)
 
 class Iso17987Version:
-    
+
     def __init__(self, revision: int) -> None:
         self.revision = revision
-    
+
     @staticmethod
     def from_string(version: str) -> 'Iso17987Version':
         (standard, revision) = version.split(':')

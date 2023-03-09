@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import pytest
-from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2
+from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version
 
 @pytest.mark.unit()
 @pytest.mark.parametrize(
@@ -114,3 +114,22 @@ def test_linversion_float(version, expected):
 def test_linversion_typerror(func, arg):
     with pytest.raises(TypeError):
         func(arg)
+
+@pytest.mark.unit()
+@pytest.mark.parametrize(
+    ('a', 'b', 'op', 'result'),
+    [
+        (Iso17987Version(2015), Iso17987Version(2015), Iso17987Version.__eq__, True),
+        (Iso17987Version(2015), Iso17987Version(2016), Iso17987Version.__eq__, False),
+        (Iso17987Version(2015), Iso17987Version(2015), Iso17987Version.__ne__, False),
+        (Iso17987Version(2015), Iso17987Version(2016), Iso17987Version.__ne__, True),
+        (Iso17987Version(2015), Iso17987Version(2016), Iso17987Version.__gt__, False),
+        (Iso17987Version(2015), LIN_VERSION_2_0, Iso17987Version.__gt__, True),
+        (Iso17987Version(2015), Iso17987Version(2015), Iso17987Version.__ge__, True),
+        (Iso17987Version(2015), Iso17987Version(2016), Iso17987Version.__lt__, True),
+        (Iso17987Version(2015), LIN_VERSION_2_0, Iso17987Version.__lt__, False),
+        (Iso17987Version(2015), Iso17987Version(2015), Iso17987Version.__le__, True)
+    ]
+)
+def test_linversion_iso_compare(a, b, op, result):
+    assert op(a, b) == result

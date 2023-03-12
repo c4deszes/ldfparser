@@ -98,7 +98,7 @@ class LDF():
             pass
         try:
             return self.get_sporadic_frame(frame_id)
-        except LookupError as exc:
+        except LookupError:
             pass
         try:
             return self.get_diagnostic_frame(frame_id)

@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import pytest
-from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version
+from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version, parse_lin_version
 
 @pytest.mark.unit()
 @pytest.mark.parametrize(
@@ -133,3 +133,26 @@ def test_linversion_typerror(func, arg):
 )
 def test_linversion_iso_compare(a, b, op, result):
     assert op(a, b) == result
+
+@pytest.mark.parametrize(
+    ('a', 'b', 'op', 'exc'),
+    [
+        (Iso17987Version(2015), 2015, Iso17987Version.__gt__, TypeError),
+        (Iso17987Version(2015), 2015, Iso17987Version.__lt__, TypeError)
+    ]
+)
+def test_linversion_iso_invalid(a, b, op, exc):
+    with pytest.raises(exc):
+        op(a, b)
+
+@pytest.mark.parametrize(
+    ('value'),
+    [
+        '',
+        '2.1.2',
+        'ISO17987:abc'
+    ]
+)
+def test_linversion_parse_invalid(value):
+    with pytest.raises(ValueError):
+        parse_lin_version(value)

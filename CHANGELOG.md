@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2023-03-12
+
 ### Added
 
 - ISO17987 version support
@@ -14,9 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `LDF_file_revision`
   - Endianness
 
+### Changed
+
+- `LDF::get_frame` can now return diagnostic frames
+
 ### Fixes
 
 - `LinSlave` protocol version property is now the correct type
+- `LinUnconditionalFrame::decode` no longer calls the deprecated `parse_raw` function
 
 ## [0.18.0] - 2022-12-13
 

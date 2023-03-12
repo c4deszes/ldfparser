@@ -87,7 +87,7 @@ class LDF():
         """
         return self._slaves.values()
 
-    def get_frame(self, frame_id: Union[int, str]) -> Union[LinUnconditionalFrame, LinEventTriggeredFrame, LinSporadicFrame]:
+    def get_frame(self, frame_id: Union[int, str]) -> Union[LinUnconditionalFrame, LinEventTriggeredFrame, LinSporadicFrame, LinDiagnosticFrame]:
         try:
             return self.get_unconditional_frame(frame_id)
         except LookupError:
@@ -98,6 +98,10 @@ class LDF():
             pass
         try:
             return self.get_sporadic_frame(frame_id)
+        except LookupError as exc:
+            pass
+        try:
+            return self.get_diagnostic_frame(frame_id)
         except LookupError as exc:
             raise exc
 

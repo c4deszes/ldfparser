@@ -206,7 +206,7 @@ class LinUnconditionalFrame(LinFrame):
             frame_layout = u6p2u8u1u1p6
 
         """
-        parsed = self.parse_raw(data)
+        parsed = self.decode_raw(data)
         converted = {}
         for (signal_name, value) in parsed.items():
             signal = self._get_signal(signal_name)

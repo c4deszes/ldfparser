@@ -6,7 +6,7 @@ from ldfparser.parser import parse_ldf
 from ldfparser.frame import LinFrame
 from ldfparser.signal import LinSignal
 from ldfparser.encoding import ASCIIValue, BCDValue, LogicalValue
-
+from ldfparser.lin import Iso17987Version
 
 @pytest.mark.unit
 def test_load_valid_lin13():
@@ -200,3 +200,14 @@ def test_load_sporadic_frames():
 
     with pytest.raises(LookupError):
         ldf.get_frame('SF_123')
+
+@pytest.mark.unit
+def test_load_iso17987():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "iso17987.ldf")
+    ldf = parse_ldf(path)
+
+    assert isinstance(ldf.get_protocol_version(), Iso17987Version)
+    assert ldf.get_protocol_version().revision == 2015
+
+    assert isinstance(ldf.get_language_version(), Iso17987Version)
+    assert ldf.get_language_version().revision == 2015

@@ -18,7 +18,7 @@ Nodes {
     {%- endif %}
 }
 
-{%- if ldf.get_language_version().major == 2 %}
+{%- if ldf.get_language_version().major == 2 or "Iso17987Version" in ldf.get_language_version().__class__.__name__ %}
 Node_attributes {
     {%- for slave in ldf.get_slaves() %}
     {{slave.name}} {

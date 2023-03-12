@@ -1,9 +1,9 @@
 start: ldf
 
-ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | nodes | node_compositions | signals | diagnostic_signals | diagnostic_addresses | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
+ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | header_file_revision | header_sig_byte_order_big_endian | header_sig_byte_order_little_endian | nodes | node_compositions | signals | diagnostic_signals | diagnostic_addresses | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
 
 ldf_identifier: CNAME
-ldf_version: C_VERSION
+ldf_version: LIN_VERSION | ISO_VERSION
 ldf_integer: C_INT
 ldf_float: C_FLOAT
 ldf_channel_name: ESCAPED_STRING
@@ -14,6 +14,11 @@ header_protocol_version: "LIN_protocol_version" "=" "\"" ldf_version "\"" ";"
 header_language_version: "LIN_language_version" "=" "\"" ldf_version "\"" ";"
 header_speed: "LIN_speed" "=" ldf_float "kbps" ";"
 header_channel: "Channel_name" "=" ldf_channel_name ";"
+
+// ISO1798 Specification
+header_file_revision: "LDF_file_revision" "=" ESCAPED_STRING ";"
+header_sig_byte_order_big_endian: "LIN_sig_byte_order_big_endian" ";"
+header_sig_byte_order_little_endian: "LIN_sig_byte_order_little_endian" ";"
 
 // LIN 2.1 Specification, section 9.2.2
 nodes: "Nodes" "{" nodes_master? nodes_slaves? "}"
@@ -113,7 +118,8 @@ signal_representation_node: ldf_identifier ":" ldf_identifier ("," ldf_identifie
 
 C_INT: ("0x"HEXDIGIT+) | ("-"? INT) 
 C_FLOAT: ("-"? INT ("." INT)?) ("e" ("+" | "-")? INT)?
-C_VERSION: INT "." INT
+LIN_VERSION: INT "." INT
+ISO_VERSION: "ISO17987" ":" INT
 
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 

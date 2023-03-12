@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ISO17987 version support
+- Grammar support for the following ISO17987 fields:
+  - `LDF_file_revision`
+  - Endianness
+
+### Fixes
+
+- `LinSlave` protocol version property is now the correct type
+
 ## [0.18.0] - 2022-12-13
 
 ### Changed

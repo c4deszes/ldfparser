@@ -9,7 +9,7 @@ from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntr
 from .frame import LinEventTriggeredFrame, LinSporadicFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
-from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, LinVersion
+from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, parse_lin_version
 from .node import LinMaster, LinProductId, LinSlave
 from .ldf import LDF
 from .grammar import LdfTransformer
@@ -92,8 +92,8 @@ def parseLDF(path: str, captureComments: bool = False, encoding: str = None) -> 
     return parse_ldf(path, captureComments, encoding)
 
 def _populate_ldf_header(json: dict, ldf: LDF):
-    ldf._protocol_version = LinVersion.from_string(_require_key(json, 'protocol_version', 'LDF missing protocol version.'))
-    ldf._language_version = LinVersion.from_string(_require_key(json, 'language_version', 'LDF missing language version.'))
+    ldf._protocol_version = parse_lin_version(_require_key(json, 'protocol_version', 'LDF missing protocol version.'))
+    ldf._language_version = parse_lin_version(_require_key(json, 'language_version', 'LDF missing language version.'))
     ldf._baudrate = _require_key(json, 'speed', 'LDF missing speed definition.')
     ldf._channel = json.get('channel_name')
 
@@ -171,7 +171,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
     name = node['name']
     lin_protocol = _require_key(node, 'lin_protocol', f"Node {name} has no LIN protocol version specified.")
     slave = LinSlave(name)
-    slave.lin_protocol = lin_protocol
+    slave.lin_protocol = parse_lin_version(lin_protocol)
     slave.configured_nad = _require_key(node, 'configured_nad', f"Node {name} has no configured NAD.")
     slave.initial_nad = slave.configured_nad if node.get('initial_nad') is None else node.get('initial_nad')
 

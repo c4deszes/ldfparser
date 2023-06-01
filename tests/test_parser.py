@@ -6,7 +6,7 @@ from ldfparser.parser import parse_ldf
 from ldfparser.frame import LinFrame
 from ldfparser.signal import LinSignal
 from ldfparser.encoding import ASCIIValue, BCDValue, LogicalValue
-from ldfparser.lin import Iso17987Version
+from ldfparser.lin import Iso17987Version, LIN_VERSION_2_0
 
 @pytest.mark.unit
 def test_load_valid_lin13():
@@ -211,3 +211,23 @@ def test_load_iso17987():
 
     assert isinstance(ldf.get_language_version(), Iso17987Version)
     assert ldf.get_language_version().revision == 2015
+
+@pytest.mark.unit
+def test_load_j2602_attributes():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "j2602_1.ldf")
+    ldf = parse_ldf(path)
+
+    assert ldf.get_protocol_version() == LIN_VERSION_2_0
+    assert ldf.get_language_version() == LIN_VERSION_2_0
+    assert ldf.master.max_header_length == 24
+    assert ldf.master.response_tolerance == 0.3
+    assert list(ldf.slaves)[0].response_tolerance == 0.38
+
+@pytest.mark.unit
+def test_default_j2602_attributes():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "lin20.ldf")
+    ldf = parse_ldf(path)
+
+    assert ldf.master.max_header_length == 48
+    assert ldf.master.response_tolerance == 0.4
+    assert list(ldf.slaves)[0].response_tolerance == 0.4

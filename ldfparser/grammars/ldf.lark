@@ -3,7 +3,7 @@ start: ldf
 ldf: (header_lin_description_file | header_protocol_version | header_language_version | header_speed | header_channel | header_file_revision | header_sig_byte_order_big_endian | header_sig_byte_order_little_endian | nodes | node_compositions | signals | diagnostic_signals | diagnostic_addresses | frames | sporadic_frames | event_triggered_frames | diagnostic_frames | node_attributes | schedule_tables | signal_groups | signal_encoding_types | signal_representations)*
 
 ldf_identifier: CNAME
-ldf_version: LIN_VERSION | ISO_VERSION
+ldf_version: LIN_VERSION | ISO_VERSION | J2602_VERSION
 ldf_integer: C_INT
 ldf_float: C_FLOAT
 ldf_channel_name: ESCAPED_STRING
@@ -21,8 +21,9 @@ header_sig_byte_order_big_endian: "LIN_sig_byte_order_big_endian" ";"
 header_sig_byte_order_little_endian: "LIN_sig_byte_order_little_endian" ";"
 
 // LIN 2.1 Specification, section 9.2.2
+// SAE J2602-3_201001, SECTION 7.2
 nodes: "Nodes" "{" nodes_master? nodes_slaves? "}"
-nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ";"
+nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ("," ldf_integer "bits" "," ldf_integer "%")* ";"
 nodes_slaves: "Slaves" ":" ldf_identifier ("," ldf_identifier)* ";"
 
 // LIN 2.1 Specification, section 9.2.2.3
@@ -66,8 +67,9 @@ diagnostic_addresses: "Diagnostic_addresses" "{" (diagnostic_address)* "}"
 diagnostic_address: ldf_identifier ":" ldf_integer ";"
 
 // LIN 2.1 Specification, section 9.2.2.2
+// response_tolerance: SAE J2602_1_201001, section 7.2.1
 node_attributes: "Node_attributes" "{" (node_definition*) "}"
-node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames)* "}"
+node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames | node_definition_response_tolerance)* "}"
 node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_version "\""] | ldf_version) ";"
 node_definition_configured_nad: "configured_NAD" "=" ldf_integer ";"
 node_definition_initial_nad: "initial_NAD" "=" ldf_integer ";"
@@ -81,6 +83,8 @@ node_definition_n_cr_timeout: "N_Cr_timeout" "=" ldf_float "ms" ";"
 node_definition_configurable_frames: node_definition_configurable_frames_20 | node_definition_configurable_frames_21
 node_definition_configurable_frames_20: "configurable_frames" "{" (ldf_identifier "=" ldf_integer ";")+ "}"
 node_definition_configurable_frames_21: "configurable_frames" "{" (ldf_identifier ";")+ "}"
+node_definition_response_tolerance: "response_tolerance" "=" ldf_float "%" ";"
+
 
 // LIN 2.1 Specification, section 9.2.5
 schedule_tables: "Schedule_tables" "{" (schedule_table_definition+) "}" 
@@ -120,6 +124,7 @@ C_INT: ("0x"HEXDIGIT+) | ("-"? INT)
 C_FLOAT: ("-"? INT ("." INT)?) ("e" ("+" | "-")? INT)?
 LIN_VERSION: INT "." INT
 ISO_VERSION: "ISO17987" ":" INT
+J2602_VERSION: "J2602" "_" INT "_" INT "." INT
 
 ANY_SEMICOLON_TERMINATED_LINE: /.*;/
 

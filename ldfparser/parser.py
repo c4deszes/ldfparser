@@ -9,7 +9,7 @@ from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntr
 from .frame import LinEventTriggeredFrame, LinSporadicFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
-from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, parse_lin_version
+from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, parse_lin_version, J2602_BASE
 from .node import LinMaster, LinProductId, LinSlave
 from .ldf import LDF
 from .grammar import LdfTransformer
@@ -150,7 +150,11 @@ def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
     if nodes.get('master'):
         master_node = nodes['master']
-        ldf._master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
+        if master_node['max_header_length'] is None:
+            master_node['max_header_length'] = 48
+        if master_node['response_tolerance'] is None:
+            master_node['response_tolerance'] = 0.4
+        ldf._master = LinMaster(**master_node)
 
     if nodes.get('slaves'):
         if ldf.get_language_version() >= LIN_VERSION_2_0:
@@ -188,6 +192,7 @@ def _create_ldf2x_node(node: dict, language_version: float):
     slave.st_min = node.get('ST_min', 0)
     slave.n_as_timeout = node.get('N_As_timeout', 1)
     slave.n_cr_timeout = node.get('N_Cr_timeout', 1)
+    slave.response_tolerance = node.get('response_tolerance', 0.4)
 
     return slave
 

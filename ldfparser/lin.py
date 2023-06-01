@@ -3,6 +3,7 @@ Utility classes for LIN objects
 """
 from typing import Union
 
+
 class LinVersion:
     """
     LinVersion represents the LIN protocol and LDF language versions
@@ -118,6 +119,22 @@ class Iso17987Version:
 
 ISO17987_2015 = Iso17987Version(2015)
 
+
+J2602_BASE = "J2602_"
+def parse_j2602_version(version: str) -> Union[LinVersion, Iso17987Version]:
+    if J2602_BASE not in version:
+        raise ValueError(f'{version} is not an SAE J2602 version.')
+
+    version = version.replace("J2602_", '')
+    (_, versions) = version.split('_')
+    major = int(versions.split('.')[0])
+
+    if major == 1:
+        return LinVersion(2, 0)
+
+    raise ValueError(f'{version} is not supported yet.')
+
+
 def parse_lin_version(version: str) -> Union[LinVersion, Iso17987Version]:
     try:
         return LinVersion.from_string(version)
@@ -125,4 +142,6 @@ def parse_lin_version(version: str) -> Union[LinVersion, Iso17987Version]:
         try:
             return Iso17987Version.from_string(version)
         except ValueError:
+            if J2602_BASE in version:
+                return parse_j2602_version(version)
             raise ValueError(f'{version} is not a valid LIN version.')

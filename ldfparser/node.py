@@ -134,7 +134,7 @@ class LinSlave(LinNode):
         self.n_as_timeout: float = 1
         self.n_cr_timeout: float = 1
         self.configurable_frames = {}
-        self.response_tolerance = 0.4
+        self.response_tolerance = None
 
 class LinNodeCompositionConfiguration:
 

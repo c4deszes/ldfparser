@@ -1,0 +1,54 @@
+/*
+* Description: The LIN description file with J2602 protocol version, without the new attributes
+*/
+
+LIN_description_file ;
+LIN_protocol_version = "J2602_1_1.0";
+LIN_language_version = "J2602_3_1.0";
+LIN_speed = 10.417 kbps;
+
+Nodes {
+    Master: CEM, 5 ms, 0.1 ms;
+    Slaves: LSM;
+}
+
+Signals {
+    InternalLightsRequest: 2, 0, CEM, LSM;
+    InternalLightsSwitch: 2, 0, LSM, CEM;
+}
+
+Frames {
+    VL1_CEM_Frm1: 1, CEM {
+        InternalLightsRequest, 0;
+    }
+    VL1_LSM_Frm1: 2, LSM {
+        InternalLightsSwitch, 0;
+    }
+}
+
+Node_attributes {
+    LSM {
+        LIN_protocol = "J2602_1_1.0";
+        configured_NAD = 0x01;
+    }
+}
+
+Schedule_tables {
+    MySchedule1 {
+        VL1_CEM_Frm1 delay 15 ms;
+        VL1_LSM_Frm1 delay 15 ms;
+    }
+}
+
+Signal_encoding_types {
+    Dig2Bit {
+        logical_value, 0, "off";
+        logical_value, 1, "on";
+        logical_value, 2, "error";
+        logical_value, 3, "void";
+    }
+}
+
+Signal_representation {
+    Dig2Bit: InternalLightsRequest, InternalLightsSwitch;
+}

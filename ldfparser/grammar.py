@@ -72,7 +72,7 @@ class LdfTransformer(Transformer):
         return ("nodes", {'master': tree[0], 'slaves': tree[1]})
 
     def nodes_master(self, tree):
-        return {"name": tree[0], "timebase": tree[1] * 0.001, "jitter": tree[2] * 0.001}
+        return {"name": tree[0], "timebase": tree[1] * 0.001, "jitter": tree[2] * 0.001, "max_header_length": tree[3] if len(tree) > 3 else None, "response_tolerance": tree[4] * 0.01 if len(tree) > 4 else None}
 
     def nodes_slaves(self, tree):
         return tree
@@ -200,6 +200,9 @@ class LdfTransformer(Transformer):
 
     def node_definition_configurable_frames_21(self, tree):
         return ("configurable_frames", tree[0:])
+
+    def node_definition_response_tolerance(self, tree):
+        return ("response_tolerance", tree[0] * 0.01)
 
     def schedule_tables(self, tree):
         return ("schedule_tables", tree)

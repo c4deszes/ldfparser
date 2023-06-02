@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import pytest
-from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version, parse_lin_version
+from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version, parse_lin_version, parse_j2602_version
 
 @pytest.mark.unit()
 @pytest.mark.parametrize(
@@ -156,3 +156,42 @@ def test_linversion_iso_invalid(a, b, op, exc):
 def test_linversion_parse_invalid(value):
     with pytest.raises(ValueError):
         parse_lin_version(value)
+
+
+@pytest.mark.parametrize(
+    ('value', 'expected'),
+    [
+        ('J2602_1_1.0', LIN_VERSION_2_0),
+        ('J2602_3_1.0', LIN_VERSION_2_0),
+        ('J2602_1_1.1', LIN_VERSION_2_0),
+    ]
+)
+def test_linversion_from_j2602(value, expected):
+    result = parse_lin_version(value)
+    assert result.__class__ == expected.__class__
+    assert result == expected
+    assert result.use_j2602
+
+@pytest.mark.parametrize(
+    'value',
+    [
+        '1.1',
+        '2.2',
+    ]
+)
+def test_linversion_j2602_default(value):
+    result = parse_lin_version(value)
+    assert not result.use_j2602
+
+@pytest.mark.parametrize(
+    ('value'),
+    [
+        '',
+        '1.2',
+        'ISO17987:2016',
+        'J2602_1_2.0'
+    ]
+)
+def test_linversion_unsupported_j2602(value):
+    with pytest.raises(ValueError):
+        parse_j2602_version(value)

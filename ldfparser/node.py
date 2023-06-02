@@ -78,10 +78,20 @@ class LinMaster(LinNode):
     :type jitter: float
     """
 
-    def __init__(self, name: str, timebase: float, jitter: float):
+    def __init__(
+            self,
+            name: str,
+            timebase: float,
+            jitter: float,
+            max_header_length: int,
+            response_tolerance: float,
+    ):
         super().__init__(name)
         self.timebase: float = timebase
         self.jitter: float = jitter
+        self.max_header_length: int = max_header_length
+        self.response_tolerance: float = response_tolerance
+
 
 class LinSlave(LinNode):
     """
@@ -124,6 +134,7 @@ class LinSlave(LinNode):
         self.n_as_timeout: float = 1
         self.n_cr_timeout: float = 1
         self.configurable_frames = {}
+        self.response_tolerance = None
 
 class LinNodeCompositionConfiguration:
 

@@ -9,9 +9,10 @@ class LinVersion:
     LinVersion represents the LIN protocol and LDF language versions
     """
 
-    def __init__(self, major: int, minor: int) -> None:
+    def __init__(self, major: int, minor: int, use_j2602=False) -> None:
         self.major = major
         self.minor = minor
+        self.use_j2602 = use_j2602
 
     @staticmethod
     def from_string(version: str) -> 'LinVersion':
@@ -77,8 +78,9 @@ LIN_VERSION_2_2 = LinVersion(2, 2)
 
 class Iso17987Version:
 
-    def __init__(self, revision: int) -> None:
+    def __init__(self, revision: int, use_j2602: bool = False) -> None:
         self.revision = revision
+        self.use_j2602 = use_j2602
 
     @staticmethod
     def from_string(version: str) -> 'Iso17987Version':
@@ -119,21 +121,29 @@ class Iso17987Version:
 
 ISO17987_2015 = Iso17987Version(2015)
 
-
-J2602_BASE = "J2602_"
 def parse_j2602_version(version: str) -> Union[LinVersion, Iso17987Version]:
-    if J2602_BASE not in version:
+    """
+    Return the version object from J2602 version string.
+
+    According to J2602-3_202110, section 7.1.3:
+    “J2602_1_1.0” -> J2602:2012 and earlier -> based on LIN 2.0
+    “J2602_1_2.0” -> J2602:2021 -> based on ISO 17987:2016
+
+    Therefore,
+    “J2602_1_1.0” -> LinVersion(2, 0)
+
+    Support for J2602_1_2.0 is not implemented at this time.
+    """
+    if "J2602" not in version:
         raise ValueError(f'{version} is not an SAE J2602 version.')
 
     version = version.replace("J2602_", '')
     (_, versions) = version.split('_')
     major = int(versions.split('.')[0])
-
     if major == 1:
-        return LinVersion(2, 0)
+        return LinVersion(major=2, minor=0, use_j2602=True)
 
     raise ValueError(f'{version} is not supported yet.')
-
 
 def parse_lin_version(version: str) -> Union[LinVersion, Iso17987Version]:
     try:
@@ -142,6 +152,6 @@ def parse_lin_version(version: str) -> Union[LinVersion, Iso17987Version]:
         try:
             return Iso17987Version.from_string(version)
         except ValueError:
-            if J2602_BASE in version:
+            if "J2602" in version:
                 return parse_j2602_version(version)
             raise ValueError(f'{version} is not a valid LIN version.')

@@ -223,11 +223,21 @@ def test_load_j2602_attributes():
     assert ldf.master.response_tolerance == 0.3
     assert list(ldf.slaves)[0].response_tolerance == 0.38
 
-@pytest.mark.unit
-def test_default_j2602_attributes():
-    path = os.path.join(os.path.dirname(__file__), "ldf", "lin20.ldf")
+@pytest.mark.parametrize(
+    'file, max_header_length, master_response_tolerance, slave_response_tolerance',
+    [
+        ("lin20.ldf", None, None, None),
+        ("j2602_1_no_values.ldf", 48, 0.4, 0.4)
+    ]
+)
+def test_j2602_attributes_default(
+        file, max_header_length, master_response_tolerance, slave_response_tolerance):
+    """
+    Should not set default value for J2602 attributes if protocol is not J2602
+    """
+    path = os.path.join(os.path.dirname(__file__), "ldf", file)
     ldf = parse_ldf(path)
 
-    assert ldf.master.max_header_length == 48
-    assert ldf.master.response_tolerance == 0.4
-    assert list(ldf.slaves)[0].response_tolerance == 0.4
+    assert ldf.master.max_header_length == max_header_length
+    assert ldf.master.response_tolerance == master_response_tolerance
+    assert list(ldf.slaves)[0].response_tolerance == slave_response_tolerance

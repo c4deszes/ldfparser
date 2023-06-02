@@ -3,7 +3,7 @@ Lin Description File handler objects
 """
 from typing import Union, Dict, List
 
-from .lin import LinVersion, Iso17987Version, J2602_BASE
+from .lin import LinVersion, Iso17987Version
 from .frame import LinFrame, LinSporadicFrame, LinUnconditionalFrame, LinEventTriggeredFrame
 from .diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from .signal import LinSignal
@@ -407,6 +407,3 @@ class LDF():
         Deprecated, use `get_slave` instead, this method will be removed in 1.0.0
         """
         return self._slaves.get(name)
-
-    def is_j2602_protocol(self):
-        return J2602_BASE in self._protocol_version

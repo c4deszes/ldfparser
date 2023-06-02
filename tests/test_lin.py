@@ -170,7 +170,18 @@ def test_linversion_from_j2602(value, expected):
     result = parse_lin_version(value)
     assert result.__class__ == expected.__class__
     assert result == expected
+    assert result.use_j2602
 
+@pytest.mark.parametrize(
+    'value',
+    [
+        '1.1',
+        '2.2',
+    ]
+)
+def test_linversion_j2602_default(value):
+    result = parse_lin_version(value)
+    assert not result.use_j2602
 
 @pytest.mark.parametrize(
     ('value'),

@@ -157,7 +157,7 @@ def test_linversion_parse_invalid(value):
     with pytest.raises(ValueError):
         parse_lin_version(value)
 
-
+@pytest.mark.unit()
 @pytest.mark.parametrize(
     ('value', 'expected'),
     [
@@ -171,7 +171,7 @@ def test_linversion_from_j2602(value, expected):
     assert result.__class__ == expected.__class__
     assert result == expected
     assert result.use_j2602
-
+@pytest.mark.unit()
 @pytest.mark.parametrize(
     'value',
     [
@@ -182,7 +182,7 @@ def test_linversion_from_j2602(value, expected):
 def test_linversion_j2602_default(value):
     result = parse_lin_version(value)
     assert not result.use_j2602
-
+@pytest.mark.unit()
 @pytest.mark.parametrize(
     ('value'),
     [

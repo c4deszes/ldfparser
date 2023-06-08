@@ -21,6 +21,12 @@
                 },
                 "jitter": {
                     "type": "number"
+                },
+                "max_header_length": {
+                    "type": ["null", "integer"]
+                },
+                "response_tolerance": {
+                    "type": ["null", "number"]
                 }
             },
             "required": [
@@ -288,6 +294,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "response_tolerance": {
+                    "type": ["null", "number"]
                 }
             },
             "required": [

@@ -23,7 +23,7 @@ header_sig_byte_order_little_endian: "LIN_sig_byte_order_little_endian" ";"
 // LIN 2.1 Specification, section 9.2.2
 // SAE J2602-3_201001, SECTION 7.2
 nodes: "Nodes" "{" nodes_master? nodes_slaves? "}"
-nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ("," ldf_integer "bits" "," ldf_float "%")* ";"
+nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ("," ldf_integer "bits" "," ldf_float "%")? ";"
 nodes_slaves: "Slaves" ":" ldf_identifier ("," ldf_identifier)* ";"
 
 // LIN 2.1 Specification, section 9.2.2.3

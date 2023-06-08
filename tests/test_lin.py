@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import pytest
-from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, Iso17987Version, parse_lin_version, parse_j2602_version
+from ldfparser.lin import LIN_VERSION_1_3, LIN_VERSION_2_0, LIN_VERSION_2_1, LIN_VERSION_2_2, LinVersion, Iso17987Version, parse_lin_version, J2602Version
 
 @pytest.mark.unit()
 @pytest.mark.parametrize(
@@ -150,7 +150,8 @@ def test_linversion_iso_invalid(a, b, op, exc):
     [
         '',
         '2.1.2',
-        'ISO17987:abc'
+        'ISO17987:abc',
+        'J2602_1_1_1.0',
     ]
 )
 def test_linversion_parse_invalid(value):
@@ -159,29 +160,20 @@ def test_linversion_parse_invalid(value):
 
 @pytest.mark.unit()
 @pytest.mark.parametrize(
-    ('value', 'expected'),
+    ('value', 'major', 'minor', 'part'),
     [
-        ('J2602_1_1.0', LIN_VERSION_2_0),
-        ('J2602_3_1.0', LIN_VERSION_2_0),
-        ('J2602_1_1.1', LIN_VERSION_2_0),
+        ('J2602_1_1.0', 1, 0, 1),
+        ('J2602_3_1.0', 1, 0, 3),
+        ('J2602_1_1.1', 1, 1, 1),
     ]
 )
-def test_linversion_from_j2602(value, expected):
-    result = parse_lin_version(value)
-    assert result.__class__ == expected.__class__
-    assert result == expected
-    assert result.use_j2602
-@pytest.mark.unit()
-@pytest.mark.parametrize(
-    'value',
-    [
-        '1.1',
-        '2.2',
-    ]
-)
-def test_linversion_j2602_default(value):
-    result = parse_lin_version(value)
-    assert not result.use_j2602
+def test_linversion_j2602_valid(value, major, minor, part):
+    version = J2602Version.from_string(value)
+    assert version.major == major
+    assert version.minor == minor
+    assert version.part == part
+    assert str(J2602Version(major=major, minor=minor, part=part)) == value
+
 @pytest.mark.unit()
 @pytest.mark.parametrize(
     ('value'),
@@ -194,4 +186,40 @@ def test_linversion_j2602_default(value):
 )
 def test_linversion_unsupported_j2602(value):
     with pytest.raises(ValueError):
-        parse_j2602_version(value)
+        J2602Version.from_string(value)
+
+@pytest.mark.unit()
+@pytest.mark.parametrize(
+    ('value', 'expected'), [
+        ('2.0', LIN_VERSION_2_0),
+        ('ISO17987:2015', Iso17987Version(2015)),
+        ('J2602_3_1.0', J2602Version(1, 0, 3))
+    ]
+)
+def test_parse_linversion(value, expected):
+    version = parse_lin_version(value)
+    assert version == expected
+
+@pytest.mark.unit()
+@pytest.mark.parametrize(
+    'a, b, op, result', [
+        (J2602Version(1, 0, 1), LIN_VERSION_2_0, J2602Version.__eq__, True),
+        (J2602Version(1, 0, 1), J2602Version(1, 1, 1), J2602Version.__eq__, False),
+        (J2602Version(1, 0, 1), J2602Version(1, 0, 1), J2602Version.__eq__, True),
+        (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__eq__, False),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__eq__, False),
+        (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__lt__, True),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__lt__, True),
+        (J2602Version(1, 0, 1), LIN_VERSION_1_3, J2602Version.__gt__, True),
+        (J2602Version(1, 0, 1), LIN_VERSION_1_3, J2602Version.__lt__, False),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__gt__, False),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__ne__, True),
+        (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__ne__, True),
+        (LIN_VERSION_2_0, J2602Version(1, 0, 1), LinVersion.__eq__, True),
+        (LIN_VERSION_2_2, J2602Version(1, 0, 1), LinVersion.__gt__, True),
+        (LIN_VERSION_1_3, J2602Version(1, 0, 1), LinVersion.__lt__, True),
+    ]
+)
+def test_linversion_j2602_compare(a, b, op, result):
+    assert op(a, b) == result
+

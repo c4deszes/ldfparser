@@ -227,4 +227,3 @@ def parse_lin_version(version: str) -> Union[LinVersion, Iso17987Version, J2602V
             pass
 
     raise ValueError(f'{version} is not a valid LIN version.')
-

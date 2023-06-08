@@ -11,14 +11,14 @@ Channel_name = "{{ ldf.get_channel() }}";
 
 Nodes {
     {%- if ldf.get_master() %}
-    Master: {{ ldf.get_master().name }}, {{ ldf.get_master().timebase * 1000 | float}} ms, {{ ldf.get_master().jitter * 1000 }} ms;
+    Master: {{ ldf.get_master().name }}, {{ ldf.get_master().timebase * 1000 | float}} ms, {{ ldf.get_master().jitter * 1000 }} ms{%- if ldf.get_master().max_header_length is not none %}, {{ldf.get_master().max_header_length}} bits{%- endif %}{%- if ldf.get_master().response_tolerance is not none %}, {{ldf.get_master().response_tolerance * 100}} %{%- endif %};
     {%- endif %}
     {%- if ldf.get_slaves() %}
     Slaves: {%- for slave in ldf.get_slaves() %} {{ slave.name }}{%- if not loop.last %},{% endif -%}{%- endfor -%};
     {%- endif %}
 }
 
-{%- if ldf.get_language_version().major == 2 or "Iso17987Version" in ldf.get_language_version().__class__.__name__ %}
+{%- if ldf.get_language_version().major == 2 or "Iso17987Version" in ldf.get_language_version().__class__.__name__ or "J2602" in ldf.get_language_version().__class__.__name__ %}
 Node_attributes {
     {%- for slave in ldf.get_slaves() %}
     {{slave.name}} {
@@ -44,6 +44,9 @@ Node_attributes {
             {{frame.name}}{% if slave.lin_protocol == "2.0" %} = {{id}}{% endif -%};
             {%- endfor %}
         }
+        {%- endif %}
+        {%- if slave.response_tolerance %}
+        response_tolerance = {{slave.response_tolerance * 100}} %;
         {%- endif %}
     }
     {%- endfor %}

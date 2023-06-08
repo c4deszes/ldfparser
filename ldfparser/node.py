@@ -6,7 +6,7 @@ from typing import List, TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from .frame import LinFrame
     from .signal import LinSignal
-    from .lin import LinVersion, Iso17987Version
+    from .lin import LinVersion, Iso17987Version, J2602Version
 
 LIN_SUPPLIER_ID_WILDCARD = 0x7FFF
 LIN_FUNCTION_ID_WILDCARD = 0xFFFF
@@ -76,6 +76,11 @@ class LinMaster(LinNode):
     :type timebase: float
     :param jitter: LIN network jitter in seconds
     :type jitter: float
+    :param max_header_length: The maximum number of bits of the header length
+    :type max_header_length: int
+    :param response_tolerance: The value between 0.0 - 1.0 that represents the
+        percentage of the frame response tolerance.
+    :type response_tolerance: float
     """
 
     def __init__(
@@ -119,11 +124,14 @@ class LinSlave(LinNode):
     :type n_cr_timeout:
     :param configurable_frames:
     :type configurable_frames:
+    :param response_tolerance: The value between 0.0 - 1.0 that represents the
+        percentage of the frame response tolerance. For example, 0.4 for 40%.
+    :type response_tolerance: float
     """
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        self.lin_protocol: Union[LinVersion, Iso17987Version] = None
+        self.lin_protocol: Union[LinVersion, Iso17987Version, J2602Version] = None
         self.configured_nad: int = None
         self.initial_nad: int = None
         self.product_id: LinProductId = None
@@ -134,7 +142,7 @@ class LinSlave(LinNode):
         self.n_as_timeout: float = 1
         self.n_cr_timeout: float = 1
         self.configurable_frames = {}
-        self.response_tolerance = None
+        self.response_tolerance: float = None
 
 class LinNodeCompositionConfiguration:
 

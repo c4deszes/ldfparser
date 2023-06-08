@@ -8,7 +8,7 @@ LIN_language_version = "J2602_3_1.0";
 LIN_speed = 19.2 kbps;
 
 Nodes {
-    Master: CEM, 5 ms, 0.1 ms, 24 bits, 30% ;
+    Master: CEM, 5 ms, 0.1 ms, 24 bits, 30 % ;
     Slaves: LSM;
 }
 

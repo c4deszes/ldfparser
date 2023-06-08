@@ -3,7 +3,7 @@ Lin Description File handler objects
 """
 from typing import Union, Dict, List
 
-from .lin import LinVersion, Iso17987Version
+from .lin import LinVersion, Iso17987Version, J2602Version
 from .frame import LinFrame, LinSporadicFrame, LinUnconditionalFrame, LinEventTriggeredFrame
 from .diagnostics import LinDiagnosticFrame, LinDiagnosticRequest, LinDiagnosticResponse
 from .signal import LinSignal
@@ -19,8 +19,8 @@ class LDF():
 
     def __init__(self):
         self._source: Dict = None
-        self._protocol_version: Union[LinVersion, Iso17987Version] = None
-        self._language_version: Union[LinVersion, Iso17987Version] = None
+        self._protocol_version: Union[LinVersion, Iso17987Version, J2602Version] = None
+        self._language_version: Union[LinVersion, Iso17987Version, J2602Version] = None
         self._baudrate: int = None
         self._channel: str = None
         self._master: LinMaster = None
@@ -38,11 +38,11 @@ class LDF():
         self._schedule_tables: Dict[str, ScheduleTable] = {}
         self._comments: List[str] = []
 
-    def get_protocol_version(self) -> Union[LinVersion, Iso17987Version]:
+    def get_protocol_version(self) -> Union[LinVersion, Iso17987Version, J2602Version]:
         """Returns the protocol version of the LIN network"""
         return self._protocol_version
 
-    def get_language_version(self) -> Union[LinVersion, Iso17987Version]:
+    def get_language_version(self) -> Union[LinVersion, Iso17987Version, J2602Version]:
         """Returns the LDF language version"""
         return self._language_version
 

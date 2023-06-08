@@ -222,5 +222,3 @@ def test_parse_linversion(value, expected):
 )
 def test_linversion_j2602_compare(a, b, op, result):
     assert op(a, b) == result
-
-

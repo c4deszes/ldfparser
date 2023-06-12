@@ -6,7 +6,7 @@ from ldfparser.parser import parse_ldf
 from ldfparser.frame import LinFrame
 from ldfparser.signal import LinSignal
 from ldfparser.encoding import ASCIIValue, BCDValue, LogicalValue
-from ldfparser.lin import Iso17987Version
+from ldfparser.lin import Iso17987Version, LIN_VERSION_2_0
 
 @pytest.mark.unit
 def test_load_valid_lin13():
@@ -211,3 +211,34 @@ def test_load_iso17987():
 
     assert isinstance(ldf.get_language_version(), Iso17987Version)
     assert ldf.get_language_version().revision == 2015
+
+@pytest.mark.unit
+def test_load_j2602_attributes():
+    path = os.path.join(os.path.dirname(__file__), "ldf", "j2602_1.ldf")
+    ldf = parse_ldf(path)
+
+    assert ldf.get_protocol_version() == LIN_VERSION_2_0
+    assert ldf.get_language_version() == LIN_VERSION_2_0
+    assert ldf.master.max_header_length == 24
+    assert ldf.master.response_tolerance == 0.3
+    assert list(ldf.slaves)[0].response_tolerance == 0.38
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'file, max_header_length, master_response_tolerance, slave_response_tolerance',
+    [
+        ("lin20.ldf", None, None, None),
+        ("j2602_1_no_values.ldf", 48, 0.4, 0.4)
+    ]
+)
+def test_j2602_attributes_default(
+        file, max_header_length, master_response_tolerance, slave_response_tolerance):
+    """
+    Should not set default value for J2602 attributes if protocol is not J2602
+    """
+    path = os.path.join(os.path.dirname(__file__), "ldf", file)
+    ldf = parse_ldf(path)
+
+    assert ldf.master.max_header_length == max_header_length
+    assert ldf.master.response_tolerance == master_response_tolerance
+    assert list(ldf.slaves)[0].response_tolerance == slave_response_tolerance

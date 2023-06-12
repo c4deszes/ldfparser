@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2023-06-12
+
+### Added
+
+- Support for SAE J2602 legacy version
+- Grammar support for the following J2602 fields:
+  - `max_header_length`, `response_tolerance` for the master node
+  - `response_tolerance` for slave node attributes
+
 ## [0.19.0] - 2023-03-12
 
 ### Added

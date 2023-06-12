@@ -9,7 +9,7 @@ from .schedule import AssignFrameIdEntry, AssignFrameIdRangeEntry, AssignNadEntr
 from .frame import LinEventTriggeredFrame, LinSporadicFrame, LinUnconditionalFrame
 from .signal import LinSignal
 from .encoding import ASCIIValue, BCDValue, LinSignalEncodingType, LogicalValue, PhysicalValue, ValueConverter
-from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, parse_lin_version
+from .lin import LIN_VERSION_2_0, LIN_VERSION_2_1, J2602Version, parse_lin_version
 from .node import LinMaster, LinProductId, LinSlave
 from .ldf import LDF
 from .grammar import LdfTransformer
@@ -148,9 +148,17 @@ def _populate_ldf_sporadic_frames(json: dict, ldf: LDF):
 
 def _populate_ldf_nodes(json: dict, ldf: LDF):
     nodes = _require_key(json, 'nodes', 'Missing Nodes section.')
+
     if nodes.get('master'):
         master_node = nodes['master']
-        ldf._master = LinMaster(master_node['name'], master_node['timebase'], master_node['jitter'])
+        is_j2602_protocol = isinstance(ldf.get_protocol_version(), J2602Version)
+        default_max_header_len = 48 if is_j2602_protocol else None
+        default_resp_tolerance = 0.4 if is_j2602_protocol else None
+        if master_node['max_header_length'] is None:
+            master_node['max_header_length'] = default_max_header_len
+        if master_node['response_tolerance'] is None:
+            master_node['response_tolerance'] = default_resp_tolerance
+        ldf._master = LinMaster(**master_node)
 
     if nodes.get('slaves'):
         if ldf.get_language_version() >= LIN_VERSION_2_0:
@@ -188,6 +196,9 @@ def _create_ldf2x_node(node: dict, language_version: float):
     slave.st_min = node.get('ST_min', 0)
     slave.n_as_timeout = node.get('N_As_timeout', 1)
     slave.n_cr_timeout = node.get('N_Cr_timeout', 1)
+    is_j2602_protocol = isinstance(slave.lin_protocol, J2602Version)
+    default_resp_tolerance = 0.4 if is_j2602_protocol else None
+    slave.response_tolerance = node.get('response_tolerance', default_resp_tolerance)
 
     return slave
 

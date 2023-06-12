@@ -145,6 +145,7 @@ def test_linversion_iso_invalid(a, b, op, exc):
     with pytest.raises(exc):
         op(a, b)
 
+@pytest.mark.unit()
 @pytest.mark.parametrize(
     ('value'),
     [
@@ -206,6 +207,9 @@ def test_parse_linversion(value, expected):
         (J2602Version(1, 0, 1), LIN_VERSION_2_0, J2602Version.__eq__, True),
         (J2602Version(1, 0, 1), J2602Version(1, 1, 1), J2602Version.__eq__, False),
         (J2602Version(1, 0, 1), J2602Version(1, 0, 1), J2602Version.__eq__, True),
+        (J2602Version(2, 0, 1), J2602Version(1, 0, 1), J2602Version.__gt__, True),
+        (J2602Version(1, 0, 1), J2602Version(2, 0, 1), J2602Version.__lt__, True),
+        (J2602Version(1, 0, 1), "Other type", J2602Version.__eq__, False),
         (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__eq__, False),
         (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__eq__, False),
         (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__lt__, True),
@@ -214,6 +218,8 @@ def test_parse_linversion(value, expected):
         (J2602Version(1, 0, 1), LIN_VERSION_1_3, J2602Version.__lt__, False),
         (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__gt__, False),
         (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__ne__, True),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__ge__, False),
+        (J2602Version(1, 0, 1), Iso17987Version(2015), J2602Version.__le__, True),
         (J2602Version(1, 0, 1), LIN_VERSION_2_2, J2602Version.__ne__, True),
         (LIN_VERSION_2_0, J2602Version(1, 0, 1), LinVersion.__eq__, True),
         (LIN_VERSION_2_2, J2602Version(1, 0, 1), LinVersion.__gt__, True),
@@ -222,3 +228,18 @@ def test_parse_linversion(value, expected):
 )
 def test_linversion_j2602_compare(a, b, op, result):
     assert op(a, b) == result
+
+
+@pytest.mark.unit()
+@pytest.mark.parametrize(
+    ('func', 'arg'),
+    [
+        (J2602Version(2, 0, 1).__gt__, "J2602_3_0.1"),
+        (J2602Version(2, 0, 1).__lt__, "J2602_3_0.1"),
+        (J2602Version(2, 0, 1).__ge__, "J2602_3_0.1"),
+        (J2602Version(2, 0, 1).__le__, "J2602_3_0.1")
+    ]
+)
+def test_linversion_j2602_typerror(func, arg):
+    with pytest.raises(TypeError):
+        func(arg)

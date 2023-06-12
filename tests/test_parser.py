@@ -223,6 +223,7 @@ def test_load_j2602_attributes():
     assert ldf.master.response_tolerance == 0.3
     assert list(ldf.slaves)[0].response_tolerance == 0.38
 
+@pytest.mark.unit
 @pytest.mark.parametrize(
     'file, max_header_length, master_response_tolerance, slave_response_tolerance',
     [

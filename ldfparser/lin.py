@@ -9,10 +9,9 @@ class LinVersion:
     LinVersion represents the LIN protocol and LDF language versions
     """
 
-    def __init__(self, major: int, minor: int, use_j2602=False) -> None:
+    def __init__(self, major: int, minor: int) -> None:
         self.major = major
         self.minor = minor
-        self.use_j2602 = use_j2602
 
     @staticmethod
     def from_string(version: str) -> 'LinVersion':
@@ -84,9 +83,8 @@ LIN_VERSION_2_2 = LinVersion(2, 2)
 
 class Iso17987Version:
 
-    def __init__(self, revision: int, use_j2602: bool = False) -> None:
+    def __init__(self, revision: int) -> None:
         self.revision = revision
-        self.use_j2602 = use_j2602
 
     @staticmethod
     def from_string(version: str) -> 'Iso17987Version':

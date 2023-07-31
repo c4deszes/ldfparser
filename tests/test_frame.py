@@ -215,7 +215,7 @@ def frame():
         8: temp_signal,
         14: reserved1_signal,
         18: int_error_signal,
-        19: comm_error_signal,
+        19: comm_error_signal
     })
 
 @pytest.fixture(scope="function")

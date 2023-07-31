@@ -132,16 +132,25 @@ class LinUnconditionalFrame(LinFrame):
                  as is (float and string values)
         """
         converted = {}
+
+        def default_encoder(_value, _signal):
+            if isinstance(_value, int):
+                return _value
+            raise ValueError(f'No encoding type found for {signal_name} ({value})')
+
         for (signal_name, value) in data.items():
             signal = self._get_signal(signal_name)
+            encoder = default_encoder
             if encoding_types is not None and signal_name in encoding_types:
-                converted[signal_name] = encoding_types[signal_name].encode(value, signal)
+                encoder = encoding_types[signal_name].encode
             elif signal.encoding_type is not None:
-                converted[signal_name] = signal.encoding_type.encode(value, signal)
-            elif isinstance(value, int):
-                converted[signal_name] = value
+                encoder = signal.encoding_type.encode
+
+            if signal.is_array():
+                converted[signal_name] = [encoder(_v, signal) for _v in value]
             else:
-                raise ValueError(f'No encoding type found for {signal_name} ({value})')
+                converted[signal_name] = encoder(value, signal)
+
         return self.encode_raw(converted)
 
     def _signal_map_to_message(self, signals: Dict[str, int]) -> List[int]:
@@ -206,16 +215,24 @@ class LinUnconditionalFrame(LinFrame):
             frame_layout = u6p2u8u1u1p6
 
         """
+        def default_decoder(_value, *args):
+            return _value
+
         parsed = self.decode_raw(data)
         converted = {}
         for (signal_name, value) in parsed.items():
             signal = self._get_signal(signal_name)
+            decoder = default_decoder
             if encoding_types is not None and signal_name in encoding_types:
-                converted[signal_name] = encoding_types[signal_name].decode(value, signal, keep_unit)
+                decoder = encoding_types[signal_name].decode
             elif signal.encoding_type is not None:
-                converted[signal_name] = signal.encoding_type.decode(value, signal, keep_unit)
+                decoder = signal.encoding_type.decode
+
+            if signal.is_array():
+                converted[signal_name] = [decoder(_v, signal, keep_unit) for _v in value]
             else:
-                converted[signal_name] = value
+                converted[signal_name] = decoder(value, signal, keep_unit)
+
         return converted
 
     def decode_raw(self,

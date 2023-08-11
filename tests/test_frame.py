@@ -287,7 +287,7 @@ def test_encode_decode_array(use_converter):
     frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
     raw = {"BattCurr": [1, 1, 1]}
     encoded_expected = bytearray([1, 1, 1])
-    decoded_expected = {"BattCurr": [-511.99609375, -511.99609375, -511.99609375]}
+    decoded_expected = {'BattCurr': -254.99609375}
     encoded_raw = frame.encode_raw(raw)
     assert encoded_raw == encoded_expected
 

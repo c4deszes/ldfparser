@@ -1,6 +1,7 @@
 """
 LIN Frame utilities
 """
+import math
 import warnings
 from typing import Dict, List, Tuple, Union, TYPE_CHECKING
 
@@ -134,9 +135,10 @@ class LinUnconditionalFrame(LinFrame):
         converted = {}
 
         def default_encoder(_value, _signal):
-            if isinstance(_value, int):
+            if isinstance(_value, (int, list)):
                 return _value
-            raise ValueError(f'No encoding type found for {signal_name} ({value})')
+
+            raise ValueError(f'No encoding type found for {_signal} ({value})')
 
         for (signal_name, value) in data.items():
             signal = self._get_signal(signal_name)
@@ -147,7 +149,10 @@ class LinUnconditionalFrame(LinFrame):
                 encoder = signal.encoding_type.encode
 
             if signal.is_array():
-                converted[signal_name] = [encoder(_v, signal) for _v in value]
+                if not isinstance(value, list):
+                    signal_byte_size = int(math.ceil(signal.width/8))
+                    value = int.to_bytes(encoder(value, signal), signal_byte_size, "big")
+                converted[signal_name] = value
             else:
                 converted[signal_name] = encoder(value, signal)
 
@@ -215,7 +220,7 @@ class LinUnconditionalFrame(LinFrame):
             frame_layout = u6p2u8u1u1p6
 
         """
-        def default_decoder(_value, *args):
+        def default_decoder(_value, *args,):
             return _value
 
         parsed = self.decode_raw(data)
@@ -229,7 +234,9 @@ class LinUnconditionalFrame(LinFrame):
                 decoder = signal.encoding_type.decode
 
             if signal.is_array():
-                converted[signal_name] = [decoder(_v, signal, keep_unit) for _v in value]
+                if decoder is not default_decoder:
+                    value = int.from_bytes(value, "big")
+                converted[signal_name] = decoder(value, signal, keep_unit)
             else:
                 converted[signal_name] = decoder(value, signal, keep_unit)
 

@@ -317,10 +317,10 @@ class TestEncodeDecodeArray:
         decoded = frame.decode(encoded)
         assert decoded == raw
 
-    def test_encode_decode_array_default(self):
+    def test_encode_decode_array_default_no_converter(self):
         signal = LinSignal('BattCurr', 24, [0, 0, 2])
         frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
-        
+
         encoded_expected = bytearray([0, 0, 2])
         decode_expected = {'BattCurr': [0, 0, 2]}
 

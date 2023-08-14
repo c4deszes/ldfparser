@@ -1,7 +1,6 @@
 """
 LIN Frame utilities
 """
-import math
 import warnings
 from typing import Dict, List, Tuple, Union, TYPE_CHECKING
 
@@ -150,8 +149,8 @@ class LinUnconditionalFrame(LinFrame):
 
             if signal.is_array():
                 if not isinstance(value, list):
-                    signal_byte_size = int(math.ceil(signal.width/8))
-                    value = int.to_bytes(encoder(value, signal), signal_byte_size, "big")
+                    num_of_bytes = int(signal.width / 8)
+                    value = [b for b in int.to_bytes(encoder(value, signal), num_of_bytes, "big")]
                 converted[signal_name] = value
             else:
                 converted[signal_name] = encoder(value, signal)
@@ -220,7 +219,7 @@ class LinUnconditionalFrame(LinFrame):
             frame_layout = u6p2u8u1u1p6
 
         """
-        def default_decoder(_value, *args,):
+        def default_decoder(_value, *args):
             return _value
 
         parsed = self.decode_raw(data)

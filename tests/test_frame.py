@@ -271,45 +271,65 @@ class TestLinUnconditionalFrameEncoding:
             frame.encode({'MotorSpeed': value})
 
 @pytest.mark.unit
-@pytest.mark.parametrize("use_converter", [True, False])
-def test_encode_decode_array(use_converter):
-    signal = LinSignal('BattCurr', 24, [0, 0, 2])
-    encoding_type = LinSignalEncodingType(
-        "BattCurrCoding",
-        [PhysicalValue(0, 182272, 0.00390625, -512, "A")]
-    )
-    converters = {}
-    if use_converter:
-        converters["BattCurr"] = encoding_type
-    else:
-        signal.encoding_type = encoding_type
+class TestEncodeDecodeArray:
+    """Test encode/decode of signal with array values"""
+    @pytest.mark.parametrize("use_converter", [True, False])
+    def test_encode_decode_array(self, use_converter):
+        signal = LinSignal('BattCurr', 24, [0, 0, 2])
+        encoding_type = LinSignalEncodingType(
+            "BattCurrCoding",
+            [
+                PhysicalValue(0, 182272, 0.00390625, -512, "A"),
+                LogicalValue(16777215, "Invalid")
+            ]
+        )
+        converters = {}
+        if use_converter:
+            converters["BattCurr"] = encoding_type
+        else:
+            signal.encoding_type = encoding_type
 
-    frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
-    raw = {"BattCurr": [1, 1, 1]}
-    encoded_expected = bytearray([1, 1, 1])
-    decoded_expected = {'BattCurr': -254.99609375}
-    encoded_raw = frame.encode_raw(raw)
-    assert encoded_raw == encoded_expected
+        frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
 
-    decoded = frame.decode(encoded_raw, converters)
-    assert decoded == decoded_expected
+        # Logical value
+        invalid_value = {"BattCurr": "Invalid"}
+        encoded = frame.encode(invalid_value, converters)
+        assert encoded == bytearray([255, 255, 255])
+        decoded = frame.decode(encoded, converters)
+        assert decoded == invalid_value
 
-    encoded = frame.encode(decoded, converters)
-    decoded_raw = frame.decode_raw(encoded)
-    assert decoded_raw == raw
+        # Physical value
+        valid_value = {"BattCurr": -254.99609375}
+        encoded = frame.encode(valid_value, converters)
+        assert encoded == bytearray([1, 1, 1])
+        decoded = frame.decode(encoded, converters)
+        assert decoded == valid_value
 
-@pytest.mark.unit
-def test_encode_decode_array_no_converter():
-    signal = LinSignal('BattCurr', 24, [0, 0, 2])
-    frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
-    raw = {"BattCurr": [1, 1, 1]}
-    encoded_expected = bytearray([1, 1, 1])
+    def test_encode_decode_array_no_converter(self):
+        signal = LinSignal('BattCurr', 24, [0, 0, 2])
+        frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
+        raw = {"BattCurr": [1, 1, 1]}
+        encoded_expected = bytearray([1, 1, 1])
 
-    encoded = frame.encode(raw)
-    assert encoded == encoded_expected
+        encoded = frame.encode(raw)
+        assert encoded == encoded_expected
 
-    decoded = frame.decode(encoded)
-    assert decoded == raw
+        decoded = frame.decode(encoded)
+        assert decoded == raw
+
+    def test_encode_decode_array_default(self):
+        signal = LinSignal('BattCurr', 24, [0, 0, 2])
+        frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
+        
+        encoded_expected = bytearray([0, 0, 2])
+        decode_expected = {'BattCurr': [0, 0, 2]}
+
+        encoded = frame.encode({})
+        assert encoded == encoded_expected
+
+        decoded = frame.decode(encoded)
+        assert decoded == decode_expected
+
 
 @pytest.mark.unit
 class TestLinUnconditionalFrameDecodingRaw:

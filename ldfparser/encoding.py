@@ -9,36 +9,77 @@ if TYPE_CHECKING:
     from .signal import LinSignal
 
 class ValueConverter():
-    """
-    Value converter is used to convert Lin signal values from and into
-    their human readable form
-    """
+
+    def __init__(self) -> None:
+        """
+        Value converter is used to convert Lin signal values from and into their human readable form
+
+        Converters shall be reversible, meaning that encoding a value then decoding that output shall
+        return the original value.
+        """
+        pass
 
     def encode(self, value: Any, signal: 'LinSignal') -> Union[int, List[int]]:
         """
         Converts the human readable value into the raw bytes that will be sent
+
+        :param value: Signal value
+        :type value: Any
+        :param signal: LIN Signal context
+        :type signal: LinSignal
+        :return: Raw data as an integer, array signals should return a list
+        :rtype: Union[int, List[int]]
         """
         raise NotImplementedError()
 
     def decode(self, value: Union[int, List[int]], signal: 'LinSignal', keep_unit: bool = False) -> Any:
         """
         Converts the received raw bytes into the human readable form
+
+        :param value: Raw data to convert, array signals have to be passed as a list
+        :type value: Union[int, List[int]]
+        :param signal: LIN Signal context
+        :type signal: LinSignal
+        :param keep_unit: when True physical values will have the unit applied and will be
+                          returned as strings, defaults to False
+        :type keep_unit: bool, optional
+        :return: Signal value
+        :rtype: Any
         """
         raise NotImplementedError()
 
 class PhysicalValue(ValueConverter):
-    """
-    Value converter for physical values
-
-    A physical value encoder converts a range of values into a different range of values.
-
-    :Example:
-
-    `PhysicalValue(phy_min=0, phy_max=100, scale=50, offset=400, unit='rpm')` maps signal values
-    from 0-100 into a range of 400 - 5400 rpm.
-    """
 
     def __init__(self, phy_min: int, phy_max: int, scale: float, offset: float, unit: str = None):
+        """
+        A physical value encoder converts a range of values into a different range of values.
+
+        The formula from raw values into physical values is:
+
+        .. math:: raw * scale + offset
+
+        Example of a raw speed signal in the range of 0-100 being mapped to a the 1000-6000 RPM range:
+
+        .. code-block:: python
+
+            converter = PhysicalValue(phy_min=0, phy_max=100, scale=50, offset=1000, unit='RPM')
+            converter.encode("4000 RPM", signal)
+            >>> 60
+            converter.decode(0, signal)
+            >>> "1000 RPM"
+
+        :param phy_min: Minimum raw value
+        :type phy_min: int
+        :param phy_max: Maximum raw value
+        :type phy_max: int
+        :param scale: Raw values are multiplied by this value
+        :type scale: float
+        :param offset: Raw values are offset by this value
+        :type offset: float
+        :param unit: Physical value unit, e.g.: °C (temperature) or RPM (angular speed),
+                     defaults to None
+        :type unit: str, optional
+        """
         # pylint: disable=too-many-arguments
         self.phy_min = phy_min
         self.phy_max = phy_max
@@ -71,19 +112,28 @@ class PhysicalValue(ValueConverter):
         return decoded
 
 class LogicalValue(ValueConverter):
-    """
-    Value converter for logical values
-
-    A logical value encoder converts a particular value into another value.
-
-    :Example:
-
-    `LogicalValue(phy_value=0, unit='off')` maps the signal value `0` into `'off'`
-
-    `LogicalValue(phy_value=1, unit='on')` maps the signal value `1` into `'on'`
-    """
 
     def __init__(self, phy_value: int, info: str = None):
+        """
+        A logical value encoder converts a particular value into another value.
+
+        Example of switch value (0/1) being mapped to an on/off values:
+
+        .. code-block:: python
+
+            converter = PhysicalValue(phy_min=0, phy_max=100, scale=50, offset=1000, unit='RPM')
+            off_value = LogicalValue(phy_value=0, info='off')
+            on_value = LogicalValue(phy_value=1, info='on')
+            off_value.encode("off", signal)
+            >>> 0
+            off_value.decode(1, signal)
+            >>> ValueError
+
+        :param phy_value: Physical/Raw value
+        :type phy_value: int
+        :param info: String value associated with the physical value, defaults to None
+        :type info: str, optional
+        """
         self.phy_value = phy_value
         self.info = info
 
@@ -100,9 +150,20 @@ class LogicalValue(ValueConverter):
         raise ValueError(f"value: {value} not equal to {self.phy_value}")
 
 class BCDValue(ValueConverter):
-    """
-    Value converter for Binary Coded Decimal values
-    """
+
+    def __init__(self) -> None:
+        """
+        A BCD value converter interprets raw values as binary coded decimals.
+
+        Example 3 element array signal being converted into a BCD value:
+
+        .. code-block:: python
+
+            converter = BCDValue()
+            convert.encode(123, signal)
+            >>> [1, 2, 3]
+        """
+        super().__init__()
 
     def encode(self, value: int, signal: 'LinSignal') -> List[int]:
         if value > 10**int(signal.width / 8):
@@ -122,9 +183,20 @@ class BCDValue(ValueConverter):
         return out
 
 class ASCIIValue(ValueConverter):
-    """
-    Value converter for ASCII values
-    """
+
+    def __init__(self) -> None:
+        """
+        An ASCII value converter interprets raw values as ASCII encoded strings.
+
+        Example 3 element array signal being converted into a ASCII value:
+
+        .. code-block:: python
+
+            converter = ASCIIValue()
+            convert.encode("abc", signal)
+            >>> [0x61, 0x62, 0x63]
+        """
+        super().__init__()
 
     def encode(self, value: str, signal: 'LinSignal') -> List[int]:
         return list(value.encode())
@@ -133,36 +205,45 @@ class ASCIIValue(ValueConverter):
         return bytes(value).decode()
 
 class LinSignalEncodingType():
-    """
-    LinSignalEncodingType is used to encode and decode LIN signals
-
-    An encoding type contains multiple value converters.
-
-    :param name: Signal encoding type name
-    :type name: `str`
-    :param converters: Value converters in the encoding type
-    :type converters: `List[ValueConverter]`
-
-    :Example:
-
-    ```
-    LinSignalEncodingType(name="MotorSpeed",
-                  [
-                    LogicalValue(phy_value=0, info='off')
-                    PhysicalValue(phy_min=1, phy_max=254, scale=10, offset=100, unit='rpm')
-                    LogicalValue(phy_value=255, info='error')
-                  ])
-    ```
-    """
 
     def __init__(self, name: str, converters: List[ValueConverter]):
+        """
+        LinSignalEncodingType encapsulates multiple value converters and then decides on one to use.
+
+        Example of a motor's speed signal being mapped to different values.
+
+        .. code-block:: python
+
+            encoder = LinSignalEncodingType("MotorSpeedEncoder", [
+                LogicalValue(phy_value=0, info='off')
+                PhysicalValue(phy_min=1, phy_max=254, scale=10, offset=100, unit='rpm')
+                LogicalValue(phy_value=255, info='error')
+            ])
+            encoder.encode("off")
+            >>> 0
+            encoder.decode(255)
+            >>> "error"
+
+        :param name: Encoding type name
+        :type name: str
+        :param converters: Value converters associated with the encoding type
+        :type converters: List[ValueConverter]
+        """
         self.name: str = name
         self._converters: List[ValueConverter] = converters
         self._signals: List['LinSignal'] = []
 
     def encode(self, value: Union[str, int, float], signal: 'LinSignal') -> int:
         """
-        Encodes the given value into the physical value
+        Encodes the given signal value into the physical/raw value
+
+        :param value: Signal value
+        :type value: Union[str, int, float]
+        :param signal: LIN Signal context
+        :type signal: LinSignal
+        :raises ValueError: when the value cannot be converted
+        :return: Physical/Raw value
+        :rtype: int
         """
         for encoder in self._converters:
             try:
@@ -173,7 +254,18 @@ class LinSignalEncodingType():
 
     def decode(self, value: int, signal: 'LinSignal', keep_unit: bool = False) -> Union[str, int, float]:
         """
-        Decodes the given physical value into the signal value
+        Decodes the physical/raw value and returns the signal's value
+
+        :param value: Physical/Raw value
+        :type value: int
+        :param signal: LIN Signal context
+        :type signal: LinSignal
+        :param keep_unit: when True physical values will have the unit applied and will be
+                          returned as strings, defaults to False
+        :type keep_unit: bool, optional
+        :raises ValueError: when the value cannot be converted
+        :return: Signal value
+        :rtype: Union[str, int, float]
         """
         for decoder in self._converters:
             try:
@@ -183,7 +275,18 @@ class LinSignalEncodingType():
         raise ValueError(f"cannot decode {value} as {self.name}")
 
     def get_converters(self) -> List[ValueConverter]:
+        """Returns the value converters under the encoding type
+
+        :return: _description_
+        :rtype: List[ValueConverter]
+        """
         return self._converters
 
     def get_signals(self) -> List['LinSignal']:
+        """
+        Returns the signals associated with the encoding type in the LDF
+
+        :return: List of LIN signal objects
+        :rtype: List[LinSignal]
+        """
         return self._signals

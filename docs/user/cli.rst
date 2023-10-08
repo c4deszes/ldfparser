@@ -1,10 +1,12 @@
 Command-line interface (CLI)
 ============================
 
-Usage & help
-------------
+A command line interface is available after installation of the package, it allows simple operations
+to be done without writing a script.
 
-.. code-block:: text
+Below are the list of subcommands, or you can use the following command to get help:
+
+.. code-block:: bash
 
     ldfparser --help
 
@@ -18,34 +20,34 @@ The `info` subcommand will print general information about the LDF, such as lang
 version, baudrate, node and frame counts. When the `details` option is added it will
 print a list of node names, frames, etc. instead of counts.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> info [--details]`
-
-.. code-block:: text
 
 Exporting to JSON
 ~~~~~~~~~~~~~~~~~
 
 The `export` subcommand can be used to export the LDF as a JSON file to be used by
-other tools. When the `output` option is not specified it will print the contents to `stdout`.
+other tools. When the `output` option is not specified it will print the contents to the standard
+output.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> export [--output <output>]
 
 Node information
 ~~~~~~~~~~~~~~~~
 
-The `node` subcommand can be used to access information about the LIN nodes in the LDF.
+The `node` subcommand can be used to access information about the LIN nodes in the LDF. The default
+behavior will list all nodes.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> node --list
 
-These commands print information about LIN nodes.
+With the ``--master`` and ``--slave`` options it prints information about the specific LIN node.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> node --master
 
@@ -56,13 +58,13 @@ Frame information
 
 The `frame` subcommand can be used to access information about the LIN frames in the LDF.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> frame --list
 
 These commands print information about the LIN frames.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> frame --name <name>
 
@@ -73,10 +75,10 @@ Signal information
 
 The `signal` subcommand can be used to access information about the LIN signals in the LDF.
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> signal --list
 
-.. code-block:: text
+.. code-block:: bash
 
     ldfparser --ldf <file> signal --name <name>

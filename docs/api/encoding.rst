@@ -5,8 +5,10 @@ Common
 ------
 
 .. autoclass:: ldfparser.encoding.ValueConverter
+    :members:
 
 .. autoclass:: ldfparser.encoding.LinSignalEncodingType
+    :members:
 
 Converters
 ----------

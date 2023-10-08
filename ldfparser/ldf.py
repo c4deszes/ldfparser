@@ -123,22 +123,9 @@ class LDF():
         """
         Returns the unconditional frame with the given name or id
 
-        When `frame_id` is an integer the `LinUnconditionalFrame` with the given id will be returned
+        When ``frame_id`` is an integer the frame with the given id will be returned
 
-        When `frame_id` is a string the `LinUnconditionalFrame` with the given name will be returned
-
-        :Example:
-        Given an LDF:
-
-        ```
-        Frames {
-            VL1_CEM_Frm1: 1, CEM {
-                InternalLightsRequest, 0;
-            }
-        }
-        ```
-
-        `ldf.get_unconditional_frame(1)` and `ldf.get_unconditional_frame("VL1_CEM_Frm1")` will return the same value
+        When ``frame_id`` is a string the frame with the given name will be returned
 
         :param frame_id:
         :type frame_id: int or str

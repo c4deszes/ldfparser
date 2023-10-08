@@ -115,12 +115,6 @@ class LinUnconditionalFrame(LinFrame):
         """
         Encodes signal values into the LIN frame content
 
-        Example:
-            {
-                "MotorSpeed": 1000.0,
-                "MotorDirection": "CCW"
-            }
-
         :param data: Mapping of signal names to values, signals that are not supplied will default
                     to their initial values
         :type data: Dict[str, Union[str, int, float]] where each key is a signal name and each
@@ -172,12 +166,6 @@ class LinUnconditionalFrame(LinFrame):
         """
         Encodes signal values into the LIN frame content
 
-        Example:
-            {
-                "MotorSpeed": 1000,
-                "MotorDirection": 2
-            }
-
         :param data: Mapping of signal names to values, signals that are not supplied will default
                     to their initial values
         :type data: Dict[str, int] where each key is a signal name and each value is an integer
@@ -200,11 +188,6 @@ class LinUnconditionalFrame(LinFrame):
                keep_unit: bool = False) -> Dict[str, Union[str, int, float]]:
         """
         Decodes a LIN frame into the signals that it contains
-
-        Example:
-            data = 0xFC 0x38
-            frame_layout = u6p2u8u1u1p6
-
         """
         parsed = self.decode_raw(data)
         converted = {}
@@ -224,10 +207,13 @@ class LinUnconditionalFrame(LinFrame):
         Decodes a LIN frame into the signals that it contains
 
         Example:
-            data = 0xFC 0x30 0xFF,
-            frame_layout = u6p2u1u1p6u8
 
-            would yield the following dictionary {
+        Given data ``0xFC 0x30 0xFF`` for the layout ``u6p2u1u1p6u8``, decode could yield the
+        following dictionary:
+
+        .. code-block:: python
+
+            {
                 'Signal1': 63,
                 'Signal2': 1,
                 'Signal3': 1,

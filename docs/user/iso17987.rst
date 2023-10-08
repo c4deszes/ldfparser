@@ -13,7 +13,7 @@ don't include confidential information.
 Support
 -------
 
-As of :version:`0.19.0` parts of ISO17987 are supported, the support is based on examples found on
+As of ``0.19.0`` parts of ISO17987 are supported, the support is based on examples found on
 Github.
 
 The following attributes are supported:

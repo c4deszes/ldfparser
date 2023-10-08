@@ -20,6 +20,8 @@ def parse_ldf_to_dict(path: str, capture_comments: bool = False, encoding: str =
 
     :param path: Path to the LDF file
     :type path: str
+    :param capture_comments: When `True` comments will be processed
+    :type capture_comments: bool, defaults to False
     :param encoding: File encoding, for example 'UTF-8'
     :type encoding: str
     """
@@ -56,6 +58,8 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
 
     :param path: Path to the LDF file
     :type path: str
+    :param capture_comments: When `True` comments will be processed
+    :type capture_comments: bool, defaults to False
     :param encoding: File encoding, for example 'UTF-8'
     :type encoding: str
     """

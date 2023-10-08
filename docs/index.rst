@@ -4,6 +4,7 @@ ldfparser
 .. toctree::
     :hidden:
 
+    Home <self>
     user/index
     dev/index
     api/index
@@ -11,6 +12,8 @@ ldfparser
 
 The `ldfparser` library allows extracting information out of LIN descriptor files
 that are used to describe automotive networks.
+
+To get started see :ref:`installation <index:Installation>` and :ref:`basic usage <user/usage:Basic usage>`.
 
 Installation
 ------------

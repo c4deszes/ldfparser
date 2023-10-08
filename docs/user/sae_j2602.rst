@@ -2,13 +2,13 @@ SAE J2602
 =========
 
 SAE J2602 is the American equivalent standard for LIN communication, just like
-:ref:`ISO17987 <user/iso_17987:ISO17987>` it's not freely available therefore the same principles
+:ref:`ISO17987 <user/iso17987:ISO17987>` it's not freely available therefore the same principles
 apply to supporting this standard.
 
 Support
 -------
 
-As of :version:`0.20.0` parts of SAE J2602 are supported based on contributed examples.
+As of ``0.20.0`` parts of SAE J2602 are supported based on contributed examples.
 
 The following attributes are supported:
 

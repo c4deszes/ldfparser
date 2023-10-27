@@ -177,11 +177,11 @@ class LinUnconditionalFrame(LinFrame):
         for signal in signals:
             if isinstance(signal, int):
                 message.append(signal)
-            elif isinstance(signal, List[int]):
+            elif isinstance(signal, List):
                 message += signal[::-1]
         return message
 
-    def encode_raw(self, data: Union[Dict[str, int], List[int]]) -> bytearray:
+    def encode_raw(self, data: Union[Dict[str, int], List[Union[int, List[int]]]]) -> bytearray:
         """
         Encodes signal values into the LIN frame content
 

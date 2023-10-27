@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.1] - 2023-10-28
+
+### Fixes
+
+- Incorrect endianness for array type signals
+
 ## [0.21.0] - 2023-09-13
 
 ### Fixes

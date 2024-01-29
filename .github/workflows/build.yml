@@ -17,13 +17,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10.0b1']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
     runs-on: ubuntu-latest
     container:
       image: python:${{ matrix.python-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install
         run: pip install -e .[dev]
@@ -46,10 +46,11 @@ jobs:
         uses: codecov/codecov-action@v3
         if: always()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./
-          flags: unittests,${{ matrix.python-version }}
+          flags: ${{ matrix.python-version }}
           name: Python-${{ matrix.python-version }}
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   flake8:
     runs-on: ubuntu-latest
@@ -57,7 +58,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup flake8 annotations
         uses: rbialon/flake8-annotations@v1
@@ -74,7 +75,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install
         run: pip install -e .[dev]
@@ -88,7 +89,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install
         run: pip install -e .[dev]
@@ -103,7 +104,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout (current)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: current
 
@@ -144,7 +145,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install
         run: pip install -e .[dev]
@@ -159,7 +160,7 @@ jobs:
       image: python:3.6
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install
         run: pip install -e .[dev]

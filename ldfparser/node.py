@@ -127,6 +127,12 @@ class LinSlave(LinNode):
     :param response_tolerance: The value between 0.0 - 1.0 that represents the
         percentage of the frame response tolerance. For example, 0.4 for 40%.
     :type response_tolerance: float
+    :param wakeup_time: The time in seconds a responder-node requires to recover from LIN sleep to normal
+        communication state
+    :type wakeup_time: float
+    :param poweron_time: The time in seconds a responder-node requires to recover from power down to LIN
+        normal communication state
+    :type poweron_time: float
     """
 
     def __init__(self, name: str) -> None:
@@ -143,6 +149,8 @@ class LinSlave(LinNode):
         self.n_cr_timeout: float = 1
         self.configurable_frames = {}
         self.response_tolerance: float = None
+        self.wakeup_time: float = None
+        self.poweron_time: float = None
 
 class LinNodeCompositionConfiguration:
 

@@ -31,6 +31,8 @@ Node_attributes {
         LIN_protocol = 2.0;
         configured_NAD = 0x01;
 		response_tolerance = 38 % ;
+	    wakeup_time = 100 ms; 
+		poweron_time = 100 ms; 
     }
 }
 

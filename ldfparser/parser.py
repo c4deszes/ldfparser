@@ -197,8 +197,14 @@ def _create_ldf2x_node(node: dict, language_version: float):
     slave.n_as_timeout = node.get('N_As_timeout', 1)
     slave.n_cr_timeout = node.get('N_Cr_timeout', 1)
     is_j2602_protocol = isinstance(slave.lin_protocol, J2602Version)
-    default_resp_tolerance = 0.4 if is_j2602_protocol else None
+    if is_j2602_protocol:
+        default_resp_tolerance, default_wakeup_time, default_poweron_time = 0.4, 0.1, 0.1
+    else:
+        default_resp_tolerance, default_wakeup_time, default_poweron_time = None, None, None
+
     slave.response_tolerance = node.get('response_tolerance', default_resp_tolerance)
+    slave.wakeup_time = node.get('wakeup_time', default_wakeup_time)
+    slave.poweron_time = node.get('poweron_time', default_poweron_time)
 
     return slave
 

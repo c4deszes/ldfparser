@@ -222,6 +222,8 @@ def test_load_j2602_attributes():
     assert ldf.master.max_header_length == 24
     assert ldf.master.response_tolerance == 0.3
     assert list(ldf.slaves)[0].response_tolerance == 0.38
+    assert list(ldf.slaves)[0].wakeup_time == 0.1
+    assert list(ldf.slaves)[0].poweron_time == 0.1
 
 @pytest.mark.unit
 @pytest.mark.parametrize(

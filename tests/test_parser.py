@@ -246,4 +246,3 @@ def test_j2602_attributes_default(
     assert list(ldf.slaves)[0].response_tolerance == slave_response_tolerance
     assert list(ldf.slaves)[0].wakeup_time == slave_wakeup_time
     assert list(ldf.slaves)[0].poweron_time == slave_poweron_time
-

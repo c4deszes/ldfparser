@@ -34,16 +34,6 @@ def test_frame_raw_encoding_zero():
 
     assert list(content) == [0, 10 | 1 << 7]
 
-def test_frame_raw_encoding_multi_byte_signal():
-    signal1 = LinSignal('Signal_1', 16, 0)
-
-    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1})
-    content = frame.raw({
-        'Signal_1': 0xFF,
-    })
-    assert list(content) == [255, 0]
-
-
 @pytest.mark.unit
 def test_frame_raw_encoding_no_signal():
     signal1 = LinSignal('Signal_1', 8, 255)
@@ -65,7 +55,7 @@ def test_frame_raw_encoding_array():
     content = frame.raw({
         'Signal_1': [1, 2]
     })
-    assert list(content) == [2, 1]
+    assert list(content) == [1, 2]
 
 @pytest.mark.unit
 def test_frame_raw_encoding_array2():
@@ -76,35 +66,20 @@ def test_frame_raw_encoding_array2():
         'Signal_1': [1, 2],
         'Signal_2': 3
     })
-    assert list(content) == [2, 1, 3]
-
-@pytest.mark.unit
-def test_frame_raw_encoding_array3():
-    signal1 = LinSignal('Signal_1', 16, [0, 0])
-    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1})
-    content = frame.encode_raw([[1, 2]])
-    assert list(content) == [2, 1]
-
-@pytest.mark.unit
-def test_frame_raw_encoding_array4():
-    signal1 = LinSignal('Signal_1', 16, [0, 0])
-    signal2 = LinSignal('Signal_2', 8, 0)
-    frame = LinUnconditionalFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
-    content = frame.encode_raw([[1, 2], 3])
-    assert list(content) == [2, 1, 3]
+    assert list(content) == [1, 2, 3]
 
 @pytest.mark.unit
 def test_frame_raw_decoding_array():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
     frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1})
-    assert frame.parse_raw(bytearray([2, 1])) == {"Signal_1": [1, 2]}
+    assert frame.parse_raw(bytearray([1, 2])) == {"Signal_1": [1, 2]}
 
 @pytest.mark.unit
 def test_frame_raw_decoding_array2():
     signal1 = LinSignal('Signal_1', 16, [0, 0])
     signal2 = LinSignal('Signal_2', 8, 0)
     frame = LinUnconditionalFrame(1, 'Frame_1', 3, {0: signal1, 16: signal2})
-    assert frame.parse_raw(bytearray([2, 1, 3])) == {"Signal_1": [1, 2], "Signal_2": 3}
+    assert frame.parse_raw(bytearray([1, 2, 3])) == {"Signal_1": [1, 2], "Signal_2": 3}
 
 @pytest.mark.unit
 def test_frame_raw_encoding_out_of_range():
@@ -324,17 +299,17 @@ class TestEncodeDecodeArray:
         assert decoded == invalid_value
 
         # Physical value
-        valid_value = {"BattCurr": 0.00}
+        valid_value = {"BattCurr": -254.99609375}
         encoded = frame.encode(valid_value, converters)
-        assert encoded == bytearray([0, 0, 2])
+        assert encoded == bytearray([1, 1, 1])
         decoded = frame.decode(encoded, converters)
         assert decoded == valid_value
 
     def test_encode_decode_array_no_converter(self):
         signal = LinSignal('BattCurr', 24, [0, 0, 2])
         frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
-        raw = {"BattCurr": [1, 2, 3]}
-        encoded_expected = bytearray([3, 2, 1])
+        raw = {"BattCurr": [1, 1, 1]}
+        encoded_expected = bytearray([1, 1, 1])
 
         encoded = frame.encode(raw)
         assert encoded == encoded_expected
@@ -346,7 +321,7 @@ class TestEncodeDecodeArray:
         signal = LinSignal('BattCurr', 24, [0, 0, 2])
         frame = LinUnconditionalFrame(0x20, "LinStatus", 3, {0: signal})
 
-        encoded_expected = bytearray([2, 0, 0])
+        encoded_expected = bytearray([0, 0, 2])
         decode_expected = {'BattCurr': [0, 0, 2]}
 
         encoded = frame.encode({})

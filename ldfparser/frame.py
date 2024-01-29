@@ -162,12 +162,12 @@ class LinUnconditionalFrame(LinFrame):
         for (_, signal) in self.signal_map:
             if signal.name in signals.keys():
                 if signal.is_array():
-                    message += signals.get(signal.name)[::-1]
+                    message += signals.get(signal.name)
                 else:
                     message.append(signals.get(signal.name))
             else:
                 if signal.is_array():
-                    message += signal.init_value[::-1]
+                    message += signal.init_value
                 else:
                     message.append(signal.init_value)
         return message
@@ -177,11 +177,11 @@ class LinUnconditionalFrame(LinFrame):
         for signal in signals:
             if isinstance(signal, int):
                 message.append(signal)
-            elif isinstance(signal, List):
-                message += signal[::-1]
+            elif isinstance(signal, List[int]):
+                message += signal
         return message
 
-    def encode_raw(self, data: Union[Dict[str, int], List[Union[int, List[int]]]]) -> bytearray:
+    def encode_raw(self, data: Union[Dict[str, int], List[int]]) -> bytearray:
         """
         Encodes signal values into the LIN frame content
 
@@ -269,7 +269,7 @@ class LinUnconditionalFrame(LinFrame):
         while index < len(unpacked):
             if self.signal_map[signal_index][1].is_array():
                 array_size = int(self.signal_map[signal_index][1].width / 8)
-                message[self.signal_map[signal_index][1].name] = list(unpacked[index:index + array_size])[::-1]
+                message[self.signal_map[signal_index][1].name] = list(unpacked[index:index + array_size])
                 index += array_size - 1
             else:
                 message[self.signal_map[signal_index][1].name] = unpacked[index]

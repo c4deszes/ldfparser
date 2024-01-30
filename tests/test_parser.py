@@ -222,17 +222,19 @@ def test_load_j2602_attributes():
     assert ldf.master.max_header_length == 24
     assert ldf.master.response_tolerance == 0.3
     assert list(ldf.slaves)[0].response_tolerance == 0.38
+    assert list(ldf.slaves)[0].wakeup_time == 0.05
+    assert list(ldf.slaves)[0].poweron_time == 0.06
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    'file, max_header_length, master_response_tolerance, slave_response_tolerance',
+    'file, max_header_length, master_response_tolerance, slave_response_tolerance, slave_wakeup_time, slave_poweron_time',
     [
-        ("lin20.ldf", None, None, None),
-        ("j2602_1_no_values.ldf", 48, 0.4, 0.4)
+        ("lin20.ldf", None, None, None, None, None),
+        ("j2602_1_no_values.ldf", 48, 0.4, 0.4, 0.1, 0.1)
     ]
 )
 def test_j2602_attributes_default(
-        file, max_header_length, master_response_tolerance, slave_response_tolerance):
+        file, max_header_length, master_response_tolerance, slave_response_tolerance, slave_wakeup_time, slave_poweron_time):
     """
     Should not set default value for J2602 attributes if protocol is not J2602
     """
@@ -242,3 +244,5 @@ def test_j2602_attributes_default(
     assert ldf.master.max_header_length == max_header_length
     assert ldf.master.response_tolerance == master_response_tolerance
     assert list(ldf.slaves)[0].response_tolerance == slave_response_tolerance
+    assert list(ldf.slaves)[0].wakeup_time == slave_wakeup_time
+    assert list(ldf.slaves)[0].poweron_time == slave_poweron_time

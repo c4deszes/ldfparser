@@ -375,3 +375,17 @@ class TestLinUnconditionalFrameDecoding:
     def test_decode_with_unit(self, frame, range_type):
         decoded = frame.decode(b'\x20\x3F\x08', {'MotorSpeed': range_type}, keep_unit=True)
         assert decoded['MotorSpeed'] == '1600.000 rpm'
+
+@pytest.mark.unit
+def test_frame_encoding_with_optional_padding1():
+    signal1 = LinSignal('Signal_1', 8, 255)
+    signal2 = LinSignal('Signal_2', 4, 255)
+    signal3 = LinSignal('Signal_3', 1, 255)
+
+    frame = LinUnconditionalFrame(1, 'Frame_1', 2, {0: signal1, 8: signal2, 15: signal3}, pad_with_zero=False)
+    content = frame.encode_raw({
+        'Signal_2': 10,
+        'Signal_3': 1
+    })
+
+    assert list(content) == [255, 250]  # 10 | ( 1 << 7 | 0x70) = 250

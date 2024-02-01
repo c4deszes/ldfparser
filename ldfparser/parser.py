@@ -50,7 +50,7 @@ def parseLDFtoDict(path: str, captureComments: bool = False, encoding: str = Non
     warnings.warn("'parseLDFtoDict' is deprecated, use 'parse_ldf_to_dict' instead", DeprecationWarning)
     return parse_ldf_to_dict(path, captureComments, encoding)
 
-def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -> LDF:
+def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None, pad_with_zero: bool = True) -> LDF:
     """
     Parses an LDF file into an object
 
@@ -58,9 +58,12 @@ def parse_ldf(path: str, capture_comments: bool = False, encoding: str = None) -
     :type path: str
     :param encoding: File encoding, for example 'UTF-8'
     :type encoding: str
+    :param pad_with_zero: If True, pad with zeros during frame encoding. Otherwise, pad with ones.
+        Default: True
+    :type pad_with_zero: Boolean
     """
     json = parse_ldf_to_dict(path, capture_comments, encoding)
-    ldf = LDF()
+    ldf = LDF(pad_with_zero=pad_with_zero)
     ldf._source = json
 
     _populate_ldf_header(json, ldf)
@@ -122,7 +125,7 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
             elif 48 <= frame['frame_id'] <= 63:
                 length = 8
 
-        frame_obj = LinUnconditionalFrame(frame['frame_id'], frame['name'], length, signals)
+        frame_obj = LinUnconditionalFrame(frame['frame_id'], frame['name'], length, signals, pad_with_zero=ldf._pad_with_zero)
         ldf._unconditional_frames[frame['name']] = frame_obj
 
         for (_, signal) in signals.items():

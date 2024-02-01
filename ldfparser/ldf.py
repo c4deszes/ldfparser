@@ -17,7 +17,12 @@ class LDF():
     LDF is a container class that describes a LIN network
     """
 
-    def __init__(self):
+    def __init__(self, pad_with_zero: bool = True):
+        """
+        :param pad_with_zero: If True, pad with zeros during frame encoding. Otherwise, pad with ones.
+            Default: True
+        :type pad_with_zero: Boolean
+        """
         self._source: Dict = None
         self._protocol_version: Union[LinVersion, Iso17987Version, J2602Version] = None
         self._language_version: Union[LinVersion, Iso17987Version, J2602Version] = None
@@ -37,6 +42,7 @@ class LDF():
         self._slave_response_frame: LinDiagnosticResponse = None
         self._schedule_tables: Dict[str, ScheduleTable] = {}
         self._comments: List[str] = []
+        self._pad_with_zero = pad_with_zero
 
     def get_protocol_version(self) -> Union[LinVersion, Iso17987Version, J2602Version]:
         """Returns the protocol version of the LIN network"""

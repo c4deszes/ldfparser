@@ -30,6 +30,7 @@ class LinFrame():
         self.frame_id = frame_id
         self.name = name
 
+
 class LinUnconditionalFrame(LinFrame):
     """
     LinUnconditionalFrame represents an unconditional frame consisting of signals
@@ -42,19 +43,24 @@ class LinUnconditionalFrame(LinFrame):
     :type length: int
     :param signals: Signals of the frame
     :type signals: Dict[int, LinSignal]
+    :param pad_with_zero: If True, pad with zeros during frame encoding. Otherwise, pad with ones.
+        Default: True
+    :type pad_with_zero: Boolean
     """
 
-    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, 'LinSignal']):
+    def __init__(self, frame_id: int, name: str, length: int, signals: Dict[int, 'LinSignal'], pad_with_zero: bool = True):
         super().__init__(frame_id, name)
         self.publisher = None
         self.length = length
         self.signal_map = sorted(signals.items(), key=lambda x: x[0])
-        self._packer = LinUnconditionalFrame._frame_pattern(self.length, self.signal_map)
+        self._packer = LinUnconditionalFrame._frame_pattern(self.length, self.signal_map, pad_with_zero)
 
     @staticmethod
     def _frame_pattern(
             frame_size: int,
-            signals: List[Tuple[int, 'LinSignal']]) -> bitstruct.CompiledFormat:
+            signals: List[Tuple[int, 'LinSignal']],
+            pad_with_zero: bool = True,
+    ) -> bitstruct.CompiledFormat:
         """
         Converts a frame layout into a bitstructure formatting string
 
@@ -73,7 +79,9 @@ class LinUnconditionalFrame(LinFrame):
         :param signals: List of signals and offsets that represent the frame layout
         :type signals: List[Tuple[int, LinSignal]] where the tuple's first element is the offset
                         and the second element is the signal object
-
+        :param pad_with_zero: If True, pad with zeros during frame encoding. Otherwise, pad with ones.
+            Default: True
+        :type pad_with_zero: Boolean
         :raises: ValueError if the signals inside the frame would overlap or span outside the frame
         :returns: Bitstruct packer object
         :rtype: bitstruct.CompiledFormat
@@ -81,12 +89,13 @@ class LinUnconditionalFrame(LinFrame):
         pattern = "<"
         frame_bits = frame_size * 8
         frame_offset = 0
+        padding_value = "p" if pad_with_zero else "P"
         for (offset, signal) in signals:
             if offset < frame_offset:
                 raise ValueError(f"{signal} is overlapping ")
             if offset != frame_offset:
                 padding = offset - frame_offset
-                pattern += f"p{padding}"
+                pattern += f"{padding_value}{padding}"
                 frame_offset += padding
             if frame_offset + signal.width > frame_bits:
                 raise ValueError(f"{signal} with offset {offset} spans outside frame!")
@@ -96,7 +105,7 @@ class LinUnconditionalFrame(LinFrame):
                 pattern += f"u{signal.width}"
             frame_offset += signal.width
         if frame_offset < frame_bits:
-            pattern += f"p{frame_bits - frame_offset}"
+            pattern += f"{padding_value}{frame_bits - frame_offset}"
         return bitstruct.compile(pattern)
 
     def _get_signal(self, name: str):

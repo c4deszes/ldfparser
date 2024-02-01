@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.0] - 2024-02-02
+
+### Fixes
+- Incorrect padding of unused bytes
+
 ## [0.22.0] - 2024-01-30
 
 ### Added

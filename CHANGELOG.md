@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2024-01-30
+
+### Added
+
+- Support for J2602 slave node attributes:
+  - `wakeup_time`, `poweron_time`
+
 ## [0.21.0] - 2023-09-13
 
 ### Fixes

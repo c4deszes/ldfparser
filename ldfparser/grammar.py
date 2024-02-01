@@ -204,6 +204,12 @@ class LdfTransformer(Transformer):
     def node_definition_response_tolerance(self, tree):
         return ("response_tolerance", tree[0] * 0.01)
 
+    def node_definition_wakeup_time(self, tree):
+        return ("wakeup_time", tree[0] * 0.001)
+
+    def node_definition_poweron_time(self, tree):
+        return ("poweron_time", tree[0] * 0.001)
+
     def schedule_tables(self, tree):
         return ("schedule_tables", tree)
 

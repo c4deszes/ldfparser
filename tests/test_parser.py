@@ -246,3 +246,16 @@ def test_j2602_attributes_default(
     assert list(ldf.slaves)[0].response_tolerance == slave_response_tolerance
     assert list(ldf.slaves)[0].wakeup_time == slave_wakeup_time
     assert list(ldf.slaves)[0].poweron_time == slave_poweron_time
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "pad_with_zero", [True, False, None]
+)
+def test_padding_option(pad_with_zero):
+    path = os.path.join(os.path.dirname(__file__), "ldf", "lin20.ldf")
+    if pad_with_zero is None:
+        ldf = parse_ldf(path)
+        assert ldf._pad_with_zero is True
+    else:
+        ldf = parse_ldf(path, pad_with_zero=pad_with_zero)
+        assert ldf._pad_with_zero == pad_with_zero

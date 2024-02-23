@@ -122,7 +122,7 @@ signal_representations: "Signal_representation" "{" (signal_representation_node+
 signal_representation_node: ldf_identifier ":" ldf_identifier ("," ldf_identifier)* ";"
 
 C_INT: ("0x"HEXDIGIT+) | ("-"? INT) 
-C_FLOAT: ("-"? INT ("." INT)?) ("e" ("+" | "-")? INT)?
+C_FLOAT: ("-"? INT ("." INT)?) ("e" | "E" ("+" | "-")? INT)?
 LIN_VERSION: INT "." INT
 ISO_VERSION: "ISO17987" ":" INT
 J2602_VERSION: "J2602" "_" INT "_" INT "." INT

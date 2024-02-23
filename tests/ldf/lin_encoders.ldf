@@ -65,11 +65,6 @@ Signal_encoding_types {
     physical_value, 1, 63, 0.0625, 7.0, "Volt";
     physical_value, 64, 191, 0.0104, 11.0, "Volt";
     physical_value, 192, 253, 0.0625, 13.0, "Volt";
-    physical_value, 0, 5.678e-04, 0.0625, 4, "Volt";
-    physical_value, 0, 7.654E-02, 0.01, 9, "Volt";
-    physical_value, 0, 3.778e02, 0.05, 12, "Volt";
-    physical_value, 0, 1.222E09, 1, 0, "Volt";
-    physical_value, 0, 3.5E+02, 0.5, 5, "Volt";
     logical_value, 254, "over voltage";
     logical_value, 255, "invalid";
   }
@@ -99,6 +94,13 @@ Signal_encoding_types {
   }
   BCDEncoding {
     bcd_value;
+  }
+  ScientificEncoding {
+    physical_value, 0, 255, 5.6785558246e-04, 0, "Ohm";
+    physical_value, 0, 255, 7.654E-02, 0, "Ohm";
+    physical_value, 0, 1024, 3.778e02, 0, "Ohm";
+    physical_value, 0, 1024, 1.222E09, 0, "Ohm";
+    physical_value, 0, 65535, 3.5E+02, 5, "Ohm";
   }
 }
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2024-02-22
+
+### Changed
+
+- scientific/engineeering notation values can now have upper case E
+
 ## [0.23.0] - 2024-02-05
 
 ### Changed

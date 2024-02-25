@@ -95,6 +95,13 @@ Signal_encoding_types {
   BCDEncoding {
     bcd_value;
   }
+  ScientificEncoding {
+    physical_value, 0, 255, 5.6785558246e-04, 0, "Ohm";
+    physical_value, 0, 255, 7.654E-02, 0, "Ohm";
+    physical_value, 0, 1024, 3.778e02, 0, "Ohm";
+    physical_value, 0, 1024, 1.222E09, 0, "Ohm";
+    physical_value, 0, 65535, 3.5E+02, 5, "Ohm";
+  }
 }
 
 Signal_representation {

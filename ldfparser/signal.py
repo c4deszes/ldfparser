@@ -9,29 +9,36 @@ if TYPE_CHECKING:
     from .frame import LinUnconditionalFrame
 
 class LinSignal:
-    """
-    LinSignal describes values contained inside LinFrames
 
-    :param name: Name of the signal
-    :type name: str
-    :param width: Width of the signal in bits
-    :type width: int
-    :param init_value: Initial or default value of the signal
-    :type init_value: int or List[int] in case of array signals
-    :param publisher: Node that publishes the signal
-    :type publisher: LinNode
-    :param subscribers: Nodes that subscribe to the signal
-    :type subscribers: List[LinNode]
-    """
+    def __init__(self, name: str, width: int, init_value: Union[int, List[int]],
+                 publisher: 'LinNode' = None, subscribers: List['LinNode'] = None,
+                 encoding_type: 'LinSignalEncodingType' = None,
+                 frame: 'LinUnconditionalFrame' = None):
+        """
+        LinSignal describes the values contained in a LinFrame
 
-    def __init__(self, name: str, width: int, init_value: Union[int, List[int]]):
-        self.name: str = name
-        self.width: int = width
-        self.init_value: Union[int, List[int]] = init_value
-        self.publisher: 'LinNode' = None
-        self.subscribers: List['LinNode'] = []
-        self.encoding_type: 'LinSignalEncodingType' = None
-        self.frame: 'LinUnconditionalFrame' = None
+        :param name: Signal
+        :type name: str
+        :param width: Signal size in bits
+        :type width: int
+        :param init_value: Signal's initial value, for array type signals a List should be passed
+        :type init_value: Union[int, List[int]]
+        :param publisher: Node that's publishing this signal, defaults to None
+        :type publisher: LinNode, optional
+        :param subscribers: Nodes that are listening to this signal, defaults to None
+        :type subscribers: List[LinNode], optional
+        :param encoding_type: Signal encoding type, defaults to None
+        :type encoding_type: LinSignalEncodingType, optional
+        :param frame: Frame that includes the signal, defaults to None
+        :type frame: LinUnconditionalFrame, optional
+        """
+        self.name = name
+        self.width = width
+        self.init_value = init_value
+        self.publisher = publisher
+        self.subscribers = subscribers if subscribers is not None else []
+        self.encoding_type = encoding_type
+        self.frame = frame
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, LinSignal):
@@ -44,7 +51,7 @@ class LinSignal:
     def __hash__(self) -> int:
         return hash((self.name))
 
-    def is_array(self):
+    def is_array(self) -> bool:
         """
         Returns whether the Signal is array type
 

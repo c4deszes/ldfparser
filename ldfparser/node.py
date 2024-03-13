@@ -12,18 +12,24 @@ LIN_SUPPLIER_ID_WILDCARD = 0x7FFF
 LIN_FUNCTION_ID_WILDCARD = 0xFFFF
 
 class LinProductId:
-    """
-    LinProductId identifies a node's manufacturer and product
-
-    :param supplier_id: a number uniquely identifying the manufacturer of the node
-    :type supplier_id: int
-    :param function_id: a number assigned by the manufacturer that identifies the product
-    :type function_id: int
-    :param variant: an optional number identifying a variant of the product
-    :type variant: int
-    """
 
     def __init__(self, supplier_id: int, function_id: int, variant: int = 0):
+        """
+        LinProductId identifies a node's manufacturer and product
+
+        Example usage:
+
+        .. code-block:: python
+
+            product_id = LinProductId(0x0040, 0x0340, 0x1)
+
+        :param supplier_id: a number uniquely identifying the manufacturer of the node
+        :type supplier_id: int
+        :param function_id: a number assigned by the manufacturer that identifies the product
+        :type function_id: int
+        :param variant: an optional number identifying a variant of the product
+        :type variant: int
+        """
         self.supplier_id: int = supplier_id
         self.function_id: int = function_id
         self.variant: int = variant
@@ -47,50 +53,43 @@ class LinProductId:
                f"function=0x{self.function_id:04x},variant={self.variant})"
 
 class LinNode:
-    """
-    Abstract LIN Node class
 
-    Contains the following common attributes:
+    def __init__(self, name: str, subscribes_to: List['LinSignal'] = None,
+                 publishes: List['LinSignal'] = None, publishes_frames: List['LinFrame'] = None):
+        """
+        Base LIN Node class
 
-    :param name: Name of the node
-    :type name: str
-    :param subscribes_to: LIN signals that the node is subscribed to
-    :type subscribes_to: List[LinSignal]
-    :param publishes: LIN signals that the node is publishing
-    :type publishes: List[LinSignal]
-    :param publishes_frames: LIN frames that the node is publishing
-    :type publishes_frames: List[LinFrame]
-    """
-
-    def __init__(self, name: str):
+        :param name: Node name
+        :type name: str
+        :param subscribes_to: LIN signals that the node is subscribed to
+        :type subscribes_to: List[LinSignal]
+        :param publishes: LIN signals that the node is publishing
+        :type publishes: List[LinSignal]
+        :param publishes_frames: LIN frames that the node is publishing
+        :type publishes_frames: List[LinFrame]
+        """
         self.name = name
-        self.subscribes_to: List['LinSignal'] = []
-        self.publishes: List['LinSignal'] = []
-        self.publishes_frames: List['LinFrame'] = []
+        self.subscribes_to = subscribes_to if subscribes_to is not None else []
+        self.publishes = publishes if publishes is not None else []
+        self.publishes_frames = publishes_frames if publishes_frames is not None else []
 
 class LinMaster(LinNode):
-    """
-    LinMaster is a LinNode that controls communication on the network
 
-    :param timebase: LIN network timebase in seconds
-    :type timebase: float
-    :param jitter: LIN network jitter in seconds
-    :type jitter: float
-    :param max_header_length: The maximum number of bits of the header length
-    :type max_header_length: int
-    :param response_tolerance: The value between 0.0 - 1.0 that represents the
-        percentage of the frame response tolerance.
-    :type response_tolerance: float
-    """
-
-    def __init__(
-            self,
-            name: str,
-            timebase: float,
-            jitter: float,
-            max_header_length: int,
-            response_tolerance: float,
-    ):
+    def __init__(self, name: str, timebase: float, jitter: float, max_header_length: int,
+                 response_tolerance: float):
+        """
+        LinMaster is a LinNode that controls communication on the network
+        
+        :param timebase: LIN network timebase in seconds
+        :type timebase: float
+        :param jitter: LIN network jitter in seconds
+        :type jitter: float
+        :param max_header_length: The maximum number of bits of the header length
+        :type max_header_length: int
+        :param response_tolerance: The value between 0.0 - 1.0 that represents the
+            percentage of the frame response tolerance.
+        :type response_tolerance: float
+        """
         super().__init__(name)
         self.timebase: float = timebase
         self.jitter: float = jitter

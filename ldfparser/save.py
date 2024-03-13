@@ -14,7 +14,7 @@ def save_ldf(ldf: LDF,
              output_path: Union[str, bytes, os.PathLike],
              template_path: Union[str, bytes, os.PathLike] = None) -> None:
     """
-    Saves as an LDF object as an `.ldf` file
+    Saves an LDF object as an `.ldf` file
 
     :param ldf: LDF object
     :type ldf: LDF

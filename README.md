@@ -32,8 +32,13 @@ I also recommend trying the LDF to JSON conversion mechanism, see if that succee
 
 The LIN standard is now known as [ISO 17987](https://www.iso.org/standard/61222.html) which
 clears up some of the confusing parts in the 2.2A specification. Since this new standard is not
-freely available **this library won't support the modifications present in ISO 17987**. I don't
-think it's going to a huge problem because the LIN 2.2A released in 2010 has overall better adoption.
+freely available **this library won't support the modifications present in ISO 17987 actively**.
+As of `0.19.0` some parts are supported based on information in the public domain.
+
+The SAE organization has their own variant of the LIN standard, known as
+[SAE J2602](https://www.sae.org/standards/content/j2602-1_202110/). As of `0.20.0` some additional
+fields are supported, but just like with ISO since the standard is not free it's support is limited
+to external contributors and publicly available information.
 
 The LDF usually contains sensitive information, if you need to open an issue related to the parser
 then try to provide either an anonymized version with signals and frames obfuscated or just the

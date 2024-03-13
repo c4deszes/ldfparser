@@ -28,7 +28,10 @@ setup(
             "jsonschema",
             # Linting
             "pylint",
-            "flake8"
+            "flake8",
+            # Documentation
+            "sphinx>=7",
+            "sphinx-rtd-theme>=1.2"
         ]
     },
     python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4',

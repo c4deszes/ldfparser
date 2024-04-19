@@ -53,10 +53,11 @@ class LinUnconditionalFrame(LinFrame):
         self.publisher = None
         self.length = length
         self.signal_map = sorted(signals.items(), key=lambda x: x[0])
-        self._packer = LinUnconditionalFrame._frame_pattern(self.length, self.signal_map, pad_with_zero)
+        self._packer = LinUnconditionalFrame._frame_pattern(self.name, self.length, self.signal_map, pad_with_zero)
 
     @staticmethod
     def _frame_pattern(
+            frame_name: str,
             frame_size: int,
             signals: List[Tuple[int, 'LinSignal']],
             pad_with_zero: bool = True,
@@ -89,21 +90,23 @@ class LinUnconditionalFrame(LinFrame):
         pattern = "<"
         frame_bits = frame_size * 8
         frame_offset = 0
+        prev_signal = None
         padding_value = "p" if pad_with_zero else "P"
         for (offset, signal) in signals:
             if offset < frame_offset:
-                raise ValueError(f"{signal} is overlapping ")
+                raise ValueError(f"{frame_name}: {signal.name} is overlapping {prev_signal.name}")
             if offset != frame_offset:
                 padding = offset - frame_offset
                 pattern += f"{padding_value}{padding}"
                 frame_offset += padding
             if frame_offset + signal.width > frame_bits:
-                raise ValueError(f"{signal} with offset {offset} spans outside frame!")
+                raise ValueError(f"{signal.name} with offset {offset} spans outside frame!")
             if signal.is_array():
                 pattern += "u8" * int(signal.width / 8)
             else:
                 pattern += f"u{signal.width}"
             frame_offset += signal.width
+            prev_signal = signal
         if frame_offset < frame_bits:
             pattern += f"{padding_value}{frame_bits - frame_offset}"
         return bitstruct.compile(pattern)

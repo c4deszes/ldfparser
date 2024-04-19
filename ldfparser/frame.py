@@ -94,13 +94,13 @@ class LinUnconditionalFrame(LinFrame):
         padding_value = "p" if pad_with_zero else "P"
         for (offset, signal) in signals:
             if offset < frame_offset:
-                raise ValueError(f"{frame_name}: {signal.name} is overlapping {prev_signal.name}")
+                raise ValueError(f"{frame_name}: {signal.name} at bit {offset} is overlapping {prev_signal.name}")
             if offset != frame_offset:
                 padding = offset - frame_offset
                 pattern += f"{padding_value}{padding}"
                 frame_offset += padding
             if frame_offset + signal.width > frame_bits:
-                raise ValueError(f"{signal.name} with offset {offset} spans outside frame!")
+                raise ValueError(f"{frame_name}: {signal.name} at bit {offset} spans outside frame!")
             if signal.is_array():
                 pattern += "u8" * int(signal.width / 8)
             else:

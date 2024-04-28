@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2024-04-28
+
+### Changed
+
+- Signals overlapping error message now includes relevant information
+
 ## [0.24.0] - 2024-02-22
 
 ### Changed

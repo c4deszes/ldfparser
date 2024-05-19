@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.0] - 2024-05-19
+
+### Changed
+
+- Empty signal encoders are now allowed
+
 ## [0.25.0] - 2024-04-28
 
 ### Changed

@@ -1,0 +1,38 @@
+ISO17987
+========
+
+ISO17987 is the successor of the LIN2.2A standard, it clears up some of the confusing parts of the
+standard. There are minor additions to the LDF syntax, but because the standard isn't freely
+available **the library will only include support for things that are in the public domain** or that
+others have moved into public domain, like example LDFs.
+
+When contributing additional ISO17987 support keep in mind that access to the standard might come
+with a non-disclosure agreement. Also when including LDFs in issues or PRs make sure that they
+don't include confidential information.
+
+Support
+-------
+
+As of ``0.19.0`` parts of ISO17987 are supported, the support is based on examples found on
+Github.
+
+The following attributes are supported:
+
+* LIN_protocol_version/LIN_language_version with ISO version values
+* LDF_file_revision as a string
+* LIN_sig_byte_order_big_endian/LIN_sig_byte_order_little_endian
+
+.. note:: LDF_file_revision is only available in the dictionary.
+
+.. warning:: LIN_sig_byte_order_big/little_endian is only supported on grammar level, it's currently
+             ignored by the parser and frame encoding/decoding doesn't support big endian mode.
+
+Version values are converted into :py:class:`~.Iso17987Version` which contains the release year,
+comparison operations are implemented.
+
+References
+----------
+
+`LINISO17987.ldf <https://github.com/sebastianwilczek/CANoe-Configurations/blob/28315802924d9b028a1da9fd1c02c5caac833ce7/LIN/LINBasicISO17987/LINdb/LINISO17987.ldf>`_
+
+`SlaveConfTestDbISO <https://github.com/sebastianwilczek/CANoe-Configurations/blob/28315802924d9b028a1da9fd1c02c5caac833ce7/LIN/LINSlaveConformanceTest/LDF/SlaveConfTestDbISO.ldf>`_

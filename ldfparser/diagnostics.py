@@ -37,8 +37,11 @@ def rsid(sid: int) -> int:
     Returns the response service identifier for a given service id
 
     Example:
-    >>> rsid(LIN_SID_READ_BY_ID)
-    0xF2
+
+    .. code-block:: python
+
+        rsid(LIN_SID_READ_BY_ID)
+        >>> 0xF2
 
     :param sid: Service identifier
     :type sid: int

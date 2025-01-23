@@ -54,7 +54,7 @@ class PhysicalValue(ValueConverter):
 
         raw = self.offset
         if self.scale != 0:
-            raw = int((num - self.offset) / self.scale)
+            raw = round((num - self.offset) / self.scale)
 
         if raw < self.phy_min or raw > self.phy_max:
             raise ValueError(f"value: {raw} out of range ({self.phy_min}, {self.phy_max})")

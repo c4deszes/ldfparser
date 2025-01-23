@@ -129,7 +129,11 @@ def _populate_ldf_frames(json: dict, ldf: LDF):
         ldf._unconditional_frames[frame['name']] = frame_obj
 
         for (_, signal) in signals.items():
-            signal.frame = frame_obj
+            if len(signal.frames) == 0:
+                signal.frame = frame_obj    # signal has only appeared in one frame
+            elif len(signal.frames) >= 1:
+                signal.frame = None         # signal is in multiple frames
+            signal.frames.append(frame_obj)
 
 def _populate_ldf_event_triggered_frames(json: dict, ldf: LDF):
     if "event_triggered_frames" not in json:

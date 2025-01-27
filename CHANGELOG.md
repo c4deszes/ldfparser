@@ -13,12 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Empty signal encoders are now allowed
 - Signals can now be associated with multiple frames, accessible under `signal.frames`
+- Physical values are now rounded to the nearest integer, rather than down
 
 ### Migration guide for 0.26.0
 
 - Newly written should be using `signal.frames` to determine the owners of a signal, for
   compatibility reasons `signal.frame` is still set, but only when a signal is associated with one
   frame
+- Physical values might be rounded the wrong way depending on the user's intention. This type of
+rounding should generally work better in values ranging from `0-X`, for example `49.9` is no longer
+rounded down to `49`. If this is undesired the user can in most cases offset the input by `0.5` and
+it should work as previously as `-0.5` rounds to `0`, check
+[Python's round function](https://docs.python.org/3/library/functions.html#round) for more.
 
 ## [0.25.0] - 2024-04-28
 

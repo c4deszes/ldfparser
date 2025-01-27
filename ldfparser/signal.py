@@ -31,7 +31,9 @@ class LinSignal:
         self.publisher: 'LinNode' = None
         self.subscribers: List['LinNode'] = []
         self.encoding_type: 'LinSignalEncodingType' = None
-        self.frame: 'LinUnconditionalFrame' = None
+        self.frame: 'LinUnconditionalFrame' = None      # for compatibility reasons this is set
+                                                        # when the signal is added to only one frame
+        self.frames: List['LinUnconditionalFrame'] = []
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, LinSignal):

@@ -150,7 +150,7 @@ class J2602Version:
         version = version.replace("J2602_", '')
         (part, versions) = version.split('_')
         major, minor = [int(value) for value in versions.split('.')]
-        if major == 1:
+        if major == 1 or major == 2:
             return J2602Version(major=major, minor=minor, part=int(part))
 
         raise ValueError(f'{version} is not supported yet.')

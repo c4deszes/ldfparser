@@ -110,8 +110,8 @@ def export_ldf(ldf: LDF, output: str = None):
             json.dump(ldf._source, file, indent=4)
 
 def print_ldf_info(ldf: LDF, extended: bool = False):
-    print(f"Protocol Version: {ldf.protocol_version:.01f}")
-    print(f"Language Version: {ldf.language_version:.01f}")
+    print(f"Protocol Version: {ldf.get_protocol_version()}")
+    print(f"Language Version: {ldf.get_language_version()}")
     print(f"Speed: {ldf.baudrate}")
     print(f"Channel: {ldf.channel if ldf.channel else '-'}")
 

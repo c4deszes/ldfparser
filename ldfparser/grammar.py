@@ -209,6 +209,9 @@ class LdfTransformer(Transformer):
 
     def node_definition_poweron_time(self, tree):
         return ("poweron_time", tree[0] * 0.001)
+    
+    def node_definition_reset_indication(self, tree):
+        return ("reset_indication", tree[0])
 
     def schedule_tables(self, tree):
         return ("schedule_tables", tree)

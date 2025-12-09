@@ -23,8 +23,8 @@ header_sig_byte_order_little_endian: "LIN_sig_byte_order_little_endian" ";"
 // LIN 2.1 Specification, section 9.2.2
 // SAE J2602-3_201001, SECTION 7.2
 nodes: "Nodes" "{" nodes_master? nodes_slaves? "}"
-nodes_master: "Master" ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ("," ldf_integer "bits" "," ldf_float "%")? ";"
-nodes_slaves: "Slaves" ":" ldf_identifier ("," ldf_identifier)* ";"
+nodes_master: ("Master" | "Commander") ":" ldf_identifier "," ldf_float "ms" "," ldf_float "ms" ("," ldf_integer ("bits" | "bit") "," ldf_float "%")? ";"
+nodes_slaves: ("Slaves" | "Responders") ":" ldf_identifier ("," ldf_identifier)* ";"
 
 // LIN 2.1 Specification, section 9.2.2.3
 node_compositions: "composite" "{" (node_compositions_configuration+) "}"
@@ -69,7 +69,7 @@ diagnostic_address: ldf_identifier ":" ldf_integer ";"
 // LIN 2.1 Specification, section 9.2.2.2
 // response_tolerance: SAE J2602_1_201001, section 7.2.1
 node_attributes: "Node_attributes" "{" (node_definition*) "}"
-node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames | node_definition_response_tolerance | node_definition_wakeup_time | node_definition_poweron_time)* "}"
+node_definition: ldf_identifier "{" (node_definition_protocol | node_definition_configured_nad | node_definition_initial_nad | node_definition_product_id | node_definition_response_error | node_definition_fault_state_signals | node_definition_p2_min | node_definition_st_min | node_definition_n_as_timeout | node_definition_n_cr_timeout | node_definition_configurable_frames | node_definition_response_tolerance | node_definition_wakeup_time | node_definition_poweron_time | node_definition_reset_indication)* "}"
 node_definition_protocol: "LIN_protocol" "=" (["\"" ldf_version "\""] | ldf_version) ";"
 node_definition_configured_nad: "configured_NAD" "=" ldf_integer ";"
 node_definition_initial_nad: "initial_NAD" "=" ldf_integer ";"
@@ -86,6 +86,7 @@ node_definition_configurable_frames_21: "configurable_frames" "{" (ldf_identifie
 node_definition_response_tolerance: "response_tolerance" "=" ldf_float "%" ";"
 node_definition_wakeup_time: "wakeup_time" "=" ldf_float "ms" ";"
 node_definition_poweron_time: "poweron_time" "=" ldf_float "ms" ";"
+node_definition_reset_indication: "reset_indication" "=" ldf_identifier ";"
 
 // LIN 2.1 Specification, section 9.2.5
 schedule_tables: "Schedule_tables" "{" (schedule_table_definition+) "}" 
